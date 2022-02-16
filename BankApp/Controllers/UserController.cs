@@ -28,4 +28,11 @@ public class UserController : ControllerBase
         var user = await _userService.GetUserByIdAsync(id);
         return Ok(user);
     }
+
+    [HttpGet("{id}/refresh-tokens")]
+    public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokens(string id)
+    {
+        var user = await _userService.GetUserByIdAsync(id);
+        return Ok(user.RefreshTokens);
+    }
 }

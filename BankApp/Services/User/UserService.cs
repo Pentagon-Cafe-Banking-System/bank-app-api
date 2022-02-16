@@ -1,6 +1,8 @@
 ﻿using BankApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using BankApp.Exceptions;
+
 
 namespace BankApp.Services.User;
 
@@ -23,7 +25,7 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
-            throw new KeyNotFoundException("User not found");
+            throw new NotFoundException("User not found");
         return user;
     }
 }

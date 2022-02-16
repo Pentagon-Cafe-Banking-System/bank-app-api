@@ -1,4 +1,5 @@
 ﻿using BankApp.Data;
+using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.DTO;
 using BankApp.Utils.Jwt;
@@ -34,11 +35,11 @@ public class AuthService : IAuthService
     {
         var user = await _userManager.FindByNameAsync(userDto.UserName);
         if (user is null)
-            throw new Exception("Username does not exist");
+            throw new NotFoundException("Username does not exist");
 
         var passwordCheck = await _userManager.CheckPasswordAsync(user, userDto.Password);
         if (!passwordCheck)
-            throw new Exception("Incorrect password");
+            throw new NotFoundException("Incorrect password");
 
         var jwtToken = _jwtUtils.GenerateJwtToken(user);
         var refreshToken = await _jwtUtils.GenerateRefreshToken(ipAddress);
@@ -66,7 +67,7 @@ public class AuthService : IAuthService
         }
 
         if (!refreshToken.IsActive)
-            throw new Exception("Invalid token");
+            throw new NotFoundException("Invalid token");
 
         // replace old refresh token with a new one (rotate token)
         var newRefreshToken = await RotateRefreshTokenAsync(refreshToken, ipAddress);
@@ -90,7 +91,7 @@ public class AuthService : IAuthService
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
 
         if (!refreshToken.IsActive)
-            throw new Exception("Invalid token");
+            throw new NotFoundException("Invalid token");
 
         // revoke token and save
         RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");
@@ -104,7 +105,7 @@ public class AuthService : IAuthService
     {
         var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
         if (user is null)
-            throw new Exception("Invalid token");
+            throw new NotFoundException("Invalid token");
 
         return user;
     }

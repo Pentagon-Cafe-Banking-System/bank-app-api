@@ -1,7 +1,7 @@
-﻿using BankApp.Models;
+﻿using BankApp.Exceptions;
+using BankApp.Models;
 using BankApp.Models.DTO;
 using BankApp.Services.Auth;
-using BankApp.Services.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,19 +13,10 @@ namespace BankApp.Controllers;
 public class AuthController : Controller
 {
     private readonly IAuthService _authService;
-    private readonly IUserService _userService;
 
-    public AuthController(IUserService userService, IAuthService authService)
+    public AuthController(IAuthService authService)
     {
-        _userService = userService;
         _authService = authService;
-    }
-
-    [HttpGet("{id}/refresh-tokens")]
-    public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokens(string id)
-    {
-        var user = await _userService.GetUserByIdAsync(id);
-        return Ok(user.RefreshTokens);
     }
 
     [HttpPost("register")]
@@ -50,7 +41,7 @@ public class AuthController : Controller
     {
         var refreshToken = Request.Cookies["refreshToken"];
         if (refreshToken is null)
-            throw new Exception("There is no refresh token in the request cookies");
+            throw new NotFoundException("There is no refresh token in the request cookies");
         var response = await _authService.RefreshTokenAsync(refreshToken, IpAddress());
         SetTokenCookie(response.RefreshToken);
         return Ok(response);
@@ -63,7 +54,7 @@ public class AuthController : Controller
         token ??= Request.Cookies["refreshToken"];
 
         if (string.IsNullOrEmpty(token))
-            return BadRequest(new {message = "Token is required"});
+            throw new BadRequestException("Token is required");
 
         await _authService.RevokeTokenAsync(token, IpAddress());
         return Ok(new {message = "Token revoked"});

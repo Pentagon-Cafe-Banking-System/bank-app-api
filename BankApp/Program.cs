@@ -1,5 +1,6 @@
 using System.Text;
 using BankApp.Data;
+using BankApp.Middleware;
 using BankApp.Models;
 using BankApp.Services.Auth;
 using BankApp.Services.User;
@@ -70,6 +71,7 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ErrorHandlerMiddleware>();
 
 var app = builder.Build();
 
@@ -79,6 +81,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 
