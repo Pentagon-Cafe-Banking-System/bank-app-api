@@ -15,12 +15,15 @@ public class AuthService : IAuthService
     private readonly AppSettings _appSettings;
     private readonly IJwtService _jwtService;
     private readonly UserManager<AppUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AuthService(IOptions<AppSettings> appSettings, UserManager<AppUser> userManager, IJwtService jwtService)
+    public AuthService(IOptions<AppSettings> appSettings, IJwtService jwtService, UserManager<AppUser> userManager,
+        RoleManager<IdentityRole> roleManager)
     {
         _appSettings = appSettings.Value;
-        _userManager = userManager;
         _jwtService = jwtService;
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<IdentityResult> RegisterAsync(RegisterRequest request)
@@ -30,9 +33,15 @@ public class AuthService : IAuthService
             UserName = request.UserName,
         };
 
-        var result = await _userManager.CreateAsync(user, request.Password);
-        await _userManager.AddToRoleAsync(user, request.RoleName);
-        return result;
+        var roleExists = await _roleManager.RoleExistsAsync(request.RoleName);
+        if (!roleExists)
+            throw new BadRequestException($"Role '{request.RoleName}' does not exist");
+
+        var createUserResult = await _userManager.CreateAsync(user, request.Password);
+        if (!createUserResult.Succeeded)
+            return createUserResult;
+        
+        return await _userManager.AddToRoleAsync(user, request.RoleName);
     }
 
     public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress)
