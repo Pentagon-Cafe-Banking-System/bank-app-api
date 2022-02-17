@@ -14,10 +14,16 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        // Disable not needed attributes
-        builder.Entity<AppUser>().Ignore(user => user.LockoutEnabled);
-        builder.Entity<AppUser>().Ignore(user => user.LockoutEnd);
-        builder.Entity<AppUser>().Ignore(user => user.PhoneNumber);
+
+        // Only needed for login via 3rd party account
         builder.Entity<IdentityUserToken<string>>().Metadata.SetIsTableExcludedFromMigrations(true);
+        builder.Entity<IdentityUserLogin<string>>().Metadata.SetIsTableExcludedFromMigrations(true);
+
+        // Create roles
+        builder.Entity<IdentityRole>().HasData(
+            new IdentityRole {Name = "Admin", NormalizedName = "ADMIN"},
+            new IdentityRole {Name = "Employee", NormalizedName = "EMPLOYEE"},
+            new IdentityRole {Name = "Customer", NormalizedName = "CUSTOMER"}
+        );
     }
 }

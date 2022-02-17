@@ -1,8 +1,9 @@
 ﻿using BankApp.Data;
 using BankApp.Exceptions;
 using BankApp.Models;
-using BankApp.Models.DTO;
-using BankApp.Utils.Jwt;
+using BankApp.Models.Reponses;
+using BankApp.Models.Requests;
+using BankApp.Services.Jwt;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -12,37 +13,40 @@ namespace BankApp.Services.Auth;
 public class AuthService : IAuthService
 {
     private readonly AppSettings _appSettings;
-    private readonly IJwtUtils _jwtUtils;
+    private readonly IJwtService _jwtService;
     private readonly UserManager<AppUser> _userManager;
 
-    public AuthService(IOptions<AppSettings> appSettings, UserManager<AppUser> userManager, IJwtUtils jwtUtils)
+    public AuthService(IOptions<AppSettings> appSettings, UserManager<AppUser> userManager, IJwtService jwtService)
     {
         _appSettings = appSettings.Value;
         _userManager = userManager;
-        _jwtUtils = jwtUtils;
+        _jwtService = jwtService;
     }
 
-    public async Task<IdentityResult> RegisterAsync(AppUserDto userDto)
+    public async Task<IdentityResult> RegisterAsync(RegisterRequest request)
     {
         var user = new AppUser
         {
-            UserName = userDto.UserName,
+            UserName = request.UserName,
         };
-        return await _userManager.CreateAsync(user, userDto.Password);
+
+        var result = await _userManager.CreateAsync(user, request.Password);
+        await _userManager.AddToRoleAsync(user, request.RoleName);
+        return result;
     }
 
-    public async Task<AuthenticateResponse> AuthenticateAsync(AppUserDto userDto, string? ipAddress)
+    public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress)
     {
-        var user = await _userManager.FindByNameAsync(userDto.UserName);
+        var user = await _userManager.FindByNameAsync(request.UserName);
         if (user is null)
             throw new NotFoundException("Username does not exist");
 
-        var passwordCheck = await _userManager.CheckPasswordAsync(user, userDto.Password);
+        var passwordCheck = await _userManager.CheckPasswordAsync(user, request.Password);
         if (!passwordCheck)
             throw new NotFoundException("Incorrect password");
 
-        var jwtToken = _jwtUtils.GenerateJwtToken(user);
-        var refreshToken = await _jwtUtils.GenerateRefreshToken(ipAddress);
+        var jwtToken = await _jwtService.GenerateJwtTokenAsync(user);
+        var refreshToken = await _jwtService.GenerateRefreshToken(ipAddress);
 
         // remove old refresh tokens from user
         RemoveOldRefreshTokens(user);
@@ -80,7 +84,7 @@ public class AuthService : IAuthService
         await _userManager.UpdateAsync(user);
 
         // generate new jwt
-        var jwtToken = _jwtUtils.GenerateJwtToken(user);
+        var jwtToken = await _jwtService.GenerateJwtTokenAsync(user);
 
         return new AuthenticateResponse(jwtToken, newRefreshToken.Token);
     }
@@ -112,7 +116,7 @@ public class AuthService : IAuthService
 
     private async Task<RefreshToken> RotateRefreshTokenAsync(RefreshToken refreshToken, string? ipAddress)
     {
-        var newRefreshToken = await _jwtUtils.GenerateRefreshToken(ipAddress);
+        var newRefreshToken = await _jwtService.GenerateRefreshToken(ipAddress);
         RevokeRefreshToken(refreshToken, ipAddress, "Replaced by new token", newRefreshToken.Token);
         return newRefreshToken;
     }

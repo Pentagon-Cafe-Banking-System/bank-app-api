@@ -1,6 +1,6 @@
 ﻿using BankApp.Exceptions;
-using BankApp.Models;
-using BankApp.Models.DTO;
+using BankApp.Models.Reponses;
+using BankApp.Models.Requests;
 using BankApp.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -20,17 +20,17 @@ public class AuthController : Controller
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<IdentityResult>> Register(AppUserDto userDto)
+    public async Task<ActionResult<IdentityResult>> Register(RegisterRequest request)
     {
-        var identityResult = await _authService.RegisterAsync(userDto);
+        var identityResult = await _authService.RegisterAsync(request);
         return Ok(identityResult);
     }
 
     [AllowAnonymous]
     [HttpPost("authenticate")]
-    public async Task<ActionResult<AuthenticateResponse>> Authenticate(AppUserDto userDto)
+    public async Task<ActionResult<AuthenticateResponse>> Authenticate(LoginRequest request)
     {
-        var response = await _authService.AuthenticateAsync(userDto, IpAddress());
+        var response = await _authService.AuthenticateAsync(request, IpAddress());
         SetTokenCookie(response.RefreshToken);
         return Ok(response);
     }

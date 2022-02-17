@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BankApp.Models;
+namespace BankApp.Models.Reponses;
 
 public class AuthenticateResponse
 {
