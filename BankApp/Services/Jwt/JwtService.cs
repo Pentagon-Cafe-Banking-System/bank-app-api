@@ -9,26 +9,27 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace BankApp.Utils.Jwt;
+namespace BankApp.Services.Jwt;
 
-public class JwtUtils : IJwtUtils
+public class JwtService : IJwtService
 {
     private readonly AppSettings _appSettings;
     private readonly UserManager<AppUser> _userManager;
 
-    public JwtUtils(IOptions<AppSettings> appSettings, UserManager<AppUser> userManager)
+    public JwtService(IOptions<AppSettings> appSettings, UserManager<AppUser> userManager)
     {
         _appSettings = appSettings.Value;
         _userManager = userManager;
     }
 
-    public string GenerateJwtToken(AppUser appUser)
+    public async Task<string> GenerateJwtTokenAsync(AppUser user)
     {
         List<Claim> claims = new List<Claim>
         {
-            new(ClaimTypes.Sid, appUser.Id),
-            new(ClaimTypes.Role, "Admin")
+            new(ClaimTypes.Sid, user.Id)
         };
+        var roles = (await _userManager.GetRolesAsync(user)).ToList();
+        roles.ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appSettings.JwtSecret));

@@ -3,8 +3,8 @@ using BankApp.Data;
 using BankApp.Middleware;
 using BankApp.Models;
 using BankApp.Services.Auth;
+using BankApp.Services.Jwt;
 using BankApp.Services.User;
-using BankApp.Utils.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -63,12 +63,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AppDb")));
 
 builder.Services.AddIdentityCore<AppUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
-builder.Services.AddScoped<IJwtUtils, JwtUtils>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ErrorHandlerMiddleware>();
@@ -83,6 +84,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
+
+if (app.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 
