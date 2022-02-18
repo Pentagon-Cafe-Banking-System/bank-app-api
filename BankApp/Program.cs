@@ -55,12 +55,28 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = false,
             ValidateAudience = false,
             // Timezone problem workaround
-            LifetimeValidator = (notBefore, expires, _, _) => notBefore <= DateTime.UtcNow && expires >= DateTime.UtcNow
+            LifetimeValidator = (notBefore, expires, _, _) =>
+            {
+                if (notBefore is not null)
+                    return notBefore.Value.AddMinutes(-5) <= DateTime.UtcNow && expires >= DateTime.UtcNow;
+                return expires >= DateTime.UtcNow;
+            }
         };
     });
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("AppDb")));
+string GetHerokuConnectionString()
+{
+    var connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    var databaseUri = new Uri(connectionUrl!);
+    var db = databaseUri.LocalPath.TrimStart('/');
+    var userInfo = databaseUri.UserInfo.Split(':', StringSplitOptions.RemoveEmptyEntries);
+    return
+        $"UserID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};Database={db};Pooling=true;SSLMode=Require;TrustServerCertificate=True;";
+}
+
+var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+var connectionString = isDevelopment ? builder.Configuration.GetConnectionString("AppDb") : GetHerokuConnectionString();
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddIdentityCore<AppUser>()
     .AddRoles<IdentityRole>()
@@ -76,8 +92,16 @@ builder.Services.AddScoped<ErrorHandlerMiddleware>();
 
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
