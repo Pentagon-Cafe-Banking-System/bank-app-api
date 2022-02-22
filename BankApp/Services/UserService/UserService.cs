@@ -1,7 +1,6 @@
 ﻿using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.UserService;
 
@@ -16,9 +15,9 @@ public class UserService : IUserService
         _roleManager = roleManager;
     }
 
-    public async Task<IEnumerable<AppUser>> GetAllUsersAsync()
+    public IEnumerable<AppUser> GetAllUsers()
     {
-        var users = await _userManager.Users.ToListAsync();
+        var users = _userManager.Users.ToList();
         return users;
     }
 
@@ -38,8 +37,12 @@ public class UserService : IUserService
 
         var createUserResult = await _userManager.CreateAsync(user, password);
         if (!createUserResult.Succeeded)
-            throw new BadRequestException("Could not create user");
-
+        {
+            var errorList = createUserResult.Errors.ToList();
+            var errors = String.Join(" ", errorList.Select(e => $"{e.Code}: {e.Description}").ToList());
+            throw new BadRequestException(errors);
+        }
+        
         await _userManager.AddToRoleAsync(user, roleName);
     }
 
