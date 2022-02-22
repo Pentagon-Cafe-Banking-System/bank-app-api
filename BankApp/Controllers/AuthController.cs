@@ -1,29 +1,21 @@
 ﻿using BankApp.Exceptions;
-using BankApp.Models.Reponses;
 using BankApp.Models.Requests;
-using BankApp.Services.Auth;
+using BankApp.Models.Responses;
+using BankApp.Services.AuthService;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : Controller
+public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
 
     public AuthController(IAuthService authService)
     {
         _authService = authService;
-    }
-
-    [HttpPost("register")]
-    public async Task<ActionResult<IdentityResult>> Register(RegisterRequest request)
-    {
-        var identityResult = await _authService.RegisterAsync(request);
-        return Ok(identityResult);
     }
 
     [AllowAnonymous]

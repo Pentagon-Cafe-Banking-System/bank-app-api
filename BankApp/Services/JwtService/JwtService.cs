@@ -3,13 +3,14 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using BankApp.Data;
-using BankApp.Models;
+using BankApp.Entities;
+using BankApp.Entities.UserTypes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace BankApp.Services.Jwt;
+namespace BankApp.Services.JwtService;
 
 public class JwtService : IJwtService
 {
@@ -46,7 +47,7 @@ public class JwtService : IJwtService
         return jwt;
     }
 
-    public async Task<RefreshToken> GenerateRefreshToken(string? ipAddress)
+    public async Task<RefreshToken> GenerateRefreshTokenAsync(string? ipAddress)
     {
         var refreshToken = new RefreshToken
         {

@@ -1,10 +1,12 @@
 using System.Text;
 using BankApp.Data;
+using BankApp.Entities.UserTypes;
 using BankApp.Middleware;
-using BankApp.Models;
-using BankApp.Services.Auth;
-using BankApp.Services.Jwt;
-using BankApp.Services.User;
+using BankApp.Services.AuthService;
+using BankApp.Services.CustomerService;
+using BankApp.Services.EmployeeService;
+using BankApp.Services.JwtService;
+using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -88,6 +90,8 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ErrorHandlerMiddleware>();
 
 var app = builder.Build();

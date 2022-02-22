@@ -1,5 +1,5 @@
-using BankApp.Exceptions;
 using System.Text.Json;
+using BankApp.Exceptions;
 
 namespace BankApp.Middleware;
 
@@ -14,31 +14,31 @@ public class ErrorHandlerMiddleware : IMiddleware
         catch (BadRequestException badRequestException)
         {
             context.Response.StatusCode = 400;
-           
+
             await WriteAsyncJson(context, badRequestException.Message);
         }
         catch (NotFoundException notFoundException)
         {
             context.Response.StatusCode = 404;
-            
+
             await WriteAsyncJson(context, notFoundException.Message);
         }
-        catch // (Exception e)
+        catch
         {
-            context.Response.StatusCode = 500; 
+            context.Response.StatusCode = 500;
             await WriteAsyncJson(context, "Something went wrong");
         }
-       
     }
 
-    private async Task WriteAsyncJson(HttpContext context, string messageError)
+    private static async Task WriteAsyncJson(HttpContext context, string messageError)
     {
         context.Response.ContentType = "application/json";
-        await context.Response.WriteAsync(
-            JsonSerializer.Serialize(
-                new
-                {
-                    message = messageError
-                }));
+        await context.Response.WriteAsync(JsonSerializer.Serialize(
+            new
+            {
+                success = false,
+                message = messageError
+            }
+        ));
     }
 }
