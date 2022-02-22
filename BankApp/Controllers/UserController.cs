@@ -1,5 +1,6 @@
-﻿using BankApp.Models;
-using BankApp.Services.User;
+﻿using BankApp.Entities;
+using BankApp.Entities.UserTypes;
+using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankApp.Controllers;
@@ -34,5 +35,12 @@ public class UserController : ControllerBase
     {
         var user = await _userService.GetUserByIdAsync(id);
         return Ok(user.RefreshTokens);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUserById(string id)
+    {
+        await _userService.DeleteUserByIdAsync(id);
+        return Ok();
     }
 }

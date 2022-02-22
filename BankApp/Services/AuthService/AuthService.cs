@@ -1,47 +1,27 @@
 ﻿using BankApp.Data;
+using BankApp.Entities;
+using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
-using BankApp.Models;
-using BankApp.Models.Reponses;
 using BankApp.Models.Requests;
-using BankApp.Services.Jwt;
+using BankApp.Models.Responses;
+using BankApp.Services.JwtService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace BankApp.Services.Auth;
+namespace BankApp.Services.AuthService;
 
 public class AuthService : IAuthService
 {
     private readonly AppSettings _appSettings;
     private readonly IJwtService _jwtService;
     private readonly UserManager<AppUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AuthService(IOptions<AppSettings> appSettings, IJwtService jwtService, UserManager<AppUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+    public AuthService(IOptions<AppSettings> appSettings, IJwtService jwtService, UserManager<AppUser> userManager)
     {
         _appSettings = appSettings.Value;
         _jwtService = jwtService;
         _userManager = userManager;
-        _roleManager = roleManager;
-    }
-
-    public async Task<IdentityResult> RegisterAsync(RegisterRequest request)
-    {
-        var user = new AppUser
-        {
-            UserName = request.UserName,
-        };
-
-        var roleExists = await _roleManager.RoleExistsAsync(request.RoleName);
-        if (!roleExists)
-            throw new BadRequestException($"Role '{request.RoleName}' does not exist");
-
-        var createUserResult = await _userManager.CreateAsync(user, request.Password);
-        if (!createUserResult.Succeeded)
-            return createUserResult;
-        
-        return await _userManager.AddToRoleAsync(user, request.RoleName);
     }
 
     public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress)
@@ -52,10 +32,10 @@ public class AuthService : IAuthService
 
         var passwordCheck = await _userManager.CheckPasswordAsync(user, request.Password);
         if (!passwordCheck)
-            throw new NotFoundException("Incorrect password");
+            throw new BadRequestException("Incorrect password");
 
         var jwtToken = await _jwtService.GenerateJwtTokenAsync(user);
-        var refreshToken = await _jwtService.GenerateRefreshToken(ipAddress);
+        var refreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
 
         // remove old refresh tokens from user
         RemoveOldRefreshTokens(user);
@@ -80,7 +60,7 @@ public class AuthService : IAuthService
         }
 
         if (!refreshToken.IsActive)
-            throw new NotFoundException("Invalid token");
+            throw new BadRequestException("Invalid token");
 
         // replace old refresh token with a new one (rotate token)
         var newRefreshToken = await RotateRefreshTokenAsync(refreshToken, ipAddress);
@@ -104,7 +84,7 @@ public class AuthService : IAuthService
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
 
         if (!refreshToken.IsActive)
-            throw new NotFoundException("Invalid token");
+            throw new BadRequestException("Invalid token");
 
         // revoke token and save
         RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");
@@ -125,7 +105,7 @@ public class AuthService : IAuthService
 
     private async Task<RefreshToken> RotateRefreshTokenAsync(RefreshToken refreshToken, string? ipAddress)
     {
-        var newRefreshToken = await _jwtService.GenerateRefreshToken(ipAddress);
+        var newRefreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
         RevokeRefreshToken(refreshToken, ipAddress, "Replaced by new token", newRefreshToken.Token);
         return newRefreshToken;
     }

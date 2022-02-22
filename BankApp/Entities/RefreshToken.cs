@@ -2,13 +2,12 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
-namespace BankApp.Models;
+namespace BankApp.Entities;
 
 [Owned]
 public class RefreshToken
 {
-    [Key] [JsonIgnore] public int Id { get; set; }
-
+    [Key] [JsonIgnore] public Int64 Id { get; set; }
     public string Token { get; set; } = string.Empty;
     public DateTime Expires { get; set; }
     public DateTime Created { get; set; }

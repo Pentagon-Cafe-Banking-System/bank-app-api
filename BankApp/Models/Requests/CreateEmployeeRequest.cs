@@ -1,6 +1,6 @@
-﻿namespace BankApp.Models.DTO;
+﻿namespace BankApp.Models.Requests;
 
-public class AppUserDto
+public class CreateEmployeeRequest
 {
     public string UserName { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
