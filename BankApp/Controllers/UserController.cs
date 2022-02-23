@@ -1,11 +1,13 @@
 ﻿using BankApp.Entities;
 using BankApp.Entities.UserTypes;
 using BankApp.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankApp.Controllers;
 
 [ApiController]
+[Authorize(Roles = "Admin")]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {

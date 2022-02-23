@@ -1,4 +1,5 @@
-﻿using BankApp.Entities.UserTypes;
+﻿using System.Security.Claims;
+using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
 using Microsoft.AspNetCore.Identity;
 
@@ -42,7 +43,7 @@ public class UserService : IUserService
             var errors = String.Join(" ", errorList.Select(e => $"{e.Code}: {e.Description}").ToList());
             throw new BadRequestException(errors);
         }
-        
+
         await _userManager.AddToRoleAsync(user, roleName);
     }
 
@@ -57,5 +58,16 @@ public class UserService : IUserService
         if (user == null)
             throw new NotFoundException("User not found");
         await _userManager.DeleteAsync(user);
+    }
+
+    public async Task<IEnumerable<Claim>> GetUserClaims(AppUser user)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Sid, user.Id)
+        };
+        var roles = (await _userManager.GetRolesAsync(user)).ToList();
+        roles.ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));
+        return claims;
     }
 }

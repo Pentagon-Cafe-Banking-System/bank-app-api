@@ -69,11 +69,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 string GetHerokuConnectionString()
 {
     var connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-    var databaseUri = new Uri(connectionUrl!);
+    if (connectionUrl is null)
+        return string.Empty; // temporary solution for integration tests to work
+
+    var databaseUri = new Uri(connectionUrl);
     var db = databaseUri.LocalPath.TrimStart('/');
     var userInfo = databaseUri.UserInfo.Split(':', StringSplitOptions.RemoveEmptyEntries);
-    return
-        $"UserID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};Database={db};Pooling=true;SSLMode=Require;TrustServerCertificate=True;";
+    return $"UserID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};" +
+           $"Database={db};Pooling=true;SSLMode=Require;TrustServerCertificate=True;";
 }
 
 var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
@@ -127,3 +130,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program
+{
+}

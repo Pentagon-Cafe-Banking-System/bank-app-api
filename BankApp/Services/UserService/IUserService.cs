@@ -1,4 +1,5 @@
-﻿using BankApp.Entities.UserTypes;
+﻿using System.Security.Claims;
+using BankApp.Entities.UserTypes;
 
 namespace BankApp.Services.UserService;
 
@@ -9,4 +10,5 @@ public interface IUserService
     Task CreateUserAsync(AppUser user, string password, string roleName);
     Task DeleteUserAsync(AppUser user);
     Task DeleteUserByIdAsync(string id);
+    Task<IEnumerable<Claim>> GetUserClaims(AppUser user);
 }
