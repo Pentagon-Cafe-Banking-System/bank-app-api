@@ -1,10 +1,10 @@
-﻿using BankApp.Entities;
-using BankApp.Entities.UserTypes;
+﻿using System.Security.Claims;
+using BankApp.Entities;
 
 namespace BankApp.Services.JwtService;
 
 public interface IJwtService
 {
-    public Task<string> GenerateJwtTokenAsync(AppUser user);
+    public string GenerateJwtToken(IEnumerable<Claim> claims);
     public Task<RefreshToken> GenerateRefreshTokenAsync(string? ipAddress);
 }

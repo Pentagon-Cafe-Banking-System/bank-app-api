@@ -19,19 +19,12 @@ public class JwtService : IJwtService
 
     public JwtService(IOptions<AppSettings> appSettings, UserManager<AppUser> userManager)
     {
-        _appSettings = appSettings.Value;
         _userManager = userManager;
+        _appSettings = appSettings.Value;
     }
 
-    public async Task<string> GenerateJwtTokenAsync(AppUser user)
+    public string GenerateJwtToken(IEnumerable<Claim> claims)
     {
-        List<Claim> claims = new List<Claim>
-        {
-            new(ClaimTypes.Sid, user.Id)
-        };
-        var roles = (await _userManager.GetRolesAsync(user)).ToList();
-        roles.ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));
-
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appSettings.JwtSecret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);

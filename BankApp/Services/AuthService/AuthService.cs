@@ -5,6 +5,7 @@ using BankApp.Exceptions;
 using BankApp.Models.Requests;
 using BankApp.Models.Responses;
 using BankApp.Services.JwtService;
+using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -16,12 +17,15 @@ public class AuthService : IAuthService
     private readonly AppSettings _appSettings;
     private readonly IJwtService _jwtService;
     private readonly UserManager<AppUser> _userManager;
+    private readonly IUserService _userService;
 
-    public AuthService(IOptions<AppSettings> appSettings, IJwtService jwtService, UserManager<AppUser> userManager)
+    public AuthService(IOptions<AppSettings> appSettings, IJwtService jwtService, UserManager<AppUser> userManager,
+        IUserService userService)
     {
         _appSettings = appSettings.Value;
         _jwtService = jwtService;
         _userManager = userManager;
+        _userService = userService;
     }
 
     public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress)
@@ -34,7 +38,7 @@ public class AuthService : IAuthService
         if (!passwordCheck)
             throw new BadRequestException("Incorrect password");
 
-        var jwtToken = await _jwtService.GenerateJwtTokenAsync(user);
+        var jwtToken = _jwtService.GenerateJwtToken(await _userService.GetUserClaims(user));
         var refreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
 
         // remove old refresh tokens from user
@@ -73,7 +77,7 @@ public class AuthService : IAuthService
         await _userManager.UpdateAsync(user);
 
         // generate new jwt
-        var jwtToken = await _jwtService.GenerateJwtTokenAsync(user);
+        var jwtToken = _jwtService.GenerateJwtToken(await _userService.GetUserClaims(user));
 
         return new AuthenticateResponse(jwtToken, newRefreshToken.Token);
     }
