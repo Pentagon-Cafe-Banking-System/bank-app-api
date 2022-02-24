@@ -40,7 +40,7 @@ public class UserService : IUserService
         if (!createUserResult.Succeeded)
         {
             var errorList = createUserResult.Errors.ToList();
-            var errors = String.Join(" ", errorList.Select(e => $"{e.Code}: {e.Description}").ToList());
+            var errors = string.Join(" ", errorList.Select(e => $"{e.Code}: {e.Description}").ToList());
             throw new BadRequestException(errors);
         }
 

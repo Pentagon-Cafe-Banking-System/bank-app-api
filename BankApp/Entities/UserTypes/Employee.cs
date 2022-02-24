@@ -5,7 +5,7 @@ namespace BankApp.Entities.UserTypes;
 
 public class Employee
 {
-    [Key] [JsonIgnore] public Int64 Id { get; set; }
-    public virtual string AppUserId { get; set; } = default!;
+    [Key] public string Id { get; set; } = string.Empty;
+    [JsonIgnore] public virtual string AppUserId { get; set; } = default!;
     public virtual AppUser AppUser { get; set; } = default!;
 }

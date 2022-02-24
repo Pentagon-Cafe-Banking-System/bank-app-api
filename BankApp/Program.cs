@@ -90,6 +90,7 @@ builder.Services.AddIdentityCore<AppUser>()
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
+builder.Services.AddTransient<DbSeeder>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -105,6 +106,12 @@ if (!app.Environment.IsDevelopment())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
     context.Database.Migrate();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbSeeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
+    await dbSeeder.Seed();
 }
 
 // Configure the HTTP request pipeline.
