@@ -24,7 +24,7 @@ public class EmployeeService : IEmployeeService
         return employees;
     }
 
-    public async Task<Employee> GetEmployeeByIdAsync(Int64 id)
+    public async Task<Employee> GetEmployeeByIdAsync(string id)
     {
         var employee = await _dbContext.Employees.FindAsync(id);
         if (employee == null)
@@ -49,7 +49,7 @@ public class EmployeeService : IEmployeeService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteEmployeeByIdAsync(Int64 id)
+    public async Task DeleteEmployeeByIdAsync(string id)
     {
         var employee = await GetEmployeeByIdAsync(id);
         var appUser = employee.AppUser;

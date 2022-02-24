@@ -1,11 +1,14 @@
 ﻿using BankApp.Entities.UserTypes;
+using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.EmployeeService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankApp.Controllers;
 
 [ApiController]
+[Authorize(Roles = RoleType.Admin)]
 [Route("api/[controller]")]
 public class EmployeeController : ControllerBase
 {
@@ -24,7 +27,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Employee>> GetEmployeeById(Int64 id)
+    public async Task<ActionResult<Employee>> GetEmployeeById(string id)
     {
         var employee = await _employeeService.GetEmployeeByIdAsync(id);
         return Ok(employee);
@@ -38,7 +41,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpDelete("delete/{id}")]
-    public async Task<IActionResult> DeleteById(Int64 id)
+    public async Task<IActionResult> DeleteById(string id)
     {
         await _employeeService.DeleteEmployeeByIdAsync(id);
         return Ok();

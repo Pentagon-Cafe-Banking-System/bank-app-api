@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220217134759_AddRoles")]
-    partial class AddRoles
+    [Migration("20220223235508_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,24 @@ namespace BankApp.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BankApp.Models.AppUser", b =>
+            modelBuilder.Entity("BankApp.Entities.UserTypes.Admin", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
+
+                    b.ToTable("Admins");
+                });
+
+            modelBuilder.Entity("BankApp.Entities.UserTypes.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -58,7 +75,6 @@ namespace BankApp.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
@@ -89,6 +105,40 @@ namespace BankApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("BankApp.Entities.UserTypes.Customer", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
+
+                    b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("BankApp.Entities.UserTypes.Employee", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
+
+                    b.ToTable("Employees");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -113,29 +163,6 @@ namespace BankApp.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "1dd560ba-d5cf-4e3a-89bc-b39bc84abfb7",
-                            ConcurrencyStamp = "3c1f918b-d765-414f-976c-e0019c4e83e9",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "af8a48bb-b7aa-42c1-bc3e-f7d3544109f6",
-                            ConcurrencyStamp = "e4675f81-e4c8-48bd-8d87-6c6fc788e275",
-                            Name = "Employee",
-                            NormalizedName = "EMPLOYEE"
-                        },
-                        new
-                        {
-                            Id = "b3404aa9-4387-4f21-a033-96160fec068a",
-                            ConcurrencyStamp = "f9fabc74-76cd-498e-a0db-17a206aef3db",
-                            Name = "Customer",
-                            NormalizedName = "CUSTOMER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -244,15 +271,26 @@ namespace BankApp.Migrations
                     b.ToTable("AspNetUserTokens", null, t => t.ExcludeFromMigrations());
                 });
 
-            modelBuilder.Entity("BankApp.Models.AppUser", b =>
+            modelBuilder.Entity("BankApp.Entities.UserTypes.Admin", b =>
                 {
-                    b.OwnsMany("BankApp.Models.RefreshToken", "RefreshTokens", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
+                    b.HasOne("BankApp.Entities.UserTypes.AppUser", "AppUser")
+                        .WithOne()
+                        .HasForeignKey("BankApp.Entities.UserTypes.Admin", "AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("BankApp.Entities.UserTypes.AppUser", b =>
+                {
+                    b.OwnsMany("BankApp.Entities.RefreshToken", "RefreshTokens", b1 =>
+                        {
+                            b1.Property<long>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bigint");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<long>("Id"));
 
                             b1.Property<string>("AppUserId")
                                 .IsRequired()
@@ -296,6 +334,28 @@ namespace BankApp.Migrations
                     b.Navigation("RefreshTokens");
                 });
 
+            modelBuilder.Entity("BankApp.Entities.UserTypes.Customer", b =>
+                {
+                    b.HasOne("BankApp.Entities.UserTypes.AppUser", "AppUser")
+                        .WithOne()
+                        .HasForeignKey("BankApp.Entities.UserTypes.Customer", "AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("BankApp.Entities.UserTypes.Employee", b =>
+                {
+                    b.HasOne("BankApp.Entities.UserTypes.AppUser", "AppUser")
+                        .WithOne()
+                        .HasForeignKey("BankApp.Entities.UserTypes.Employee", "AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -307,7 +367,7 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("BankApp.Models.AppUser", null)
+                    b.HasOne("BankApp.Entities.UserTypes.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -316,7 +376,7 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("BankApp.Models.AppUser", null)
+                    b.HasOne("BankApp.Entities.UserTypes.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -331,7 +391,7 @@ namespace BankApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BankApp.Models.AppUser", null)
+                    b.HasOne("BankApp.Entities.UserTypes.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -340,7 +400,7 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("BankApp.Models.AppUser", null)
+                    b.HasOne("BankApp.Entities.UserTypes.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

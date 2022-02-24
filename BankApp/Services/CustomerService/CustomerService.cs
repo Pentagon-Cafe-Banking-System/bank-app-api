@@ -24,7 +24,7 @@ public class CustomerService : ICustomerService
         return employees;
     }
 
-    public async Task<Customer> GetCustomerByIdAsync(long id)
+    public async Task<Customer> GetCustomerByIdAsync(string id)
     {
         var customer = await _dbContext.Customers.FindAsync(id);
         if (customer == null)
@@ -49,7 +49,7 @@ public class CustomerService : ICustomerService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteCustomerByIdAsync(long id)
+    public async Task DeleteCustomerByIdAsync(string id)
     {
         var employee = await GetCustomerByIdAsync(id);
         var appUser = employee.AppUser;

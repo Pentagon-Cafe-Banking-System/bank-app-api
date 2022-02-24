@@ -24,11 +24,8 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("BankApp.Entities.UserTypes.Admin", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("AppUserId")
                         .IsRequired()
@@ -108,11 +105,8 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("BankApp.Entities.UserTypes.Customer", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("AppUserId")
                         .IsRequired()
@@ -128,11 +122,8 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("BankApp.Entities.UserTypes.Employee", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("AppUserId")
                         .IsRequired()
@@ -170,29 +161,6 @@ namespace BankApp.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "17eb0c76-8c40-4cc3-ac80-9381b1d73f3d",
-                            ConcurrencyStamp = "4e7f9d56-341d-4d7d-aafc-ec6f0e0df47d",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "cae325f5-534a-43d2-83cb-5d49c95e71d3",
-                            ConcurrencyStamp = "3962536f-0cbb-40bb-9b33-33eaf64ea5cf",
-                            Name = "Employee",
-                            NormalizedName = "EMPLOYEE"
-                        },
-                        new
-                        {
-                            Id = "6fbb4954-e890-4c69-9412-c2f79c4e8bc8",
-                            ConcurrencyStamp = "4b5cd4ef-41c7-4802-85f0-2662135cd213",
-                            Name = "Customer",
-                            NormalizedName = "CUSTOMER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -29,12 +29,12 @@ namespace BankApp.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
                     SecurityStamp = table.Column<string>(type: "text", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
                     PhoneNumber = table.Column<string>(type: "text", nullable: true),
@@ -66,6 +66,24 @@ namespace BankApp.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Admins",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    AppUserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Admins", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Admins_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -116,10 +134,46 @@ namespace BankApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Customers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    AppUserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Customers_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    AppUserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Employees_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RefreshToken",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Token = table.Column<string>(type: "text", nullable: false),
                     Expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -141,6 +195,12 @@ namespace BankApp.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Admins_AppUserId",
+                table: "Admins",
+                column: "AppUserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -175,6 +235,18 @@ namespace BankApp.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customers_AppUserId",
+                table: "Customers",
+                column: "AppUserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_AppUserId",
+                table: "Employees",
+                column: "AppUserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshToken_AppUserId",
                 table: "RefreshToken",
                 column: "AppUserId");
@@ -183,6 +255,9 @@ namespace BankApp.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Admins");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -190,6 +265,12 @@ namespace BankApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "RefreshToken");
