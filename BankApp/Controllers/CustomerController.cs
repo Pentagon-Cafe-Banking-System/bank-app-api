@@ -1,8 +1,8 @@
 ﻿using BankApp.Entities.UserTypes;
-using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.CustomerService;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankApp.Controllers;
@@ -20,30 +20,30 @@ public class CustomerController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Customer>>> GetAllEmployees()
+    public async Task<ActionResult<IEnumerable<Customer>>> GetAllCustomers()
     {
         var customers = await _customerService.GetAllCustomersAsync();
         return Ok(customers);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Customer>> GetEmployeeById(string id)
+    public async Task<ActionResult<Customer>> GetCustomerById(string id)
     {
         var customer = await _customerService.GetCustomerByIdAsync(id);
         return Ok(customer);
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create(CreateCustomerRequest request)
+    public async Task<ActionResult<Customer>> CreateCustomer(CreateCustomerRequest request)
     {
-        await _customerService.CreateCustomerAsync(request);
-        return Ok();
+        var customer = await _customerService.CreateCustomerAsync(request);
+        return Ok(customer);
     }
 
     [HttpDelete("delete/{id}")]
-    public async Task<IActionResult> DeleteById(string id)
+    public async Task<ActionResult<IdentityResult>> DeleteCustomerById(string id)
     {
-        await _customerService.DeleteCustomerByIdAsync(id);
-        return Ok();
+        var result = await _customerService.DeleteCustomerByIdAsync(id);
+        return Ok(result);
     }
 }

@@ -74,15 +74,14 @@ namespace BankApp.Migrations
                 name: "Admins",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    AppUserId = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Admins", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Admins_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_Admins_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -137,15 +136,14 @@ namespace BankApp.Migrations
                 name: "Customers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    AppUserId = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Customers_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_Customers_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -155,15 +153,14 @@ namespace BankApp.Migrations
                 name: "Employees",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    AppUserId = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Employees", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Employees_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_Employees_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -201,31 +198,25 @@ namespace BankApp.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "3dff7514-ee17-42d1-af59-7255d674a3e8", "17f69903-c60f-45dc-8481-9f5dc93d1fb1", "Admin", "ADMIN" },
-                    { "4be09855-01d0-4a89-88a3-29ef4c3f2d19", "492231c9-c725-44dd-a5b0-185b7368b90a", "Customer", "CUSTOMER" },
-                    { "bd6aaf7e-3090-457d-a848-ff4683e69903", "a5d3a84f-6b89-49d3-a456-e056b4b51fd9", "Employee", "EMPLOYEE" }
+                    { "3ab1e64d-c410-4e21-992c-da3937474436", "cc1c1550-adde-4af9-890d-0bd32f7622ec", "Employee", "EMPLOYEE" },
+                    { "ea84cd65-288d-424d-8814-66f48b6661a0", "ad44aac2-441f-4c4d-b534-30214d71656f", "Customer", "CUSTOMER" },
+                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "8c06dcf4-417d-40ff-baba-f6962c78df38", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "a380ad98-8597-4bd5-836e-831110e07951", 0, "70b15453-92e9-4b14-88d2-5859c5c40492", null, false, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEMfHScz6Hx4t/caYswqQEorv34wMXMySGI2cPDBbMhWI05zr+E942n2jCh2g8W8Q4Q==", null, false, "b4fcbe0d-d0cf-400f-8d51-432cfbdc81fe", false, "admin" });
+                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "7333caa9-58fa-4b03-9f61-7c26ad260dff", null, false, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEC6DfywrCHbc/HEBvKnN2k9Gbz+XP1Q0j7JIV2q7kT9EdGpVDWrXqBzc1jKy8Ai4Qw==", null, false, "0507c2d3-3e42-4d66-b1ed-bb042b67e0e7", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "Admins",
-                columns: new[] { "Id", "AppUserId" },
-                values: new object[] { "b6beef19-096f-4cbd-b470-266eae6f5c72", "a380ad98-8597-4bd5-836e-831110e07951" });
+                column: "Id",
+                value: "7a4165b4-0aca-43fb-a390-294781ee377f");
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "3dff7514-ee17-42d1-af59-7255d674a3e8", "a380ad98-8597-4bd5-836e-831110e07951" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Admins_AppUserId",
-                table: "Admins",
-                column: "AppUserId",
-                unique: true);
+                values: new object[] { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "7a4165b4-0aca-43fb-a390-294781ee377f" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -257,18 +248,6 @@ namespace BankApp.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Customers_AppUserId",
-                table: "Customers",
-                column: "AppUserId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_AppUserId",
-                table: "Employees",
-                column: "AppUserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(

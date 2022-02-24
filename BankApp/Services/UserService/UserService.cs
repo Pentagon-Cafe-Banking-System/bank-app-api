@@ -47,17 +47,17 @@ public class UserService : IUserService
         await _userManager.AddToRoleAsync(user, roleName);
     }
 
-    public async Task DeleteUserAsync(AppUser user)
+    public async Task<IdentityResult> DeleteUserAsync(AppUser user)
     {
-        await _userManager.DeleteAsync(user);
+        return await _userManager.DeleteAsync(user);
     }
 
-    public async Task DeleteUserByIdAsync(string id)
+    public async Task<IdentityResult> DeleteUserByIdAsync(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
             throw new NotFoundException("User not found");
-        await _userManager.DeleteAsync(user);
+        return await _userManager.DeleteAsync(user);
     }
 
     public async Task<IEnumerable<Claim>> GetUserClaims(AppUser user)
