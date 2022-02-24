@@ -1,8 +1,8 @@
 ﻿using BankApp.Entities.UserTypes;
-using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.EmployeeService;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankApp.Controllers;
@@ -34,16 +34,16 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create(CreateEmployeeRequest request)
+    public async Task<ActionResult<Employee>> CreateEmployee(CreateEmployeeRequest request)
     {
-        await _employeeService.CreateEmployeeAsync(request);
-        return Ok();
+        var employee = await _employeeService.CreateEmployeeAsync(request);
+        return Ok(employee);
     }
 
     [HttpDelete("delete/{id}")]
-    public async Task<IActionResult> DeleteById(string id)
+    public async Task<ActionResult<IdentityResult>> DeleteEmployeeById(string id)
     {
-        await _employeeService.DeleteEmployeeByIdAsync(id);
-        return Ok();
+        var result = await _employeeService.DeleteEmployeeByIdAsync(id);
+        return Ok(result);
     }
 }

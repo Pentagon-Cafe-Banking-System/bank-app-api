@@ -3,6 +3,7 @@ using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.EmployeeService;
@@ -32,7 +33,7 @@ public class EmployeeService : IEmployeeService
         return employee;
     }
 
-    public async Task CreateEmployeeAsync(CreateEmployeeRequest request)
+    public async Task<Employee> CreateEmployeeAsync(CreateEmployeeRequest request)
     {
         var user = new AppUser
         {
@@ -44,15 +45,16 @@ public class EmployeeService : IEmployeeService
         {
             AppUser = user
         };
-        await _dbContext.Employees.AddAsync(employee);
+        var entity = (await _dbContext.Employees.AddAsync(employee)).Entity;
 
         await _dbContext.SaveChangesAsync();
+        return entity;
     }
 
-    public async Task DeleteEmployeeByIdAsync(string id)
+    public async Task<IdentityResult> DeleteEmployeeByIdAsync(string id)
     {
         var employee = await GetEmployeeByIdAsync(id);
         var appUser = employee.AppUser;
-        await _userService.DeleteUserAsync(appUser);
+        return await _userService.DeleteUserAsync(appUser);
     }
 }

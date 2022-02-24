@@ -27,22 +27,14 @@ namespace BankApp.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("AppUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId")
-                        .IsUnique();
 
                     b.ToTable("Admins");
 
                     b.HasData(
                         new
                         {
-                            Id = "b6beef19-096f-4cbd-b470-266eae6f5c72",
-                            AppUserId = "a380ad98-8597-4bd5-836e-831110e07951"
+                            Id = "7a4165b4-0aca-43fb-a390-294781ee377f"
                         });
                 });
 
@@ -112,15 +104,15 @@ namespace BankApp.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a380ad98-8597-4bd5-836e-831110e07951",
+                            Id = "7a4165b4-0aca-43fb-a390-294781ee377f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "70b15453-92e9-4b14-88d2-5859c5c40492",
+                            ConcurrencyStamp = "7333caa9-58fa-4b03-9f61-7c26ad260dff",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEMfHScz6Hx4t/caYswqQEorv34wMXMySGI2cPDBbMhWI05zr+E942n2jCh2g8W8Q4Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEC6DfywrCHbc/HEBvKnN2k9Gbz+XP1Q0j7JIV2q7kT9EdGpVDWrXqBzc1jKy8Ai4Qw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b4fcbe0d-d0cf-400f-8d51-432cfbdc81fe",
+                            SecurityStamp = "0507c2d3-3e42-4d66-b1ed-bb042b67e0e7",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -131,14 +123,7 @@ namespace BankApp.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("AppUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId")
-                        .IsUnique();
 
                     b.ToTable("Customers");
                 });
@@ -148,14 +133,7 @@ namespace BankApp.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("AppUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId")
-                        .IsUnique();
 
                     b.ToTable("Employees");
                 });
@@ -188,22 +166,22 @@ namespace BankApp.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3dff7514-ee17-42d1-af59-7255d674a3e8",
-                            ConcurrencyStamp = "17f69903-c60f-45dc-8481-9f5dc93d1fb1",
+                            Id = "fa2640a0-0496-4010-bc27-424e0e5c6f78",
+                            ConcurrencyStamp = "8c06dcf4-417d-40ff-baba-f6962c78df38",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "bd6aaf7e-3090-457d-a848-ff4683e69903",
-                            ConcurrencyStamp = "a5d3a84f-6b89-49d3-a456-e056b4b51fd9",
+                            Id = "3ab1e64d-c410-4e21-992c-da3937474436",
+                            ConcurrencyStamp = "cc1c1550-adde-4af9-890d-0bd32f7622ec",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = "4be09855-01d0-4a89-88a3-29ef4c3f2d19",
-                            ConcurrencyStamp = "492231c9-c725-44dd-a5b0-185b7368b90a",
+                            Id = "ea84cd65-288d-424d-8814-66f48b6661a0",
+                            ConcurrencyStamp = "ad44aac2-441f-4c4d-b534-30214d71656f",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -298,8 +276,8 @@ namespace BankApp.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "a380ad98-8597-4bd5-836e-831110e07951",
-                            RoleId = "3dff7514-ee17-42d1-af59-7255d674a3e8"
+                            UserId = "7a4165b4-0aca-43fb-a390-294781ee377f",
+                            RoleId = "fa2640a0-0496-4010-bc27-424e0e5c6f78"
                         });
                 });
 
@@ -326,7 +304,7 @@ namespace BankApp.Migrations
                 {
                     b.HasOne("BankApp.Entities.UserTypes.AppUser", "AppUser")
                         .WithOne()
-                        .HasForeignKey("BankApp.Entities.UserTypes.Admin", "AppUserId")
+                        .HasForeignKey("BankApp.Entities.UserTypes.Admin", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -389,7 +367,7 @@ namespace BankApp.Migrations
                 {
                     b.HasOne("BankApp.Entities.UserTypes.AppUser", "AppUser")
                         .WithOne()
-                        .HasForeignKey("BankApp.Entities.UserTypes.Customer", "AppUserId")
+                        .HasForeignKey("BankApp.Entities.UserTypes.Customer", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -400,7 +378,7 @@ namespace BankApp.Migrations
                 {
                     b.HasOne("BankApp.Entities.UserTypes.AppUser", "AppUser")
                         .WithOne()
-                        .HasForeignKey("BankApp.Entities.UserTypes.Employee", "AppUserId")
+                        .HasForeignKey("BankApp.Entities.UserTypes.Employee", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

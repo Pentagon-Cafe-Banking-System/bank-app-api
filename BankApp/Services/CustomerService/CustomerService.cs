@@ -3,6 +3,7 @@ using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.CustomerService;
@@ -28,11 +29,11 @@ public class CustomerService : ICustomerService
     {
         var customer = await _dbContext.Customers.FindAsync(id);
         if (customer == null)
-            throw new NotFoundException("Employee not found");
+            throw new NotFoundException("Customer not found");
         return customer;
     }
 
-    public async Task CreateCustomerAsync(CreateCustomerRequest request)
+    public async Task<Customer> CreateCustomerAsync(CreateCustomerRequest request)
     {
         var user = new AppUser
         {
@@ -44,15 +45,16 @@ public class CustomerService : ICustomerService
         {
             AppUser = user
         };
-        await _dbContext.Customers.AddAsync(customer);
+        var entity = (await _dbContext.Customers.AddAsync(customer)).Entity;
 
         await _dbContext.SaveChangesAsync();
+        return entity;
     }
 
-    public async Task DeleteCustomerByIdAsync(string id)
+    public async Task<IdentityResult> DeleteCustomerByIdAsync(string id)
     {
         var employee = await GetCustomerByIdAsync(id);
         var appUser = employee.AppUser;
-        await _userService.DeleteUserAsync(appUser);
+        return await _userService.DeleteUserAsync(appUser);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using BankApp.Entities.UserTypes;
-using BankApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -50,9 +49,10 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             .OnDelete(DeleteBehavior.Cascade);
 
         // Create roles
-        const string adminRoleId = "3dff7514-ee17-42d1-af59-7255d674a3e8";
-        const string adminAppUserId = "a380ad98-8597-4bd5-836e-831110e07951";
-        const string adminId = "b6beef19-096f-4cbd-b470-266eae6f5c72";
+
+        const string adminRoleId = "fa2640a0-0496-4010-bc27-424e0e5c6f78";
+        const string adminUserId = "7a4165b4-0aca-43fb-a390-294781ee377f";
+
         builder.Entity<IdentityRole>().HasData(
             new IdentityRole
                 {Name = RoleType.Admin, NormalizedName = RoleType.Admin.ToUpperInvariant(), Id = adminRoleId},
@@ -61,11 +61,12 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
         );
 
         // Create Admin account
+
         var hasher = new PasswordHasher<AppUser>();
         builder.Entity<AppUser>().HasData(
             new AppUser
             {
-                Id = adminAppUserId,
+                Id = adminUserId,
                 UserName = "admin",
                 NormalizedUserName = "admin".ToUpperInvariant(),
                 PasswordHash = hasher.HashPassword(null!, "admin")
@@ -75,14 +76,13 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             new IdentityUserRole<string>
             {
                 RoleId = adminRoleId,
-                UserId = adminAppUserId
+                UserId = adminUserId
             }
         );
         builder.Entity<Admin>().HasData(
             new Admin
             {
-                Id = adminId,
-                AppUserId = adminAppUserId
+                Id = adminUserId
             }
         );
     }

@@ -1,4 +1,4 @@
-﻿namespace BankApp.Models;
+﻿namespace BankApp.Entities.UserTypes;
 
 public readonly record struct RoleType
 {
