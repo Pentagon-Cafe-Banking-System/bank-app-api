@@ -1,4 +1,5 @@
 ﻿using BankApp.Entities.UserTypes;
+using BankApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
         optionsBuilder.UseLazyLoadingProxies();
     }
 
-    protected override async void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
@@ -48,40 +49,41 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        // // Create roles
-        // const string adminRoleId = "3dff7514-ee17-42d1-af59-7255d674a3e8";
-        // const string adminAppUserId = "a380ad98-8597-4bd5-836e-831110e07951";
-        // const string adminId = "b6beef19-096f-4cbd-b470-266eae6f5c72";
-        // builder.Entity<IdentityRole>().HasData(
-        //     new IdentityRole {Name = "Admin", NormalizedName = "ADMIN", Id = adminRoleId},
-        //     new IdentityRole {Name = "Employee", NormalizedName = "EMPLOYEE"},
-        //     new IdentityRole {Name = "Customer", NormalizedName = "CUSTOMER"}
-        // );
-        //
-        // // Create Admin account
-        // var hasher = new PasswordHasher<AppUser>();
-        // builder.Entity<AppUser>().HasData(
-        //     new AppUser
-        //     {
-        //         Id = adminAppUserId,
-        //         UserName = "admin",
-        //         NormalizedUserName = "admin".Normalize().ToUpperInvariant(),
-        //         PasswordHash = hasher.HashPassword(null!, "admin")
-        //     }
-        // );
-        // builder.Entity<IdentityUserRole<string>>().HasData(
-        //     new IdentityUserRole<string>
-        //     {
-        //         RoleId = adminRoleId,
-        //         UserId = adminAppUserId
-        //     }
-        // );
-        // builder.Entity<Admin>().HasData(
-        //     new Admin
-        //     {
-        //         Id = adminId,
-        //         AppUserId = adminAppUserId
-        //     }
-        // );
+        // Create roles
+        const string adminRoleId = "3dff7514-ee17-42d1-af59-7255d674a3e8";
+        const string adminAppUserId = "a380ad98-8597-4bd5-836e-831110e07951";
+        const string adminId = "b6beef19-096f-4cbd-b470-266eae6f5c72";
+        builder.Entity<IdentityRole>().HasData(
+            new IdentityRole
+                {Name = RoleType.Admin, NormalizedName = RoleType.Admin.ToUpperInvariant(), Id = adminRoleId},
+            new IdentityRole {Name = RoleType.Employee, NormalizedName = RoleType.Employee.ToUpperInvariant()},
+            new IdentityRole {Name = RoleType.Customer, NormalizedName = RoleType.Customer.ToUpperInvariant()}
+        );
+
+        // Create Admin account
+        var hasher = new PasswordHasher<AppUser>();
+        builder.Entity<AppUser>().HasData(
+            new AppUser
+            {
+                Id = adminAppUserId,
+                UserName = "admin",
+                NormalizedUserName = "admin".ToUpperInvariant(),
+                PasswordHash = hasher.HashPassword(null!, "admin")
+            }
+        );
+        builder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>
+            {
+                RoleId = adminRoleId,
+                UserId = adminAppUserId
+            }
+        );
+        builder.Entity<Admin>().HasData(
+            new Admin
+            {
+                Id = adminId,
+                AppUserId = adminAppUserId
+            }
+        );
     }
 }

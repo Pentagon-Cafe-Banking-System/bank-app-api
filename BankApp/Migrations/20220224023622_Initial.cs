@@ -196,6 +196,31 @@ namespace BankApp.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "3dff7514-ee17-42d1-af59-7255d674a3e8", "17f69903-c60f-45dc-8481-9f5dc93d1fb1", "Admin", "ADMIN" },
+                    { "4be09855-01d0-4a89-88a3-29ef4c3f2d19", "492231c9-c725-44dd-a5b0-185b7368b90a", "Customer", "CUSTOMER" },
+                    { "bd6aaf7e-3090-457d-a848-ff4683e69903", "a5d3a84f-6b89-49d3-a456-e056b4b51fd9", "Employee", "EMPLOYEE" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "a380ad98-8597-4bd5-836e-831110e07951", 0, "70b15453-92e9-4b14-88d2-5859c5c40492", null, false, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEMfHScz6Hx4t/caYswqQEorv34wMXMySGI2cPDBbMhWI05zr+E942n2jCh2g8W8Q4Q==", null, false, "b4fcbe0d-d0cf-400f-8d51-432cfbdc81fe", false, "admin" });
+
+            migrationBuilder.InsertData(
+                table: "Admins",
+                columns: new[] { "Id", "AppUserId" },
+                values: new object[] { "b6beef19-096f-4cbd-b470-266eae6f5c72", "a380ad98-8597-4bd5-836e-831110e07951" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "3dff7514-ee17-42d1-af59-7255d674a3e8", "a380ad98-8597-4bd5-836e-831110e07951" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Admins_AppUserId",
                 table: "Admins",

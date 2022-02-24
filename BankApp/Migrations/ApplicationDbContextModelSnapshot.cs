@@ -37,6 +37,13 @@ namespace BankApp.Migrations
                         .IsUnique();
 
                     b.ToTable("Admins");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "b6beef19-096f-4cbd-b470-266eae6f5c72",
+                            AppUserId = "a380ad98-8597-4bd5-836e-831110e07951"
+                        });
                 });
 
             modelBuilder.Entity("BankApp.Entities.UserTypes.AppUser", b =>
@@ -101,6 +108,22 @@ namespace BankApp.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "a380ad98-8597-4bd5-836e-831110e07951",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "70b15453-92e9-4b14-88d2-5859c5c40492",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMfHScz6Hx4t/caYswqQEorv34wMXMySGI2cPDBbMhWI05zr+E942n2jCh2g8W8Q4Q==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "b4fcbe0d-d0cf-400f-8d51-432cfbdc81fe",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("BankApp.Entities.UserTypes.Customer", b =>
@@ -161,6 +184,29 @@ namespace BankApp.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "3dff7514-ee17-42d1-af59-7255d674a3e8",
+                            ConcurrencyStamp = "17f69903-c60f-45dc-8481-9f5dc93d1fb1",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "bd6aaf7e-3090-457d-a848-ff4683e69903",
+                            ConcurrencyStamp = "a5d3a84f-6b89-49d3-a456-e056b4b51fd9",
+                            Name = "Employee",
+                            NormalizedName = "EMPLOYEE"
+                        },
+                        new
+                        {
+                            Id = "4be09855-01d0-4a89-88a3-29ef4c3f2d19",
+                            ConcurrencyStamp = "492231c9-c725-44dd-a5b0-185b7368b90a",
+                            Name = "Customer",
+                            NormalizedName = "CUSTOMER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -248,6 +294,13 @@ namespace BankApp.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "a380ad98-8597-4bd5-836e-831110e07951",
+                            RoleId = "3dff7514-ee17-42d1-af59-7255d674a3e8"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
