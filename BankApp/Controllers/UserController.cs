@@ -2,6 +2,7 @@
 using BankApp.Entities;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
+using BankApp.Models;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

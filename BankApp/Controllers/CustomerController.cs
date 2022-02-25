@@ -1,4 +1,5 @@
 ﻿using BankApp.Entities.UserTypes;
+using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.CustomerService;
 using Microsoft.AspNetCore.Authorization;
