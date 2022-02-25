@@ -1,4 +1,6 @@
-﻿using BankApp.Entities.UserTypes;
+﻿using BankApp.Entities;
+using BankApp.Entities.UserTypes;
+using BankApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -25,11 +27,30 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         base.OnModelCreating(builder);
 
+        DisableNotNeededIdentityFeatures(builder);
+        ConfigureRelationships(builder);
+
+        const string adminRoleId = "fa2640a0-0496-4010-bc27-424e0e5c6f78";
+        SeedRoles(builder, adminRoleId);
+        CreateAdminAccount(builder, adminRoleId);
+
+        SeedCountries(builder);
+    }
+
+    private void DisableNotNeededIdentityFeatures(ModelBuilder builder)
+    {
         // Only needed for login via 3rd party account
         builder.Entity<IdentityUserToken<string>>().Metadata.SetIsTableExcludedFromMigrations(true);
         builder.Entity<IdentityUserLogin<string>>().Metadata.SetIsTableExcludedFromMigrations(true);
+    }
 
-        // Create relationships
+    private void ConfigureRelationships(ModelBuilder builder)
+    {
+        ConfigureRelationshipsWithAppUser(builder);
+    }
+
+    private void ConfigureRelationshipsWithAppUser(ModelBuilder builder)
+    {
         builder.Entity<Admin>()
             .HasOne(e => e.AppUser)
             .WithOne()
@@ -47,21 +68,22 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             .WithOne()
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+    }
 
-        // Create roles
+    private void SeedRoles(ModelBuilder builder, string adminRoleId)
+    {
+        var roles = new List<IdentityRole>
+        {
+            new() {Name = RoleType.Admin, NormalizedName = RoleType.Admin.ToUpperInvariant(), Id = adminRoleId},
+            new() {Name = RoleType.Employee, NormalizedName = RoleType.Employee.ToUpperInvariant()},
+            new() {Name = RoleType.Customer, NormalizedName = RoleType.Customer.ToUpperInvariant()}
+        };
+        builder.Entity<IdentityRole>().HasData(roles);
+    }
 
-        const string adminRoleId = "fa2640a0-0496-4010-bc27-424e0e5c6f78";
+    private void CreateAdminAccount(ModelBuilder builder, string adminRoleId)
+    {
         const string adminUserId = "7a4165b4-0aca-43fb-a390-294781ee377f";
-
-        builder.Entity<IdentityRole>().HasData(
-            new IdentityRole
-                {Name = RoleType.Admin, NormalizedName = RoleType.Admin.ToUpperInvariant(), Id = adminRoleId},
-            new IdentityRole {Name = RoleType.Employee, NormalizedName = RoleType.Employee.ToUpperInvariant()},
-            new IdentityRole {Name = RoleType.Customer, NormalizedName = RoleType.Customer.ToUpperInvariant()}
-        );
-
-        // Create Admin account
-
         var hasher = new PasswordHasher<AppUser>();
         builder.Entity<AppUser>().HasData(
             new AppUser
@@ -85,5 +107,24 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
                 Id = adminUserId
             }
         );
+    }
+
+    private void SeedCountries(ModelBuilder builder)
+    {
+        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "countries.csv");
+        var lines = File.ReadAllLines(path);
+        short countryId = 1;
+        foreach (var line in lines)
+        {
+            var arr = line.Split(",");
+            builder.Entity<Country>().HasData(
+                new Country
+                {
+                    Id = countryId++,
+                    Code = arr[0],
+                    Name = arr[3]
+                }
+            );
+        }
     }
 }

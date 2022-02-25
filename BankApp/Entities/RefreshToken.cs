@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Entities;
 
 [Owned]
+[Table("RefreshTokens")]
 public class RefreshToken
 {
-    [Key] [JsonIgnore] public Int64 Id { get; set; }
+    [Key] public long Id { get; set; }
     public string Token { get; set; } = string.Empty;
     public DateTime Expires { get; set; }
     public DateTime Created { get; set; }
