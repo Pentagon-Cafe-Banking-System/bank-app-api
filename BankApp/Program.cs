@@ -95,7 +95,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<ErrorHandlerMiddleware>();
+builder.Services.AddScoped<ExceptionHandlerMiddleware>();
 
 var app = builder.Build();
 
@@ -114,7 +114,7 @@ if (!app.Environment.IsProduction())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();

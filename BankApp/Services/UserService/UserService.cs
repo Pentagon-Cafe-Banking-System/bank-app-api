@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
+using BankApp.Exceptions.RequestExceptions;
 using Microsoft.AspNetCore.Identity;
 
 namespace BankApp.Services.UserService;
@@ -26,7 +27,11 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
-            throw new NotFoundException("User not found");
+            throw new NotFoundException(new RequestError
+            {
+                Code = "UserNotFound",
+                Description = "User with requested id could not be found"
+            });
         return user;
     }
 
@@ -34,15 +39,11 @@ public class UserService : IUserService
     {
         var roleExists = await _roleManager.RoleExistsAsync(roleName);
         if (!roleExists)
-            throw new BadRequestException($"Role '{roleName}' does not exist");
+            throw new AppException($"Role '{roleName}' does not exist");
 
         var createUserResult = await _userManager.CreateAsync(user, password);
         if (!createUserResult.Succeeded)
-        {
-            var errorList = createUserResult.Errors.ToList();
-            var errors = string.Join(" ", errorList.Select(e => $"{e.Code}: {e.Description}").ToList());
-            throw new BadRequestException(errors);
-        }
+            throw new BadRequestException(createUserResult.Errors.ToList());
 
         await _userManager.AddToRoleAsync(user, roleName);
     }
@@ -56,7 +57,11 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
-            throw new NotFoundException("User not found");
+            throw new NotFoundException(new RequestError
+            {
+                Code = "UserNotFound",
+                Description = "User with requested id could not be found"
+            });
         return await _userManager.DeleteAsync(user);
     }
 

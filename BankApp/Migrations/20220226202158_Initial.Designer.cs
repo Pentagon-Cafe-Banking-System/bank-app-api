@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220225232111_Initial")]
+    [Migration("20220226202158_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,6 +126,45 @@ namespace BankApp.Migrations
                     b.ToTable("Addresses");
                 });
 
+            modelBuilder.Entity("BankApp.Entities.Card", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<short>("CardTypeId")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Cvv")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Pin")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("TransactionLimit")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateOnly>("ValidThru")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CardTypeId");
+
+                    b.ToTable("Cards");
+                });
+
             modelBuilder.Entity("BankApp.Entities.CardOrder", b =>
                 {
                     b.Property<long>("Id")
@@ -149,6 +188,27 @@ namespace BankApp.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("CardOrders");
+                });
+
+            modelBuilder.Entity("BankApp.Entities.CardType", b =>
+                {
+                    b.Property<short>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<short>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CardTypes");
                 });
 
             modelBuilder.Entity("BankApp.Entities.Country", b =>
@@ -1662,7 +1722,7 @@ namespace BankApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Currency");
+                    b.ToTable("Currencies");
                 });
 
             modelBuilder.Entity("BankApp.Entities.Transfer", b =>
@@ -1797,13 +1857,13 @@ namespace BankApp.Migrations
                         {
                             Id = "7a4165b4-0aca-43fb-a390-294781ee377f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "956a5f98-7958-4472-b429-3bf1ec3312c6",
+                            ConcurrencyStamp = "ca3c27dc-477a-4690-a1f5-e29ddff530c7",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJVGvjGMnSxJAg3QdAkf4+p6NtYFsV/zIP9Q0KspsZLst4thn/ZK1C88I35gwx+O1Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFyN6db4vPyM8vs7Dr8zl4vXv+2xTRSLcHpLeTaTL08UOZ9iNtyKinIlkIDNuHP5oA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fd3aece4-054e-4a24-93db-d040a1335fb2",
+                            SecurityStamp = "31e1d912-6736-4545-9828-68e836eee28c",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1905,21 +1965,21 @@ namespace BankApp.Migrations
                         new
                         {
                             Id = "fa2640a0-0496-4010-bc27-424e0e5c6f78",
-                            ConcurrencyStamp = "750bbce4-57ee-4540-bdc7-3eb3f30518e7",
+                            ConcurrencyStamp = "8af57a38-88b7-41a3-955b-03ce476bbb79",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "3dec1d72-7bcf-485f-9f78-59938eb10848",
-                            ConcurrencyStamp = "c7d35071-40b7-42db-b691-132ccb83da9f",
+                            Id = "a060dd9f-c966-4a38-8413-549d6d831041",
+                            ConcurrencyStamp = "6ba2b11e-52cd-42d0-8b9e-43a969262626",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = "86a9243d-d611-4334-bc0e-900b38cb345e",
-                            ConcurrencyStamp = "735ba042-8057-4c12-8bd8-4a3c5b12c2da",
+                            Id = "e2800d7b-1974-4182-829a-4c2e7d92d325",
+                            ConcurrencyStamp = "282a7a96-582b-40be-a8fa-909d84b3c587",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -2078,6 +2138,17 @@ namespace BankApp.Migrations
                     b.Navigation("Country");
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("BankApp.Entities.Card", b =>
+                {
+                    b.HasOne("BankApp.Entities.CardType", "CardType")
+                        .WithMany()
+                        .HasForeignKey("CardTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CardType");
                 });
 
             modelBuilder.Entity("BankApp.Entities.CardOrder", b =>
