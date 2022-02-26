@@ -16,6 +16,15 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     public DbSet<Admin> Admins { get; set; } = default!;
     public DbSet<Employee> Employees { get; set; } = default!;
     public DbSet<Customer> Customers { get; set; } = default!;
+    public DbSet<Account> Accounts { get; set; } = default!;
+    public DbSet<AccountType> AccountTypes { get; set; } = default!;
+    public DbSet<Address> Addresses { get; set; } = default!;
+    public DbSet<Card> Cards { get; set; } = default!;
+    public DbSet<CardOrder> CardOrders { get; set; } = default!;
+    public DbSet<CardType> CardTypes { get; set; } = default!;
+    public DbSet<Country> Countries { get; set; } = default!;
+    public DbSet<Currency> Currencies { get; set; } = default!;
+    public DbSet<Transfer> Transfers { get; set; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -1,6 +1,7 @@
 ﻿using BankApp.Data;
 using BankApp.Entities.UserTypes;
-using BankApp.Exceptions;
+using BankApp.Exceptions.RequestExceptions;
+using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Identity;
@@ -29,26 +30,35 @@ public class EmployeeService : IEmployeeService
     {
         var employee = await _dbContext.Employees.FindAsync(id);
         if (employee == null)
-            throw new NotFoundException("Employee not found");
+            throw new NotFoundException(new RequestError
+            {
+                Code = "EmployeeNotFound",
+                Description = "Employee with requested id could not be found"
+            });
         return employee;
     }
 
     public async Task<Employee> CreateEmployeeAsync(CreateEmployeeRequest request)
     {
-        var user = new AppUser
+        await using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
         {
-            UserName = request.UserName,
-        };
-        await _userService.CreateUserAsync(user, request.Password, "Employee");
+            var user = new AppUser
+            {
+                UserName = request.UserName,
+            };
+            await _userService.CreateUserAsync(user, request.Password, RoleType.Employee);
 
-        var employee = new Employee
-        {
-            AppUser = user
-        };
-        var entity = (await _dbContext.Employees.AddAsync(employee)).Entity;
+            var employee = new Employee
+            {
+                AppUser = user
+            };
+            var entity = (await _dbContext.Employees.AddAsync(employee)).Entity;
 
-        await _dbContext.SaveChangesAsync();
-        return entity;
+            await _dbContext.SaveChangesAsync();
+            await dbContextTransaction.CommitAsync();
+
+            return entity;
+        }
     }
 
     public async Task<IdentityResult> DeleteEmployeeByIdAsync(string id)

@@ -1,5 +1,4 @@
-﻿using BankApp.Exceptions;
-using BankApp.Models.Requests;
+﻿using BankApp.Models.Requests;
 using BankApp.Models.Responses;
 using BankApp.Services.AuthService;
 using Microsoft.AspNetCore.Authorization;
@@ -32,8 +31,6 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> RefreshToken()
     {
         var refreshToken = Request.Cookies["refreshToken"];
-        if (refreshToken is null)
-            throw new NotFoundException("There is no refresh token in the request cookies");
         var response = await _authService.RefreshTokenAsync(refreshToken, IpAddress());
         SetTokenCookie(response.RefreshToken);
         return Ok(response);
@@ -44,10 +41,6 @@ public class AuthController : ControllerBase
     {
         // accept refresh token in request body or cookie
         token ??= Request.Cookies["refreshToken"];
-
-        if (string.IsNullOrEmpty(token))
-            throw new BadRequestException("Token is required");
-
         await _authService.RevokeTokenAsync(token, IpAddress());
         return Ok(new {message = "Token revoked"});
     }

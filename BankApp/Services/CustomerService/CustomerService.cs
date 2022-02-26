@@ -1,6 +1,7 @@
 ﻿using BankApp.Data;
 using BankApp.Entities.UserTypes;
-using BankApp.Exceptions;
+using BankApp.Exceptions.RequestExceptions;
+using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Identity;
@@ -29,26 +30,35 @@ public class CustomerService : ICustomerService
     {
         var customer = await _dbContext.Customers.FindAsync(id);
         if (customer == null)
-            throw new NotFoundException("Customer not found");
+            throw new NotFoundException(new RequestError
+            {
+                Code = "CustomerNotFound",
+                Description = "Customer with requested id could not be found"
+            });
         return customer;
     }
 
     public async Task<Customer> CreateCustomerAsync(CreateCustomerRequest request)
     {
-        var user = new AppUser
+        await using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
         {
-            UserName = request.UserName,
-        };
-        await _userService.CreateUserAsync(user, request.Password, "Customer");
+            var user = new AppUser
+            {
+                UserName = request.UserName,
+            };
+            await _userService.CreateUserAsync(user, request.Password, RoleType.Customer);
 
-        var customer = new Customer
-        {
-            AppUser = user
-        };
-        var entity = (await _dbContext.Customers.AddAsync(customer)).Entity;
+            var customer = new Customer
+            {
+                AppUser = user
+            };
+            var entity = (await _dbContext.Customers.AddAsync(customer)).Entity;
 
-        await _dbContext.SaveChangesAsync();
-        return entity;
+            await _dbContext.SaveChangesAsync();
+            await dbContextTransaction.CommitAsync();
+
+            return entity;
+        }
     }
 
     public async Task<IdentityResult> DeleteCustomerByIdAsync(string id)

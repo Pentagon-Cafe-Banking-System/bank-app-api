@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using BankApp.Entities;
 using BankApp.Entities.UserTypes;
-using BankApp.Exceptions;
+using BankApp.Exceptions.RequestExceptions;
 using BankApp.Models;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
@@ -28,29 +28,19 @@ public class UserController : ControllerBase
         return Ok(users);
     }
 
-    // [HttpGet("{id}")]
-    // public async Task<ActionResult<AppUser>> GetUserById(string id)
-    // {
-    //     var user = await _userService.GetUserByIdAsync(id);
-    //     return Ok(user);
-    // }
-
     [HttpGet("{id}/refresh-tokens")]
     [Authorize]
     public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokens(string id)
     {
         var userId = User.FindFirstValue(ClaimTypes.Sid);
         if (userId != id)
-            throw new BadRequestException("Unauthorized access");
+            throw new BadRequestException(new RequestError
+            {
+                Code = "UnauthorizedAccess",
+                Description = "Trying to get refresh tokens of another user"
+            });
 
         var user = await _userService.GetUserByIdAsync(id);
         return Ok(user.RefreshTokens);
     }
-
-    // [HttpDelete("{id}")]
-    // public async Task<IActionResult> DeleteUserById(string id)
-    // {
-    //     await _userService.DeleteUserByIdAsync(id);
-    //     return Ok();
-    // }
 }

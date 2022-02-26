@@ -65,6 +65,20 @@ namespace BankApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CardTypes",
+                columns: table => new
+                {
+                    Id = table.Column<short>(type: "smallint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Code = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CardTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Countries",
                 columns: table => new
                 {
@@ -79,7 +93,7 @@ namespace BankApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Currency",
+                name: "Currencies",
                 columns: table => new
                 {
                     Id = table.Column<short>(type: "smallint", nullable: false)
@@ -89,7 +103,7 @@ namespace BankApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Currency", x => x.Id);
+                    table.PrimaryKey("PK_Currencies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -250,6 +264,31 @@ namespace BankApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Cards",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TransactionLimit = table.Column<decimal>(type: "numeric", nullable: false),
+                    ValidThru = table.Column<DateOnly>(type: "date", nullable: false),
+                    Number = table.Column<string>(type: "text", nullable: false),
+                    Cvv = table.Column<string>(type: "text", nullable: false),
+                    Pin = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CardTypeId = table.Column<short>(type: "smallint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cards", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cards_CardTypes_CardTypeId",
+                        column: x => x.CardTypeId,
+                        principalTable: "CardTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Accounts",
                 columns: table => new
                 {
@@ -273,9 +312,9 @@ namespace BankApp.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Accounts_Currency_CurrencyId",
+                        name: "FK_Accounts_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
-                        principalTable: "Currency",
+                        principalTable: "Currencies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -366,15 +405,15 @@ namespace BankApp.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "3dec1d72-7bcf-485f-9f78-59938eb10848", "c7d35071-40b7-42db-b691-132ccb83da9f", "Employee", "EMPLOYEE" },
-                    { "86a9243d-d611-4334-bc0e-900b38cb345e", "735ba042-8057-4c12-8bd8-4a3c5b12c2da", "Customer", "CUSTOMER" },
-                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "750bbce4-57ee-4540-bdc7-3eb3f30518e7", "Admin", "ADMIN" }
+                    { "a060dd9f-c966-4a38-8413-549d6d831041", "6ba2b11e-52cd-42d0-8b9e-43a969262626", "Employee", "EMPLOYEE" },
+                    { "e2800d7b-1974-4182-829a-4c2e7d92d325", "282a7a96-582b-40be-a8fa-909d84b3c587", "Customer", "CUSTOMER" },
+                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "8af57a38-88b7-41a3-955b-03ce476bbb79", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "956a5f98-7958-4472-b429-3bf1ec3312c6", null, false, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEJVGvjGMnSxJAg3QdAkf4+p6NtYFsV/zIP9Q0KspsZLst4thn/ZK1C88I35gwx+O1Q==", null, false, "fd3aece4-054e-4a24-93db-d040a1335fb2", false, "admin" });
+                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "ca3c27dc-477a-4690-a1f5-e29ddff530c7", null, false, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEFyN6db4vPyM8vs7Dr8zl4vXv+2xTRSLcHpLeTaTL08UOZ9iNtyKinIlkIDNuHP5oA==", null, false, "31e1d912-6736-4545-9828-68e836eee28c", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "Countries",
@@ -702,6 +741,11 @@ namespace BankApp.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Cards_CardTypeId",
+                table: "Cards",
+                column: "CardTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_AppUserId",
                 table: "RefreshTokens",
                 column: "AppUserId");
@@ -733,6 +777,9 @@ namespace BankApp.Migrations
                 name: "CardOrders");
 
             migrationBuilder.DropTable(
+                name: "Cards");
+
+            migrationBuilder.DropTable(
                 name: "Employees");
 
             migrationBuilder.DropTable(
@@ -748,13 +795,16 @@ namespace BankApp.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "CardTypes");
+
+            migrationBuilder.DropTable(
                 name: "Accounts");
 
             migrationBuilder.DropTable(
                 name: "AccountTypes");
 
             migrationBuilder.DropTable(
-                name: "Currency");
+                name: "Currencies");
 
             migrationBuilder.DropTable(
                 name: "Customers");
