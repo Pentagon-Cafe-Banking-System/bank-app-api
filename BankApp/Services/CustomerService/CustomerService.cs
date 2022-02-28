@@ -34,7 +34,7 @@ public class CustomerService : ICustomerService
             throw new NotFoundException(
                 new RequestError("Id").Add("Customer with requested id could not be found")
             );
-        return customer;
+            return customer;
     }
 
     public async Task<Customer> CreateCustomerAsync(CreateCustomerRequest request)
@@ -54,7 +54,6 @@ public class CustomerService : ICustomerService
             );
             var customer = mapper.Map<Customer>(request);
             customer.AppUser = user;
-
             var entity = (await _dbContext.Customers.AddAsync(customer)).Entity;
 
             await _dbContext.SaveChangesAsync();

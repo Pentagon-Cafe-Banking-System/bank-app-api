@@ -135,8 +135,8 @@ if (!app.Environment.IsProduction())
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
-// if (app.Environment.IsDevelopment())
-//     app.UseDeveloperExceptionPage();
+if (app.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 

@@ -34,7 +34,7 @@ public class EmployeeService : IEmployeeService
             throw new NotFoundException(
                 new RequestError("Id").Add("Employee with requested id could not be found")
             );
-        return employee;
+            return employee;
     }
 
     public async Task<Employee> CreateEmployeeAsync(CreateEmployeeRequest request)
@@ -54,7 +54,7 @@ public class EmployeeService : IEmployeeService
             );
             var employee = mapper.Map<Employee>(request);
             employee.AppUser = user;
-
+            
             var entity = (await _dbContext.Employees.AddAsync(employee)).Entity;
 
             await _dbContext.SaveChangesAsync();

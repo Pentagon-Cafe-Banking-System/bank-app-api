@@ -38,7 +38,7 @@ public class UserController : ControllerBase
                 new RequestError("Id").Add("Trying to get refresh tokens of another user")
             );
 
-        var user = await _userService.GetUserByIdAsync(id);
+            var user = await _userService.GetUserByIdAsync(id);
         return Ok(user.RefreshTokens);
     }
 }

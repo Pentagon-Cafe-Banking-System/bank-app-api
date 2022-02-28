@@ -400,15 +400,15 @@ namespace BankApp.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "56e7662c-eb1a-4405-9ca9-0cfa502cd036", "b162580a-a2e7-456b-aad2-eceed5e852b2", "Employee", "EMPLOYEE" },
-                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "749cfba0-b397-48c5-91c4-27b9f07b730b", "Admin", "ADMIN" },
-                    { "fed28245-4512-497e-9d49-6d7735c18ff6", "9f087f6c-8e32-4835-8efc-d2c109fc1987", "Customer", "CUSTOMER" }
+                    { "45729abd-61e4-4843-96ba-4e31fa790cef", "b526fd67-6782-49df-9018-a25c7fb151da", "Customer", "CUSTOMER" },
+                    { "cf65d6a7-70fa-48f0-ba2c-31c2ea2d6c67", "09122fde-d315-48ae-95c6-2f18e7d244fc", "Employee", "EMPLOYEE" },
+                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "1e9d42cc-87b6-4357-a4b0-e2c64bdde014", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "LockoutEnabled", "LockoutEnd", "NormalizedUserName", "PasswordHash", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "602dba17-dc2a-4ae5-9ecd-b782065d4a27", false, null, "ADMIN", "AQAAAAEAACcQAAAAEGpFlR/WVCA7J2e8awXHchJh6XOPwd+DhIXnWaVN/l26rTcRgFa3/qPYlxDpbiT6Dg==", "5ecaae62-c8ba-4800-81aa-ff282cc342a0", false, "admin" });
+                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "cc16f24a-a280-406c-b83e-b6290865ca21", false, null, "ADMIN", "AQAAAAEAACcQAAAAEIf9ZgZOH8qGSa8YKMAxu4+R/xNnY5eYxZES0FW29+AWmIQO+V+/Hu+tehQ70okk7w==", "dad330da-8536-490b-a3fd-6542086f1bf2", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "Countries",

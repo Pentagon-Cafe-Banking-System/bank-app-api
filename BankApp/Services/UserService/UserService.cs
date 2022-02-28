@@ -40,8 +40,8 @@ public class UserService : IUserService
             throw new AppException($"Role '{roleName}' does not exist");
 
         var identityResult = await _userManager.CreateAsync(user, password);
-        // if (!identityResult.Succeeded)
-        //     throw new AppException("UserManager could not create user");
+        if (!identityResult.Succeeded)
+            throw new AppException("UserManager could not create user");
 
         await _userManager.AddToRoleAsync(user, roleName);
     }
@@ -58,7 +58,6 @@ public class UserService : IUserService
             throw new NotFoundException(
                 new RequestError("Id").Add("User with requested id could not be found")
             );
-
         return await _userManager.DeleteAsync(user);
     }
 
