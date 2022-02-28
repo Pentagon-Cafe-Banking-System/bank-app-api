@@ -2,11 +2,14 @@ using System.Text;
 using BankApp.Data;
 using BankApp.Entities.UserTypes;
 using BankApp.Middleware;
+using BankApp.Models.Requests;
 using BankApp.Services.AuthService;
 using BankApp.Services.CustomerService;
 using BankApp.Services.EmployeeService;
 using BankApp.Services.JwtService;
 using BankApp.Services.UserService;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +72,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 string GetHerokuConnectionString()
 {
     var connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-    if (connectionUrl is null)
+    if (connectionUrl == null)
         return string.Empty; // temporary solution for integration tests to work
 
     var databaseUri = new Uri(connectionUrl);
@@ -83,12 +86,25 @@ var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
 var connectionString = isDevelopment ? builder.Configuration.GetConnectionString("AppDb") : GetHerokuConnectionString();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
-builder.Services.AddIdentityCore<AppUser>()
+builder.Services.AddIdentityCore<AppUser>(options =>
+    {
+        options.Password = new PasswordOptions
+        {
+            RequireDigit = false,
+            RequiredLength = 0,
+            RequireLowercase = false,
+            RequireUppercase = false,
+            RequiredUniqueChars = 0,
+            RequireNonAlphanumeric = false,
+        };
+    })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+
+builder.Services.AddFluentValidation();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -96,6 +112,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ExceptionHandlerMiddleware>();
+
+builder.Services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateCustomerRequest>, CreateCustomerRequestValidator>();
 
 var app = builder.Build();
 

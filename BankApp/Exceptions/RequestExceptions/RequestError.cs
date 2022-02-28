@@ -2,6 +2,23 @@
 
 public class RequestError
 {
-    public string Code { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public RequestError(string name)
+    {
+        Name = name;
+    }
+
+    public string Name { get; set; }
+    public List<string> Descriptions { get; set; } = new();
+
+    public RequestError Add(string description)
+    {
+        Descriptions.Add(description);
+        return this;
+    }
+
+    public Dictionary<string, List<string>> Get()
+    {
+        var dict = new Dictionary<string, List<string>> {{Name, Descriptions}};
+        return dict;
+    }
 }

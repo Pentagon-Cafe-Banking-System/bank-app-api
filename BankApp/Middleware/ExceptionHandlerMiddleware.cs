@@ -26,8 +26,8 @@ public class ExceptionHandlerMiddleware : IMiddleware
 
             try
             {
-                var errorList = JsonSerializer.Deserialize<dynamic>(error.Message);
-                await response.WriteAsJsonAsync(new {succeeded = false, message = errorList});
+                var requestError = JsonSerializer.Deserialize<RequestError>(error.Message)!;
+                await response.WriteAsJsonAsync(new {succeeded = false, errors = requestError.Get()});
             }
             catch (JsonException)
             {

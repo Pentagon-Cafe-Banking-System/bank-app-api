@@ -1,4 +1,5 @@
-﻿using BankApp.Data;
+﻿using AutoMapper;
+using BankApp.Data;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions.RequestExceptions;
 using BankApp.Models;
@@ -30,12 +31,10 @@ public class CustomerService : ICustomerService
     {
         var customer = await _dbContext.Customers.FindAsync(id);
         if (customer == null)
-            throw new NotFoundException(new RequestError
-            {
-                Code = "CustomerNotFound",
-                Description = "Customer with requested id could not be found"
-            });
-        return customer;
+            throw new NotFoundException(
+                new RequestError("Id").Add("Customer with requested id could not be found")
+            );
+            return customer;
     }
 
     public async Task<Customer> CreateCustomerAsync(CreateCustomerRequest request)
@@ -48,10 +47,13 @@ public class CustomerService : ICustomerService
             };
             await _userService.CreateUserAsync(user, request.Password, RoleType.Customer);
 
-            var customer = new Customer
-            {
-                AppUser = user
-            };
+            var mapper = new Mapper(
+                new MapperConfiguration(cfg =>
+                    cfg.CreateMap<CreateCustomerRequest, Customer>()
+                )
+            );
+            var customer = mapper.Map<Customer>(request);
+            customer.AppUser = user;
             var entity = (await _dbContext.Customers.AddAsync(customer)).Entity;
 
             await _dbContext.SaveChangesAsync();

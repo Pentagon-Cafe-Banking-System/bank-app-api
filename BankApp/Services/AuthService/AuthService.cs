@@ -32,20 +32,16 @@ public class AuthService : IAuthService
     public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress)
     {
         var user = await _userManager.FindByNameAsync(request.UserName);
-        if (user is null)
-            throw new NotFoundException(new RequestError
-            {
-                Code = "UserNameNotExists",
-                Description = "Username not found"
-            });
+        if (user == null)
+            throw new NotFoundException(
+                new RequestError("UserName").Add("Username not found")
+            );
 
         var passwordCheck = await _userManager.CheckPasswordAsync(user, request.Password);
         if (!passwordCheck)
-            throw new NotFoundException(new RequestError
-            {
-                Code = "IncorrectPassword",
-                Description = "Wrong password"
-            });
+            throw new NotFoundException(
+                new RequestError("Password").Add("Password is not correct")
+            );
 
         var jwtToken = _jwtService.GenerateJwtToken(await _userService.GetUserClaims(user));
         var refreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
@@ -61,12 +57,10 @@ public class AuthService : IAuthService
 
     public async Task<AuthenticateResponse> RefreshTokenAsync(string? token, string? ipAddress)
     {
-        if (token is null)
-            throw new BadRequestException(new RequestError
-            {
-                Code = "MissingToken",
-                Description = "There is no refresh token in the request cookies"
-            });
+        if (token == null)
+            throw new BadRequestException(
+                new RequestError("Token").Add("There is no refresh token in the request cookies")
+            );
 
         var user = await GetUserByRefreshTokenAsync(token);
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
@@ -80,11 +74,9 @@ public class AuthService : IAuthService
         }
 
         if (!refreshToken.IsActive)
-            throw new BadRequestException(new RequestError
-            {
-                Code = "InvalidToken",
-                Description = "Refresh token is invalid"
-            });
+            throw new BadRequestException(
+                new RequestError("Token").Add("Refresh token is invalid")
+            );
 
         // replace old refresh token with a new one (rotate token)
         var newRefreshToken = await RotateRefreshTokenAsync(refreshToken, ipAddress);
@@ -105,21 +97,17 @@ public class AuthService : IAuthService
     public async Task<IdentityResult> RevokeTokenAsync(string? token, string? ipAddress)
     {
         if (string.IsNullOrEmpty(token))
-            throw new BadRequestException(new RequestError
-            {
-                Code = "MissingToken",
-                Description = "Token is null"
-            });
+            throw new BadRequestException(
+                new RequestError("Token").Add("Refresh token is null")
+            );
 
         var user = await GetUserByRefreshTokenAsync(token);
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
 
         if (!refreshToken.IsActive)
-            throw new BadRequestException(new RequestError
-            {
-                Code = "InvalidToken",
-                Description = "Refresh token is already invalidated"
-            });
+            throw new BadRequestException(
+                new RequestError("Token").Add("Refresh token is already invalidated")
+            );
 
         // revoke token and save
         RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");
@@ -132,8 +120,8 @@ public class AuthService : IAuthService
     private async Task<AppUser> GetUserByRefreshTokenAsync(string token)
     {
         var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
-        if (user is null)
-            throw new AppException("Could not find user with requested token");
+        if (user == null)
+            throw new AppException("Could not find user with requested refresh token");
 
         return user;
     }
@@ -159,7 +147,7 @@ public class AuthService : IAuthService
 
         // recursively traverse the refresh token chain and ensure all descendants are revoked
         var childToken = user.RefreshTokens.SingleOrDefault(x => x.Token == refreshToken.ReplacedByToken);
-        if (childToken is null) return;
+        if (childToken == null) return;
 
         if (childToken.IsActive)
             RevokeRefreshToken(childToken, ipAddress, reason);

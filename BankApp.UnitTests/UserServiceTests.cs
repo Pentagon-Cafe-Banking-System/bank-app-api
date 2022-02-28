@@ -112,7 +112,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async void CreateUserAsync_ForInvalidData_ThrowsBadRequestException()
+    public async void CreateUserAsync_ForInvalidData_ThrowsAppException()
     {
         // arrange
         var appUser = A.Dummy<AppUser>();
@@ -126,7 +126,7 @@ public class UserServiceTests
         var action = async () => await _userService.CreateUserAsync(appUser, "password", "roleName");
 
         // assert
-        await action.Should().ThrowExactlyAsync<BadRequestException>();
+        await action.Should().ThrowExactlyAsync<AppException>();
     }
 
     [Fact]

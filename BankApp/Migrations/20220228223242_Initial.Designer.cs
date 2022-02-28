@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220226202158_Initial")]
+    [Migration("20220228223242_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -155,8 +155,8 @@ namespace BankApp.Migrations
                     b.Property<decimal>("TransactionLimit")
                         .HasColumnType("numeric");
 
-                    b.Property<DateOnly>("ValidThru")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("ValidThru")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -1801,22 +1801,11 @@ namespace BankApp.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
@@ -1824,12 +1813,6 @@ namespace BankApp.Migrations
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -1843,9 +1826,6 @@ namespace BankApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
@@ -1857,13 +1837,11 @@ namespace BankApp.Migrations
                         {
                             Id = "7a4165b4-0aca-43fb-a390-294781ee377f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ca3c27dc-477a-4690-a1f5-e29ddff530c7",
-                            EmailConfirmed = false,
+                            ConcurrencyStamp = "cc16f24a-a280-406c-b83e-b6290865ca21",
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFyN6db4vPyM8vs7Dr8zl4vXv+2xTRSLcHpLeTaTL08UOZ9iNtyKinIlkIDNuHP5oA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "31e1d912-6736-4545-9828-68e836eee28c",
+                            PasswordHash = "AQAAAAEAACcQAAAAEIf9ZgZOH8qGSa8YKMAxu4+R/xNnY5eYxZES0FW29+AWmIQO+V+/Hu+tehQ70okk7w==",
+                            SecurityStamp = "dad330da-8536-490b-a3fd-6542086f1bf2",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1878,8 +1856,8 @@ namespace BankApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("DateOfBirth")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FathersName")
                         .IsRequired()
@@ -1911,11 +1889,11 @@ namespace BankApp.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("DateOfBirth")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateOnly>("DateOfEmployment")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("DateOfEmployment")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -1965,21 +1943,21 @@ namespace BankApp.Migrations
                         new
                         {
                             Id = "fa2640a0-0496-4010-bc27-424e0e5c6f78",
-                            ConcurrencyStamp = "8af57a38-88b7-41a3-955b-03ce476bbb79",
+                            ConcurrencyStamp = "1e9d42cc-87b6-4357-a4b0-e2c64bdde014",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "a060dd9f-c966-4a38-8413-549d6d831041",
-                            ConcurrencyStamp = "6ba2b11e-52cd-42d0-8b9e-43a969262626",
+                            Id = "cf65d6a7-70fa-48f0-ba2c-31c2ea2d6c67",
+                            ConcurrencyStamp = "09122fde-d315-48ae-95c6-2f18e7d244fc",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = "e2800d7b-1974-4182-829a-4c2e7d92d325",
-                            ConcurrencyStamp = "282a7a96-582b-40be-a8fa-909d84b3c587",
+                            Id = "45729abd-61e4-4843-96ba-4e31fa790cef",
+                            ConcurrencyStamp = "b526fd67-6782-49df-9018-a25c7fb151da",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
