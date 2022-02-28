@@ -1,4 +1,5 @@
-﻿using BankApp.Data;
+﻿using AutoMapper;
+using BankApp.Data;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions.RequestExceptions;
 using BankApp.Models;
@@ -30,11 +31,9 @@ public class EmployeeService : IEmployeeService
     {
         var employee = await _dbContext.Employees.FindAsync(id);
         if (employee == null)
-            throw new NotFoundException(new RequestError
-            {
-                Code = "EmployeeNotFound",
-                Description = "Employee with requested id could not be found"
-            });
+            throw new NotFoundException(
+                new RequestError("Id").Add("Employee with requested id could not be found")
+            );
         return employee;
     }
 
@@ -44,14 +43,18 @@ public class EmployeeService : IEmployeeService
         {
             var user = new AppUser
             {
-                UserName = request.UserName,
+                UserName = request.UserName
             };
             await _userService.CreateUserAsync(user, request.Password, RoleType.Employee);
 
-            var employee = new Employee
-            {
-                AppUser = user
-            };
+            var mapper = new Mapper(
+                new MapperConfiguration(cfg =>
+                    cfg.CreateMap<CreateEmployeeRequest, Employee>()
+                )
+            );
+            var employee = mapper.Map<Employee>(request);
+            employee.AppUser = user;
+
             var entity = (await _dbContext.Employees.AddAsync(employee)).Entity;
 
             await _dbContext.SaveChangesAsync();

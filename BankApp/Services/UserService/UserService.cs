@@ -27,11 +27,9 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
-            throw new NotFoundException(new RequestError
-            {
-                Code = "UserNotFound",
-                Description = "User with requested id could not be found"
-            });
+            throw new NotFoundException(
+                new RequestError("Id")
+            );
         return user;
     }
 
@@ -41,9 +39,9 @@ public class UserService : IUserService
         if (!roleExists)
             throw new AppException($"Role '{roleName}' does not exist");
 
-        var createUserResult = await _userManager.CreateAsync(user, password);
-        if (!createUserResult.Succeeded)
-            throw new BadRequestException(createUserResult.Errors.ToList());
+        var identityResult = await _userManager.CreateAsync(user, password);
+        // if (!identityResult.Succeeded)
+        //     throw new AppException("UserManager could not create user");
 
         await _userManager.AddToRoleAsync(user, roleName);
     }
@@ -57,11 +55,10 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
-            throw new NotFoundException(new RequestError
-            {
-                Code = "UserNotFound",
-                Description = "User with requested id could not be found"
-            });
+            throw new NotFoundException(
+                new RequestError("Id").Add("User with requested id could not be found")
+            );
+
         return await _userManager.DeleteAsync(user);
     }
 

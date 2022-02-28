@@ -51,6 +51,13 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
         // Only needed for login via 3rd party account
         builder.Entity<IdentityUserToken<string>>().Metadata.SetIsTableExcludedFromMigrations(true);
         builder.Entity<IdentityUserLogin<string>>().Metadata.SetIsTableExcludedFromMigrations(true);
+
+        // Disable IdentityUser attributes
+        builder.Entity<AppUser>().Ignore(c => c.PhoneNumber);
+        builder.Entity<AppUser>().Ignore(c => c.PhoneNumberConfirmed);
+        builder.Entity<AppUser>().Ignore(c => c.Email);
+        builder.Entity<AppUser>().Ignore(c => c.NormalizedEmail);
+        builder.Entity<AppUser>().Ignore(c => c.EmailConfirmed);
     }
 
     private void ConfigureRelationships(ModelBuilder builder)

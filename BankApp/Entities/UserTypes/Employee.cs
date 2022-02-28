@@ -11,8 +11,8 @@ public class Employee
     public string LastName { get; set; } = string.Empty;
     public double Salary { get; set; }
     public char Gender { get; set; }
-    public DateOnly DateOfEmployment { get; set; }
-    public DateOnly DateOfBirth { get; set; }
+    public DateTime DateOfEmployment { get; set; }
+    public DateTime DateOfBirth { get; set; }
 
     public virtual AppUser AppUser { get; set; } = default!;
 }

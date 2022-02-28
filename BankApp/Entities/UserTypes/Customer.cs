@@ -11,7 +11,7 @@ public class Customer
     public string SecondName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string NationalId { get; set; } = string.Empty;
-    public DateOnly DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; }
     public string CityOfBirth { get; set; } = string.Empty;
     public string FathersName { get; set; } = string.Empty;
 

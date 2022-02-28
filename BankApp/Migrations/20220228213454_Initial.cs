@@ -46,14 +46,9 @@ namespace BankApp.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: true),
                     SecurityStamp = table.Column<string>(type: "text", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
@@ -198,7 +193,7 @@ namespace BankApp.Migrations
                     SecondName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     NationalId = table.Column<string>(type: "text", nullable: false),
-                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CityOfBirth = table.Column<string>(type: "text", nullable: false),
                     FathersName = table.Column<string>(type: "text", nullable: false)
                 },
@@ -222,8 +217,8 @@ namespace BankApp.Migrations
                     LastName = table.Column<string>(type: "text", nullable: false),
                     Salary = table.Column<double>(type: "double precision", nullable: false),
                     Gender = table.Column<char>(type: "character(1)", nullable: false),
-                    DateOfEmployment = table.Column<DateOnly>(type: "date", nullable: false),
-                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false)
+                    DateOfEmployment = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -270,7 +265,7 @@ namespace BankApp.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TransactionLimit = table.Column<decimal>(type: "numeric", nullable: false),
-                    ValidThru = table.Column<DateOnly>(type: "date", nullable: false),
+                    ValidThru = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Number = table.Column<string>(type: "text", nullable: false),
                     Cvv = table.Column<string>(type: "text", nullable: false),
                     Pin = table.Column<string>(type: "text", nullable: false),
@@ -405,15 +400,15 @@ namespace BankApp.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "a060dd9f-c966-4a38-8413-549d6d831041", "6ba2b11e-52cd-42d0-8b9e-43a969262626", "Employee", "EMPLOYEE" },
-                    { "e2800d7b-1974-4182-829a-4c2e7d92d325", "282a7a96-582b-40be-a8fa-909d84b3c587", "Customer", "CUSTOMER" },
-                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "8af57a38-88b7-41a3-955b-03ce476bbb79", "Admin", "ADMIN" }
+                    { "56e7662c-eb1a-4405-9ca9-0cfa502cd036", "b162580a-a2e7-456b-aad2-eceed5e852b2", "Employee", "EMPLOYEE" },
+                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "749cfba0-b397-48c5-91c4-27b9f07b730b", "Admin", "ADMIN" },
+                    { "fed28245-4512-497e-9d49-6d7735c18ff6", "9f087f6c-8e32-4835-8efc-d2c109fc1987", "Customer", "CUSTOMER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "ca3c27dc-477a-4690-a1f5-e29ddff530c7", null, false, false, null, null, "ADMIN", "AQAAAAEAACcQAAAAEFyN6db4vPyM8vs7Dr8zl4vXv+2xTRSLcHpLeTaTL08UOZ9iNtyKinIlkIDNuHP5oA==", null, false, "31e1d912-6736-4545-9828-68e836eee28c", false, "admin" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "LockoutEnabled", "LockoutEnd", "NormalizedUserName", "PasswordHash", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "602dba17-dc2a-4ae5-9ecd-b782065d4a27", false, null, "ADMIN", "AQAAAAEAACcQAAAAEGpFlR/WVCA7J2e8awXHchJh6XOPwd+DhIXnWaVN/l26rTcRgFa3/qPYlxDpbiT6Dg==", "5ecaae62-c8ba-4800-81aa-ff282cc342a0", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "Countries",
@@ -723,11 +718,6 @@ namespace BankApp.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "AspNetUsers",
-                column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
