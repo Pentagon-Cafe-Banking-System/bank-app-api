@@ -55,7 +55,7 @@ public class EmployeeService : IEmployeeService
             );
             var employee = mapper.Map<Employee>(request);
             employee.AppUser = user;
-            
+
             var entity = (await _dbContext.Employees.AddAsync(employee)).Entity;
 
             await _dbContext.SaveChangesAsync();
@@ -65,12 +65,12 @@ public class EmployeeService : IEmployeeService
         }
     }
 
-    public async Task<Employee> UpdateEmployeeAsync(UpdateEmployeeRequest request,string id)
+    public async Task<Employee> UpdateEmployeeAsync(UpdateEmployeeRequest request, string id)
     {
         var hasher = new PasswordHasher<AppUser>();
         var employee = await GetEmployeeByIdAsync(id);
         employee.AppUser.UserName = request.UserName;
-        employee.AppUser.NormalizedUserName = request.UserName.ToUpper();
+        employee.AppUser.NormalizedUserName = request.UserName.ToUpperInvariant();
         employee.AppUser.PasswordHash = hasher.HashPassword(null!, request.Password);
         employee.FirstName = request.FirstName;
         employee.LastName = request.LastName;
@@ -78,6 +78,7 @@ public class EmployeeService : IEmployeeService
         await _dbContext.SaveChangesAsync();
         return employee;
     }
+
     public async Task<IdentityResult> DeleteEmployeeByIdAsync(string id)
     {
         var employee = await GetEmployeeByIdAsync(id);
