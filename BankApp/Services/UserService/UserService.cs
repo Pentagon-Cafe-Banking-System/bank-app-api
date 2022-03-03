@@ -71,4 +71,5 @@ public class UserService : IUserService
         roles.ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));
         return claims;
     }
+    
 }
