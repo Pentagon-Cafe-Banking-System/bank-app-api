@@ -7,6 +7,7 @@ using BankApp.Models.Requests;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace BankApp.Services.EmployeeService;
 
@@ -34,7 +35,7 @@ public class EmployeeService : IEmployeeService
             throw new NotFoundException(
                 new RequestError("Id").Add("Employee with requested id could not be found")
             );
-            return employee;
+        return employee;
     }
 
     public async Task<Employee> CreateEmployeeAsync(CreateEmployeeRequest request)
@@ -54,7 +55,7 @@ public class EmployeeService : IEmployeeService
             );
             var employee = mapper.Map<Employee>(request);
             employee.AppUser = user;
-            
+
             var entity = (await _dbContext.Employees.AddAsync(employee)).Entity;
 
             await _dbContext.SaveChangesAsync();
@@ -62,6 +63,20 @@ public class EmployeeService : IEmployeeService
 
             return entity;
         }
+    }
+
+    public async Task<Employee> UpdateEmployeeAsync(UpdateEmployeeRequest request, string id)
+    {
+        var hasher = new PasswordHasher<AppUser>();
+        var employee = await GetEmployeeByIdAsync(id);
+        employee.AppUser.UserName = request.UserName;
+        employee.AppUser.NormalizedUserName = request.UserName.ToUpperInvariant();
+        employee.AppUser.PasswordHash = hasher.HashPassword(null!, request.Password);
+        employee.FirstName = request.FirstName;
+        employee.LastName = request.LastName;
+        employee.Salary = request.Salary;
+        await _dbContext.SaveChangesAsync();
+        return employee;
     }
 
     public async Task<IdentityResult> DeleteEmployeeByIdAsync(string id)

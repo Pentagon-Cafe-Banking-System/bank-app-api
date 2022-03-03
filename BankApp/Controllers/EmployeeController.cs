@@ -41,6 +41,12 @@ public class EmployeeController : ControllerBase
         return Ok(employee);
     }
 
+    [HttpPatch("update/{id}")]
+    public async Task<ActionResult<Employee>> UpdateEmployee(UpdateEmployeeRequest request,string id)
+    {
+        var employee = await _employeeService.UpdateEmployeeAsync(request,id);
+        return Ok(employee);
+    }
     [HttpDelete("delete/{id}")]
     public async Task<ActionResult<IdentityResult>> DeleteEmployeeById(string id)
     {

@@ -115,6 +115,8 @@ builder.Services.AddScoped<ExceptionHandlerMiddleware>();
 
 builder.Services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateCustomerRequest>, CreateCustomerRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateEmployeeRequest>, UpdateEmployeeRequestValidator>();
+
 
 var app = builder.Build();
 
