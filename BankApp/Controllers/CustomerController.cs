@@ -40,7 +40,12 @@ public class CustomerController : ControllerBase
         var customer = await _customerService.CreateCustomerAsync(request);
         return Ok(customer);
     }
-
+    [HttpPatch("update/{id}")]
+    public async Task<ActionResult<Customer>> UpdateCustomer(UpdateCustomerRequest request,string id)
+    {
+        var customer = await _customerService.UpdateCustomerAsync(request,id);
+        return Ok(customer);
+    }
     [HttpDelete("delete/{id}")]
     public async Task<ActionResult<IdentityResult>> DeleteCustomerById(string id)
     {

@@ -63,6 +63,19 @@ public class CustomerService : ICustomerService
         }
     }
 
+    public async Task<Customer> UpdateCustomerAsync(UpdateCustomerRequest request, string id)
+    {
+        var hasher = new PasswordHasher<AppUser>();
+        var customer = await GetCustomerByIdAsync(id);
+        customer.AppUser.UserName = request.UserName;
+        customer.AppUser.NormalizedUserName = request.UserName.ToUpperInvariant();
+        customer.AppUser.PasswordHash =hasher.HashPassword(null!, request.Password);
+        customer.FirstName = request.FirstName;
+        customer.SecondName = request.SecondName;
+        customer.LastName = request.LastName;
+        await _dbContext.SaveChangesAsync();
+        return customer;
+    }
     public async Task<IdentityResult> DeleteCustomerByIdAsync(string id)
     {
         var employee = await GetCustomerByIdAsync(id);
