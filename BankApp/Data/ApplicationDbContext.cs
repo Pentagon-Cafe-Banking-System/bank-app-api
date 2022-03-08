@@ -44,6 +44,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
         CreateAdminAccount(builder, adminRoleId);
 
         SeedCountries(builder);
+        SeedAccountTypes(builder);
     }
 
     private void DisableNotNeededIdentityFeatures(ModelBuilder builder)
@@ -142,5 +143,32 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
                 }
             );
         }
+    }
+
+    private void SeedAccountTypes(ModelBuilder builder)
+    {
+        builder.Entity<AccountType>().HasData(
+            new AccountType
+            {
+                Id = 1,
+                Code = "CA",
+                Name = "Current Account",
+                InterestRate = (decimal) 0.5
+            },
+            new AccountType
+            {
+                Id = 2,
+                Code = "SA",
+                Name = "Savings Account",
+                InterestRate = (decimal) 3.0
+            },
+            new AccountType
+            {
+                Id = 3,
+                Code = "FCA",
+                Name = "Foreign Currency Account",
+                InterestRate = (decimal) 0.0
+            }
+        );
     }
 }

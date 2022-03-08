@@ -21,8 +21,8 @@
         <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.2" />
 
         <ContentWithTargetPath Include="Files/countries.csv">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <TargetPath>%(Filename)%(Extension)</TargetPath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </ContentWithTargetPath>
     </ItemGroup>
 
