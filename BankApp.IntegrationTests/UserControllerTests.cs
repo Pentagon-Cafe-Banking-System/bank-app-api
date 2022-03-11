@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
@@ -27,6 +29,8 @@ public class UserControllerTests : IClassFixture<WebApplicationFactory<Program>>
         {
             builder.ConfigureServices(services =>
             {
+                services.RemoveAll(typeof(IHostedService));
+
                 // Database
                 var dbContextOptions = services.SingleOrDefault(service =>
                     service.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
