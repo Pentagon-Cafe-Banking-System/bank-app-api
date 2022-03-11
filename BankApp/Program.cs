@@ -3,6 +3,7 @@ using BankApp.Data;
 using BankApp.Entities.UserTypes;
 using BankApp.Middleware;
 using BankApp.Models.Requests;
+using BankApp.Services.AccountService;
 using BankApp.Services.AuthService;
 using BankApp.Services.CustomerService;
 using BankApp.Services.EmployeeService;
@@ -104,20 +105,20 @@ builder.Services.AddIdentityCore<AppUser>(options =>
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
-builder.Services.AddFluentValidation();
+builder.Services.AddScoped<ExceptionHandlerMiddleware>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<ExceptionHandlerMiddleware>();
+builder.Services.AddScoped<IAccountTypeService, AccountTypeService>();
 
+builder.Services.AddFluentValidation();
 builder.Services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateCustomerRequest>, CreateCustomerRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateEmployeeRequest>, UpdateEmployeeRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateCustomerRequest>, UpdateCustomerRequestValidator>();
-
 
 var app = builder.Build();
 
