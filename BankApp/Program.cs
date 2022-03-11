@@ -3,6 +3,7 @@ using BankApp.Data;
 using BankApp.Entities.UserTypes;
 using BankApp.Middleware;
 using BankApp.Models.Requests;
+using BankApp.Services;
 using BankApp.Services.AccountService;
 using BankApp.Services.AuthService;
 using BankApp.Services.CustomerService;
@@ -119,6 +120,8 @@ builder.Services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeRequ
 builder.Services.AddScoped<IValidator<CreateCustomerRequest>, CreateCustomerRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateEmployeeRequest>, UpdateEmployeeRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateCustomerRequest>, UpdateCustomerRequestValidator>();
+
+builder.Services.AddHostedService<ExchangeRatesService>();
 
 var app = builder.Build();
 
