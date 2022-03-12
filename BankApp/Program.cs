@@ -45,7 +45,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy(corsPolicy,
         policyBuilder =>
         {
-            policyBuilder.WithOrigins("http://localhost:3000", "https://localhost:3000")
+            policyBuilder.WithOrigins(
+                    "http://localhost:3000", "https://localhost:3000",
+                    "https://bank-app-pcafe.herokuapp.com"
+                )
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
