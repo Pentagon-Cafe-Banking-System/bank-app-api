@@ -58,6 +58,18 @@ public class ExchangeRatesService : IHostedService, IDisposable
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+            var plnCurrency = await dbContext.Currencies.SingleOrDefaultAsync(c => c.Code.Equals("PLN"));
+            if (plnCurrency == null)
+            {
+                plnCurrency = new Currency
+                {
+                    Code = "PLN",
+                    Ask = 1,
+                    Bid = 1
+                };
+                await dbContext.AddAsync(plnCurrency);
+            }
+
             foreach (var rate in rates.EnumerateArray())
             {
                 var currency = new Currency

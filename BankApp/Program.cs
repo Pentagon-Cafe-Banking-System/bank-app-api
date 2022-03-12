@@ -6,6 +6,7 @@ using BankApp.Models.Requests;
 using BankApp.Services;
 using BankApp.Services.AccountService;
 using BankApp.Services.AuthService;
+using BankApp.Services.CurrencyService;
 using BankApp.Services.CustomerService;
 using BankApp.Services.EmployeeService;
 using BankApp.Services.JwtService;
@@ -114,6 +115,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAccountTypeService, AccountTypeService>();
+builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
 builder.Services.AddFluentValidation();
 builder.Services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeRequestValidator>();
