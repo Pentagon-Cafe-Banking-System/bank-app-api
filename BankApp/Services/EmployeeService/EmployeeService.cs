@@ -7,7 +7,6 @@ using BankApp.Models.Requests;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 
 namespace BankApp.Services.EmployeeService;
 
@@ -32,9 +31,7 @@ public class EmployeeService : IEmployeeService
     {
         var employee = await _dbContext.Employees.FindAsync(id);
         if (employee == null)
-            throw new NotFoundException(
-                new RequestError("Id").Add("Employee with requested id could not be found")
-            );
+            throw new NotFoundException("Id", "Employee with requested id could not be found");
         return employee;
     }
 

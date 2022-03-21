@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace BankApp.Models.Responses;
+﻿namespace BankApp.Models.Responses;
 
 public class AuthenticateResponse
 {
@@ -11,5 +9,5 @@ public class AuthenticateResponse
     }
 
     public string JwtToken { get; set; }
-    [JsonIgnore] public string RefreshToken { get; set; } // refresh token is returned in http only cookie
+    public string RefreshToken { get; set; }
 }

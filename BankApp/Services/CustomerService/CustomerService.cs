@@ -31,10 +31,8 @@ public class CustomerService : ICustomerService
     {
         var customer = await _dbContext.Customers.FindAsync(id);
         if (customer == null)
-            throw new NotFoundException(
-                new RequestError("Id").Add("Customer with requested id could not be found")
-            );
-            return customer;
+            throw new NotFoundException("Id", "Customer with requested id could not be found");
+        return customer;
     }
 
     public async Task<Customer> CreateCustomerAsync(CreateCustomerRequest request)
@@ -69,13 +67,14 @@ public class CustomerService : ICustomerService
         var customer = await GetCustomerByIdAsync(id);
         customer.AppUser.UserName = request.UserName;
         customer.AppUser.NormalizedUserName = request.UserName.ToUpperInvariant();
-        customer.AppUser.PasswordHash =hasher.HashPassword(null!, request.Password);
+        customer.AppUser.PasswordHash = hasher.HashPassword(null!, request.Password);
         customer.FirstName = request.FirstName;
         customer.SecondName = request.SecondName;
         customer.LastName = request.LastName;
         await _dbContext.SaveChangesAsync();
         return customer;
     }
+
     public async Task<IdentityResult> DeleteCustomerByIdAsync(string id)
     {
         var employee = await GetCustomerByIdAsync(id);

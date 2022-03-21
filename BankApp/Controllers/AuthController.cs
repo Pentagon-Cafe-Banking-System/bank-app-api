@@ -22,45 +22,27 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthenticateResponse>> Authenticate(LoginRequest request)
     {
         var response = await _authService.AuthenticateAsync(request, IpAddress());
-        SetTokenCookie(response.RefreshToken);
         return Ok(response);
     }
 
     [AllowAnonymous]
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken()
+    public async Task<ActionResult<AuthenticateResponse>> RefreshToken(RefreshTokenRequest request)
     {
-        var refreshToken = Request.Cookies["refreshToken"];
+        var refreshToken = request.RefreshToken;
         var response = await _authService.RefreshTokenAsync(refreshToken, IpAddress());
-        SetTokenCookie(response.RefreshToken);
         return Ok(response);
     }
 
     [HttpPost("revoke-token")]
-    public async Task<IActionResult> RevokeToken(string? token)
+    public async Task<IActionResult> RevokeToken(RevokeRefreshTokenRequest request)
     {
-        // accept refresh token in request body or cookie
-        token ??= Request.Cookies["refreshToken"];
-        await _authService.RevokeTokenAsync(token, IpAddress());
+        var refreshToken = request.RefreshToken;
+        await _authService.RevokeTokenAsync(refreshToken, IpAddress());
         return Ok(new {message = "Token revoked"});
     }
 
     // helper methods
-
-    private void SetTokenCookie(string token)
-    {
-        // append cookie with refresh token to the http response
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = DateTime.UtcNow.AddDays(7),
-            // Properties below only for development
-            Secure = true,
-            SameSite = SameSiteMode.None,
-            IsEssential = true
-        };
-        Response.Cookies.Append("refreshToken", token, cookieOptions);
-    }
 
     private string? IpAddress()
     {

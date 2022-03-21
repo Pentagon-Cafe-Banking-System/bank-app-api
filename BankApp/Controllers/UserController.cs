@@ -34,11 +34,9 @@ public class UserController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.Sid);
         if (userId != id)
-            throw new BadRequestException(
-                new RequestError("Id").Add("Trying to get refresh tokens of another user")
-            );
+            throw new BadRequestException("Id", "Trying to get refresh tokens of another user");
 
-            var user = await _userService.GetUserByIdAsync(id);
+        var user = await _userService.GetUserByIdAsync(id);
         return Ok(user.RefreshTokens);
     }
 }

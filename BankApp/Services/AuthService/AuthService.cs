@@ -1,7 +1,6 @@
 ﻿using BankApp.Data;
 using BankApp.Entities;
 using BankApp.Entities.UserTypes;
-using BankApp.Exceptions;
 using BankApp.Exceptions.RequestExceptions;
 using BankApp.Models.Requests;
 using BankApp.Models.Responses;
@@ -33,15 +32,11 @@ public class AuthService : IAuthService
     {
         var user = await _userManager.FindByNameAsync(request.UserName);
         if (user == null)
-            throw new NotFoundException(
-                new RequestError("UserName").Add("Username not found")
-            );
+            throw new NotFoundException("UserName", "Username not found");
 
         var passwordCheck = await _userManager.CheckPasswordAsync(user, request.Password);
         if (!passwordCheck)
-            throw new NotFoundException(
-                new RequestError("Password").Add("Password is not correct")
-            );
+            throw new NotFoundException("Password", "Password is not correct");
 
         var jwtToken = _jwtService.GenerateJwtToken(await _userService.GetUserClaims(user));
         var refreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
@@ -55,13 +50,8 @@ public class AuthService : IAuthService
         return new AuthenticateResponse(jwtToken, refreshToken.Token);
     }
 
-    public async Task<AuthenticateResponse> RefreshTokenAsync(string? token, string? ipAddress)
+    public async Task<AuthenticateResponse> RefreshTokenAsync(string token, string? ipAddress)
     {
-        if (token == null)
-            throw new BadRequestException(
-                new RequestError("Token").Add("There is no refresh token in the request cookies")
-            );
-
         var user = await GetUserByRefreshTokenAsync(token);
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
 
@@ -74,9 +64,7 @@ public class AuthService : IAuthService
         }
 
         if (!refreshToken.IsActive)
-            throw new BadRequestException(
-                new RequestError("Token").Add("Refresh token is invalid")
-            );
+            throw new BadRequestException("Token", "Refresh token is invalid");
 
         // replace old refresh token with a new one (rotate token)
         var newRefreshToken = await RotateRefreshTokenAsync(refreshToken, ipAddress);
@@ -94,26 +82,21 @@ public class AuthService : IAuthService
         return new AuthenticateResponse(jwtToken, newRefreshToken.Token);
     }
 
-    public async Task<IdentityResult> RevokeTokenAsync(string? token, string? ipAddress)
+    public async Task<IdentityResult> RevokeTokenAsync(string token, string? ipAddress)
     {
         if (string.IsNullOrEmpty(token))
-            throw new BadRequestException(
-                new RequestError("Token").Add("Refresh token is null")
-            );
+            throw new BadRequestException("Token", "Refresh token is null");
 
         var user = await GetUserByRefreshTokenAsync(token);
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
 
         if (!refreshToken.IsActive)
-            throw new BadRequestException(
-                new RequestError("Token").Add("Refresh token is already invalidated")
-            );
+            throw new BadRequestException("Token", "Refresh token is already invalidated");
 
         // revoke token and save
         RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");
         return await _userManager.UpdateAsync(user);
     }
-
 
     // helper methods
 
@@ -121,7 +104,7 @@ public class AuthService : IAuthService
     {
         var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
         if (user == null)
-            throw new AppException("Could not find user with requested refresh token");
+            throw new NotFoundException("RefreshToken", "Refresh token not found");
 
         return user;
     }

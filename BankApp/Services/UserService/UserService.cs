@@ -27,9 +27,7 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
-            throw new NotFoundException(
-                new RequestError("Id")
-            );
+            throw new NotFoundException("Id", "User with requested id could not be found");
         return user;
     }
 
@@ -55,9 +53,7 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
-            throw new NotFoundException(
-                new RequestError("Id").Add("User with requested id could not be found")
-            );
+            throw new NotFoundException("Id", "User with requested id could not be found");
         return await _userManager.DeleteAsync(user);
     }
 
@@ -71,5 +67,4 @@ public class UserService : IUserService
         roles.ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));
         return claims;
     }
-    
 }

@@ -4,7 +4,8 @@ namespace BankApp.Exceptions.RequestExceptions;
 
 public abstract class AppRequestException : Exception
 {
-    protected AppRequestException(RequestError error) : base(JsonSerializer.Serialize(error))
+    protected AppRequestException(string name, string description) :
+        base(JsonSerializer.Serialize(new RequestError(name, description)))
     {
     }
 }
