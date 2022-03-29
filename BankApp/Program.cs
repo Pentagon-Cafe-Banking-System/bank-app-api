@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using BankApp.Data;
 using BankApp.Entities.UserTypes;
 using BankApp.Middleware;
@@ -88,6 +89,11 @@ string GetHerokuConnectionString()
            $"Database={db};Pooling=true;SSLMode=Require;TrustServerCertificate=True;";
 }
 
+builder.Services.AddMvc().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
+
 var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 var connectionString = isDevelopment ? builder.Configuration.GetConnectionString("AppDb") : GetHerokuConnectionString();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
@@ -119,12 +125,15 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAccountTypeService, AccountTypeService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 builder.Services.AddFluentValidation();
 builder.Services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateCustomerRequest>, CreateCustomerRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateEmployeeRequest>, UpdateEmployeeRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateCustomerRequest>, UpdateCustomerRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateAccountRequest>, CreateAccountRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateAccountRequest>, UpdateAccountRequestValidator>();
 
 builder.Services.AddHostedService<ExchangeRatesService>();
 
