@@ -15,6 +15,5 @@ public class Account
 
     public virtual AccountType AccountType { get; set; } = default!;
     public virtual Currency Currency { get; set; } = default!;
-    public virtual Customer Customer { get; set; } = default!;
     public virtual List<Transfer> Transfers { get; set; } = default!;
 }

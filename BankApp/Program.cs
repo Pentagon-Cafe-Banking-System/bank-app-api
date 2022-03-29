@@ -89,11 +89,6 @@ string GetHerokuConnectionString()
            $"Database={db};Pooling=true;SSLMode=Require;TrustServerCertificate=True;";
 }
 
-builder.Services.AddMvc().AddJsonOptions(o =>
-{
-    o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-});
-
 var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 var connectionString = isDevelopment ? builder.Configuration.GetConnectionString("AppDb") : GetHerokuConnectionString();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));

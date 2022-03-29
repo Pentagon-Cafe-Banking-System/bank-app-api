@@ -51,13 +51,12 @@ public class AccountService : IAccountService
             var account = mapper.Map<Account>(request);
             account.AccountType = accountType;
             account.Currency = currency;
-            account.Customer = customer;
-            var entity = (await _dbContext.Accounts.AddAsync(account)).Entity;
+            customer.BankAccounts.Add(account);
 
             await _dbContext.SaveChangesAsync();
             await dbContextTransaction.CommitAsync();
 
-            return entity;
+            return account;
         }
     }
 
