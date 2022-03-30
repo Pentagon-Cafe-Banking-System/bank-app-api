@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using BankApp.Data;
 using BankApp.Entities;
+using BankApp.Services.AccountService;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 

@@ -11,6 +11,7 @@ using BankApp.Services.CurrencyService;
 using BankApp.Services.CustomerService;
 using BankApp.Services.EmployeeService;
 using BankApp.Services.JwtService;
+using BankApp.Services.TransferService;
 using BankApp.Services.UserService;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -121,6 +122,7 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAccountTypeService, AccountTypeService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ITransferService, TransferService>();
 
 builder.Services.AddFluentValidation();
 builder.Services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeRequestValidator>();
@@ -129,6 +131,7 @@ builder.Services.AddScoped<IValidator<UpdateEmployeeRequest>, UpdateEmployeeRequ
 builder.Services.AddScoped<IValidator<UpdateCustomerRequest>, UpdateCustomerRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateAccountRequest>, CreateAccountRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateAccountRequest>, UpdateAccountRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateTransferRequest>, CreateTransferRequestValidator>();
 
 builder.Services.AddHostedService<ExchangeRatesService>();
 
