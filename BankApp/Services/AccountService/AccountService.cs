@@ -57,8 +57,7 @@ public class AccountService : IAccountService
             account.Currency = currency;
             var idAccount = _dbContext.Accounts.Select(acc => acc.Id).Max() + 1;
             var id = idAccount.ToString();
-            var numberOfZeros = 16 - id.Length;
-            var paddedId = id.PadLeft(numberOfZeros, '0');
+            var paddedId = id.PadLeft(16, '0');
             account.Number = paddedId;
             account.IsActive = true;
             customer.BankAccounts.Add(account);
