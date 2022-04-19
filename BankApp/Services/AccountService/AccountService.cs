@@ -1,11 +1,9 @@
 using AutoMapper;
 using BankApp.Data;
 using BankApp.Entities;
-using BankApp.Entities.UserTypes;
+using BankApp.Exceptions;
 using BankApp.Exceptions.RequestExceptions;
-using BankApp.Models;
 using BankApp.Models.Requests;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.AccountService;
@@ -43,6 +41,12 @@ public class AccountService : IAccountService
             var accountType = _dbContext.AccountTypes.Find(accountTypeId);
             var currency = _dbContext.Currencies.Find(currencyId);
             var customer = _dbContext.Customers.Find(customerId);
+            if (accountType == null)
+                throw new AppException("Account type with requested id could not be found");
+            if (currency == null)
+                throw new AppException("Currency with requested id could not be found");
+            if (customer == null)
+                throw new AppException("Customer with requested id could not be found");
             var mapper = new Mapper(
                 new MapperConfiguration(cfg =>
                     cfg.CreateMap<CreateAccountRequest, Account>()
@@ -51,6 +55,11 @@ public class AccountService : IAccountService
             var account = mapper.Map<Account>(request);
             account.AccountType = accountType;
             account.Currency = currency;
+            var idAccount = _dbContext.Accounts.Select(acc => acc.Id).Max() + 1;
+            var id = idAccount.ToString();
+            var paddedId = id.PadLeft(16, '0');
+            account.Number = paddedId;
+            account.IsActive = true;
             customer.BankAccounts.Add(account);
 
             await _dbContext.SaveChangesAsync();
