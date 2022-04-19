@@ -17,14 +17,23 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
 {
     public CreateAccountRequestValidator(ApplicationDbContext applicationDbContext)
     {
-        var idAccountType = applicationDbContext.AccountTypes.Select(accountType => accountType.Id).Max();
-        var idCurrency = applicationDbContext.Currencies.Select(currency => currency.Id).Max();
- 
         RuleFor(e => e.Balance).GreaterThanOrEqualTo(0);
         RuleFor(e => e.TransferLimit).GreaterThan(0);
-        RuleFor(e => e.AccountTypeId).GreaterThanOrEqualTo((short) 1).LessThanOrEqualTo(idAccountType);
-        RuleFor(e => e.CurrencyId).GreaterThanOrEqualTo((short) 1).LessThanOrEqualTo(idCurrency);
-        RuleFor(e => new {e.AccountTypeId, e.CurrencyId}).MustAsync(async (args, _) =>
+        RuleFor(e => e.AccountTypeId).MustAsync(async (e, cancellationToken) =>
+        {
+            var accountType =
+                await applicationDbContext.AccountTypes.FirstOrDefaultAsync(accountType => accountType.Id == e,
+                    cancellationToken);
+            return accountType != null;
+        }).WithMessage("Account type not found");
+        RuleFor(e => e.CurrencyId).MustAsync(async (e, cancellationToken) =>
+        {
+            var currency =
+                await applicationDbContext.Currencies.FirstOrDefaultAsync(currency => currency.Id == e,
+                    cancellationToken);
+            return currency != null;
+        }).WithMessage("Currency not found");        
+        RuleFor(e => new {e.AccountTypeId, e.CurrencyId}).Must((args, _) =>
             {
                 var result = 
                     (args.AccountTypeId is 1 or 2 && args.CurrencyId == 1) || 
