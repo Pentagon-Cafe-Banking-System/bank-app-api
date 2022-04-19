@@ -6,10 +6,8 @@ namespace BankApp.Models.Requests;
 
 public class CreateAccountRequest
 {
-    public string Number { get; set; } = string.Empty;
     public int Balance { get; set; }
     public int TransferLimit { get; set; }
-    public bool IsActive { get; set; }
     public short AccountTypeId { get; set; }
     public short CurrencyId { get; set; }
     public string CustomerId { get; set; } = string.Empty;
@@ -19,19 +17,21 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
 {
     public CreateAccountRequestValidator(ApplicationDbContext applicationDbContext)
     {
-        RuleFor(e => e.Number).MustAsync(async (numberAccount, _) =>
-            {
-                var result = await applicationDbContext.Accounts.AnyAsync(number =>
-                    number.Number == numberAccount
-                );
-                return !result;
-            }
-        ).WithMessage("Number already exists");
+        var idAccountType = applicationDbContext.AccountTypes.Select(accountType => accountType.Id).Max();
+        var idCurrency = applicationDbContext.Currencies.Select(currency => currency.Id).Max();
+ 
         RuleFor(e => e.Balance).GreaterThanOrEqualTo(0);
         RuleFor(e => e.TransferLimit).GreaterThan(0);
-        RuleFor(e => e.IsActive).NotNull();
-        RuleFor(e => e.AccountTypeId).GreaterThanOrEqualTo((short) 1).LessThanOrEqualTo((short) 3);
-        RuleFor(e => e.CurrencyId).GreaterThanOrEqualTo((short) 1).LessThanOrEqualTo((short) 14);
+        RuleFor(e => e.AccountTypeId).GreaterThanOrEqualTo((short) 1).LessThanOrEqualTo(idAccountType);
+        RuleFor(e => e.CurrencyId).GreaterThanOrEqualTo((short) 1).LessThanOrEqualTo(idCurrency);
+        RuleFor(e => new {e.AccountTypeId, e.CurrencyId}).MustAsync(async (args, _) =>
+            {
+                var result = 
+                    (args.AccountTypeId is 1 or 2 && args.CurrencyId == 1) || 
+                    (args.AccountTypeId == 3 && args.CurrencyId != 1);
+                return result;
+            }
+        ).WithMessage("Current and savings accounts must be in PLN currency. Foreign currency accounts must be in foreign currency");
         RuleFor(e => e.CustomerId).MustAsync(async (customerId, _) =>
             {
                 var result = await applicationDbContext.Customers.AnyAsync(customer =>

@@ -51,6 +51,17 @@ public class AccountService : IAccountService
             var account = mapper.Map<Account>(request);
             account.AccountType = accountType;
             account.Currency = currency;
+            var idAccount = _dbContext.Accounts.Select(account => account.Id).Max() + 1;
+            var id = idAccount.ToString();
+            var numberOfZeros = 16 - id.Length;
+            var number = string.Empty;
+            for (int i = 0; i < numberOfZeros; i++)
+            {
+                number += "0";
+            }
+            number += id;
+            account.Number = number;
+            account.IsActive = true;
             customer.BankAccounts.Add(account);
 
             await _dbContext.SaveChangesAsync();
