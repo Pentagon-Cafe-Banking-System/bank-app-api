@@ -1,6 +1,7 @@
 using AutoMapper;
 using BankApp.Data;
 using BankApp.Entities;
+using BankApp.Exceptions;
 using BankApp.Exceptions.RequestExceptions;
 using BankApp.Models.Requests;
 using Microsoft.EntityFrameworkCore;
@@ -34,8 +35,11 @@ public class TransferService : ITransferService
     {
         await using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
         {
+            var ordered = DateTime.UtcNow;
             var accountId = request.AccountId;
             var account = _dbContext.Accounts.Find(accountId);
+            if (account == null)
+                throw new AppException("Account with requested id could not be found");
             var receiverNumber = request.ReceiverAccountNumber;
             var receiver = _dbContext.Accounts.Single(e => e.Number == receiverNumber);
             var mapper = new Mapper(
@@ -43,9 +47,23 @@ public class TransferService : ITransferService
                     cfg.CreateMap<CreateTransferRequest, Transfer>()
                 )
             );
-            account.Balance -= request.Amount;
-            receiver.Balance += request.Amount;
+            var receiverCurrency = _dbContext.Accounts.Single(e=>e.Number == receiverNumber).Currency;
+            var senderCurrency = _dbContext.Accounts.Single(e=>e.Id == accountId).Currency;
+            if (receiverCurrency != senderCurrency)
+            {
+                account.Balance -= request.Amount;
+                receiver.Balance += request.Amount * senderCurrency.Bid / receiverCurrency.Bid;
+            }
+            else
+            {
+                account.Balance -= request.Amount;
+                receiver.Balance += request.Amount;
+            }
+
             var transfer = mapper.Map<Transfer>(request);
+            transfer.Ordered = ordered;
+            transfer.Executed = DateTime.UtcNow;
+            transfer.IsCompleted = true;
             account.Transfers.Add(transfer);
             await _dbContext.SaveChangesAsync();
             await dbContextTransaction.CommitAsync();

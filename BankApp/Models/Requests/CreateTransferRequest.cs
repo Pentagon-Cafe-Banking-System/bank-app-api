@@ -1,9 +1,7 @@
-using System.Data;
 using BankApp.Data;
-using BankApp.Entities;
+using BankApp.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BankApp.Models.Requests;
 
@@ -23,6 +21,8 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
             RuleFor(e => new {e.Amount, e.AccountId}).MustAsync(async (args, _) =>
                 {
                     var account = await applicationDbContext.Accounts.FindAsync(args.AccountId);
+                    if (account == null)
+                        throw new AppException("Account with requested id could not be found");
                     var balance = account.Balance;
                     var transferLimit = account.TransferLimit;
                     var result = args.Amount <= balance && args.Amount <= transferLimit;
