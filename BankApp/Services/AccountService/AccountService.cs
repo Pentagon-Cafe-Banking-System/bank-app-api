@@ -23,6 +23,17 @@ public class AccountService : IAccountService
         return accounts;
     }
 
+    public async Task<bool> IsUserAccountOwnerAsync(string userId, long accountId)
+    {
+        var customer = await _dbContext.Customers.FindAsync(userId);
+        if (customer == null)
+        {
+            throw new AppException("Customer with requested id could not be found");
+        }
+
+        var result = customer.BankAccounts.Exists(e=>e.Id == accountId);
+        return result;
+    }
     public async Task<Account> GetAccountByIdAsync(long id)
     {
         var account = await _dbContext.Accounts.FindAsync(id);

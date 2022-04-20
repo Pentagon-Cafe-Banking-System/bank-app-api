@@ -1,6 +1,9 @@
+using System.Security.Claims;
 using BankApp.Entities;
+using BankApp.Exceptions.RequestExceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
+using BankApp.Services.AccountService;
 using BankApp.Services.TransferService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +17,12 @@ namespace BankApp.Controllers;
 public class TransferController : ControllerBase
 {
     private readonly ITransferService _transferService;
+    private readonly IAccountService _accountService;
 
-    public TransferController(ITransferService transferService)
+    public TransferController(ITransferService transferService, IAccountService accountService)
     {
         _transferService = transferService;
+        _accountService = accountService;
     }
 
     [HttpGet]
@@ -37,6 +42,9 @@ public class TransferController : ControllerBase
     [HttpPost("create")]
     public async Task<ActionResult<Transfer>> CreateTransfer(CreateTransferRequest request)
     {
+        var userId = User.FindFirstValue(ClaimTypes.Sid);
+        if (!await _accountService.IsUserAccountOwnerAsync(userId, request.AccountId))
+            throw new BadRequestException("AccountId", "Trying to do transfer from another user's account");
         var transfer = await _transferService.CreateTransferAsync(request);
         return Ok(transfer);
     }
