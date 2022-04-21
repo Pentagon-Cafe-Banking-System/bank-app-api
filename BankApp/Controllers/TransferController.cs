@@ -13,11 +13,10 @@ namespace BankApp.Controllers;
 [ApiController]
 [Authorize(Roles = RoleType.Customer)]
 [Route("api/[controller]")]
-
 public class TransferController : ControllerBase
 {
-    private readonly ITransferService _transferService;
     private readonly IAccountService _accountService;
+    private readonly ITransferService _transferService;
 
     public TransferController(ITransferService transferService, IAccountService accountService)
     {
@@ -39,7 +38,7 @@ public class TransferController : ControllerBase
         return Ok(transfer);
     }
 
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<ActionResult<Transfer>> CreateTransfer(CreateTransferRequest request)
     {
         var userId = User.FindFirstValue(ClaimTypes.Sid);
