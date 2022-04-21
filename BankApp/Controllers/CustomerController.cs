@@ -34,19 +34,21 @@ public class CustomerController : ControllerBase
         return Ok(customer);
     }
 
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<ActionResult<Customer>> CreateCustomer(CreateCustomerRequest request)
     {
         var customer = await _customerService.CreateCustomerAsync(request);
         return Ok(customer);
     }
-    [HttpPatch("update/{id}")]
-    public async Task<ActionResult<Customer>> UpdateCustomer(UpdateCustomerRequest request,string id)
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<Customer>> UpdateCustomer(UpdateCustomerRequest request, string id)
     {
-        var customer = await _customerService.UpdateCustomerAsync(request,id);
+        var customer = await _customerService.UpdateCustomerAsync(request, id);
         return Ok(customer);
     }
-    [HttpDelete("delete/{id}")]
+
+    [HttpDelete("{id}")]
     public async Task<ActionResult<IdentityResult>> DeleteCustomerById(string id)
     {
         var result = await _customerService.DeleteCustomerByIdAsync(id);

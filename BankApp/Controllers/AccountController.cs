@@ -1,5 +1,4 @@
 using BankApp.Entities;
-using BankApp.Entities.UserTypes;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.AccountService;
@@ -11,7 +10,6 @@ namespace BankApp.Controllers;
 [ApiController]
 [Authorize(Roles = RoleType.Employee)]
 [Route("api/[controller]")]
-
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
@@ -35,16 +33,17 @@ public class AccountController : ControllerBase
         return Ok(account);
     }
 
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<ActionResult<Account>> CreateAccount(CreateAccountRequest request)
     {
         var account = await _accountService.CreateAccountAsync(request);
         return Ok(account);
     }
-    [HttpPatch("update/{id}")]
-    public async Task<ActionResult<Account>> UpdateAccount(UpdateAccountRequest request,long id)
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<Account>> UpdateAccount(UpdateAccountRequest request, long id)
     {
-        var account = await _accountService.UpdateAccountAsync(request,id);
+        var account = await _accountService.UpdateAccountAsync(request, id);
         return Ok(account);
     }
 }
