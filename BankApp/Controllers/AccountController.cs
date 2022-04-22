@@ -46,9 +46,9 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all account of authenticated customer. Only for customers.
+    /// Returns all accounts of authenticated customer. Only for customers.
     /// </summary>
-    [HttpGet("auth")]
+    [HttpGet("customer/auth")]
     [Authorize(Roles = RoleType.Customer)]
     public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsOfAuthenticatedCustomer()
     {
@@ -58,7 +58,7 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all account of the specified customer. Only for employees.
+    /// Returns all accounts of the specified customer. Only for employees.
     /// </summary>
     [HttpGet("customer/{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
@@ -82,7 +82,7 @@ public class AccountController : ControllerBase
     /// <summary>
     /// Updates specified account. Only for employees.
     /// </summary>
-    [HttpPatch("{accountId}")]
+    [HttpPatch("{accountId}")] // TODO - make it true PATCH
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<Account>> UpdateAccountByEmployee(UpdateAccountRequest request, long accountId)
     {

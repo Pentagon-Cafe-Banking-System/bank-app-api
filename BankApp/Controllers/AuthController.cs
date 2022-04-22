@@ -8,6 +8,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Route("api/auth")]
+[AllowAnonymous]
 [ApiExplorerSettings(GroupName = "Authentication")]
 public class AuthController : ControllerBase
 {
@@ -21,7 +22,6 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Returns a pair of access token and refresh token by username and password.
     /// </summary>
-    [AllowAnonymous]
     [HttpPost("authenticate")]
     public async Task<ActionResult<AuthenticateResponse>> Authenticate(LoginRequest request)
     {
@@ -32,7 +32,6 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Returns a new pair of access token and refresh token or the user by using the refresh token.
     /// </summary>
-    [AllowAnonymous]
     [HttpPost("refresh-token")]
     public async Task<ActionResult<AuthenticateResponse>> RefreshToken(RefreshTokenRequest request)
     {

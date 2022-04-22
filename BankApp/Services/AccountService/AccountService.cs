@@ -23,7 +23,7 @@ public class AccountService : IAccountService
         return accounts;
     }
 
-    public async Task<bool> IsUserAccountOwnerAsync(string userId, long accountId)
+    public async Task<bool> IsCustomerAccountOwnerAsync(string userId, long accountId)
     {
         var customer = await _dbContext.Customers.FindAsync(userId);
         if (customer == null)

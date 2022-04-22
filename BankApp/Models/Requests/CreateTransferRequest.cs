@@ -11,14 +11,14 @@ public class CreateTransferRequest
     public string ReceiverAccountNumber { get; set; } = string.Empty;
     public string ReceiverName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public long AccountId { get; set; }
+    public long SenderAccountId { get; set; }
 }
 
 public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRequest>
 {
     public CreateTransferRequestValidator(ApplicationDbContext applicationDbContext)
     {
-        RuleFor(e => new {e.Amount, e.AccountId}).MustAsync(async (args, _) =>
+        RuleFor(e => new {e.Amount, AccountId = e.SenderAccountId}).MustAsync(async (args, _) =>
             {
                 var account = await applicationDbContext.Accounts.FindAsync(args.AccountId);
                 if (account == null)
@@ -37,7 +37,7 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
                 );
                 return result;
             }
-        ).WithMessage("Receiver account number does not exist");
+        ).WithMessage("Receiver's account number does not exist");
         RuleFor(e => e.ReceiverName).NotNull();
         RuleFor(e => e.Description).NotNull();
     }

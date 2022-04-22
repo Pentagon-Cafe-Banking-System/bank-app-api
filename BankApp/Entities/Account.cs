@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using BankApp.Entities.UserTypes;
+using System.Text.Json.Serialization;
 
 namespace BankApp.Entities;
 
@@ -15,5 +15,5 @@ public class Account
 
     public virtual AccountType AccountType { get; set; } = default!;
     public virtual Currency Currency { get; set; } = default!;
-    public virtual List<Transfer> Transfers { get; set; } = default!;
+    [JsonIgnore] public virtual List<Transfer> Transfers { get; set; } = default!;
 }

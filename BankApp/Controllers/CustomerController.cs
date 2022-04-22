@@ -54,9 +54,9 @@ public class CustomerController : ControllerBase
     }
 
     /// <summary>
-    /// Updates customer. Only for employees.
+    /// Updates customer by id. Only for employees.
     /// </summary>
-    [HttpPatch("{customerId}")]
+    [HttpPatch("{customerId}")] // TODO - make it true PATCH
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<Customer>> UpdateCustomer(UpdateCustomerRequest request, string customerId)
     {
@@ -65,7 +65,7 @@ public class CustomerController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes customer. Only for employees.
+    /// Deletes customer by id. Only for employees.
     /// </summary>
     [HttpDelete("{customerId}")]
     [Authorize(Roles = RoleType.Employee)]

@@ -36,6 +36,18 @@ public class TransferController : ControllerBase
     }
 
     /// <summary>
+    /// Returns all transfers of the authenticated customer sorted descending by order date. Only for customers.
+    /// </summary>
+    [HttpGet("customer/auth")]
+    [Authorize(Roles = RoleType.Customer)]
+    public async Task<ActionResult<IEnumerable<Transfer>>> GetAllCustomerTransfers()
+    {
+        var customerId = User.FindFirstValue(ClaimTypes.Sid);
+        var transfers = await _transferService.GetAllTransfersFromAndToCustomerAsync(customerId);
+        return Ok(transfers);
+    }
+
+    /// <summary>
     /// Returns transfer by id. Only for employees.
     /// </summary>
     [HttpGet("{transferId}")]
@@ -53,9 +65,9 @@ public class TransferController : ControllerBase
     [Authorize(Roles = RoleType.Customer)]
     public async Task<ActionResult<Transfer>> CreateTransfer(CreateTransferRequest request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.Sid);
-        if (!await _accountService.IsUserAccountOwnerAsync(userId, request.AccountId))
-            throw new BadRequestException("AccountId", "Trying to make transfer from another user's account");
+        var customerId = User.FindFirstValue(ClaimTypes.Sid);
+        if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, request.SenderAccountId))
+            throw new BadRequestException("SenderAccountId", "Trying to send transfer from not owned account");
         var transfer = await _transferService.CreateTransferAsync(request);
         return Ok(transfer);
     }

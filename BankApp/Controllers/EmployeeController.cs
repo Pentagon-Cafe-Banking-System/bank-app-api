@@ -52,9 +52,9 @@ public class EmployeeController : ControllerBase
     }
 
     /// <summary>
-    /// Updates employee. Only for admins.
+    /// Updates employee by id. Only for admins.
     /// </summary>
-    [HttpPatch("{employeeId}")]
+    [HttpPatch("{employeeId}")] // TODO - make it true PATCH
     public async Task<ActionResult<Employee>> UpdateEmployee(UpdateEmployeeRequest request, string employeeId)
     {
         var employee = await _employeeService.UpdateEmployeeAsync(request, employeeId);
@@ -62,7 +62,7 @@ public class EmployeeController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes employee. Only for admins.
+    /// Deletes employee by id. Only for admins.
     /// </summary>
     [HttpDelete("{employeeId}")]
     public async Task<ActionResult<IdentityResult>> DeleteEmployeeById(string employeeId)

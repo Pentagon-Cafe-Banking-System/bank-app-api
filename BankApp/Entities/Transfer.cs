@@ -16,4 +16,7 @@ public class Transfer
     public string? ReasonFailed { get; set; }
     public bool IsCompleted { get; set; }
     public bool IsFailed { get; set; }
+
+    public long SenderAccountId { get; set; }
+    public virtual Account SenderAccount { get; set; } = default!;
 }
