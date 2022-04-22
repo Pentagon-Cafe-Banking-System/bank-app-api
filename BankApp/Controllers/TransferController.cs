@@ -12,7 +12,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Authorize(Roles = RoleType.Customer)]
-[Route("api/[controller]")]
+[Route("api/transfers")]
 public class TransferController : ControllerBase
 {
     private readonly IAccountService _accountService;

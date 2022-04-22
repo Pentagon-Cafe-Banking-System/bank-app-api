@@ -1,11 +1,11 @@
 using System.Text;
-using System.Text.Json.Serialization;
 using BankApp.Data;
 using BankApp.Entities.UserTypes;
 using BankApp.Middleware;
 using BankApp.Models.Requests;
 using BankApp.Services;
 using BankApp.Services.AccountService;
+using BankApp.Services.AccountTypeService;
 using BankApp.Services.AuthService;
 using BankApp.Services.CurrencyService;
 using BankApp.Services.CustomerService;
@@ -154,8 +154,8 @@ if (!app.Environment.IsProduction())
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
-//if (app.Environment.IsDevelopment())
-//    app.UseDeveloperExceptionPage();
+if (app.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 

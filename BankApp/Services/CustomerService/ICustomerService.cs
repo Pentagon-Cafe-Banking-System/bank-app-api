@@ -1,4 +1,5 @@
-﻿using BankApp.Entities.UserTypes;
+﻿using BankApp.Entities;
+using BankApp.Entities.UserTypes;
 using BankApp.Models.Requests;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,4 +12,5 @@ public interface ICustomerService
     Task<Customer> CreateCustomerAsync(CreateCustomerRequest request);
     Task<Customer> UpdateCustomerAsync(UpdateCustomerRequest request, string id);
     Task<IdentityResult> DeleteCustomerByIdAsync(string id);
+    Task<IEnumerable<Account>> GetAllAccountsByCustomerIdAsync(string id);
 }

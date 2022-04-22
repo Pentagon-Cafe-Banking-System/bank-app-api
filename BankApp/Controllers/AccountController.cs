@@ -9,7 +9,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Authorize(Roles = RoleType.Employee)]
-[Route("api/[controller]")]
+[Route("api/accounts")]
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
@@ -45,5 +45,12 @@ public class AccountController : ControllerBase
     {
         var account = await _accountService.UpdateAccountAsync(request, id);
         return Ok(account);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAccount(long id)
+    {
+        await _accountService.DeleteAccountAsync(id);
+        return Ok();
     }
 }

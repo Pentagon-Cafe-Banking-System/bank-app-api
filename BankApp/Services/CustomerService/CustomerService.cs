@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BankApp.Data;
+using BankApp.Entities;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions.RequestExceptions;
 using BankApp.Models;
@@ -80,5 +81,11 @@ public class CustomerService : ICustomerService
         var employee = await GetCustomerByIdAsync(id);
         var appUser = employee.AppUser;
         return await _userService.DeleteUserAsync(appUser);
+    }
+
+    public async Task<IEnumerable<Account>> GetAllAccountsByCustomerIdAsync(string id)
+    {
+        var customer = await GetCustomerByIdAsync(id);
+        return customer.BankAccounts;
     }
 }
