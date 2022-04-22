@@ -6,6 +6,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Route("api/currencies")]
+[ApiExplorerSettings(GroupName = "Currencies")]
 public class CurrencyController : Controller
 {
     private readonly ICurrencyService _currencyService;
@@ -15,6 +16,9 @@ public class CurrencyController : Controller
         _currencyService = currencyService;
     }
 
+    /// <summary>
+    /// Returns all available currencies with their rates.
+    /// </summary>
     [HttpGet]
     public async Task<IEnumerable<Currency>> GetAllCurrencies()
     {

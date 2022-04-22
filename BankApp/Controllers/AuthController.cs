@@ -8,6 +8,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Route("api/auth")]
+[ApiExplorerSettings(GroupName = "Authentication")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -17,6 +18,9 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
+    /// <summary>
+    /// Returns a pair of access token and refresh token by username and password.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("authenticate")]
     public async Task<ActionResult<AuthenticateResponse>> Authenticate(LoginRequest request)
@@ -25,6 +29,9 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Returns a new pair of access token and refresh token or the user by using the refresh token.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("refresh-token")]
     public async Task<ActionResult<AuthenticateResponse>> RefreshToken(RefreshTokenRequest request)
@@ -34,6 +41,9 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Revokes specified refresh token.
+    /// </summary>
     [HttpPost("revoke-token")]
     public async Task<IActionResult> RevokeToken(RevokeRefreshTokenRequest request)
     {
@@ -41,8 +51,6 @@ public class AuthController : ControllerBase
         await _authService.RevokeTokenAsync(refreshToken, IpAddress());
         return Ok(new {message = "Token revoked"});
     }
-
-    // helper methods
 
     private string? IpAddress()
     {

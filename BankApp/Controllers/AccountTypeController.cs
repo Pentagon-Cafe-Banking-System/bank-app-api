@@ -9,6 +9,7 @@ namespace BankApp.Controllers;
 [ApiController]
 [Authorize(Roles = RoleType.Employee)]
 [Route("api/account-types")]
+[ApiExplorerSettings(GroupName = "Account types")]
 public class AccountTypeController : ControllerBase
 {
     private readonly IAccountTypeService _accountTypeService;
@@ -18,6 +19,9 @@ public class AccountTypeController : ControllerBase
         _accountTypeService = accountTypeService;
     }
 
+    /// <summary>
+    /// Returns all account types. Only for employees.
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AccountType>>> GetAllAccountTypes()
     {
@@ -25,10 +29,13 @@ public class AccountTypeController : ControllerBase
         return Ok(accountTypes);
     }
 
-    [HttpGet("{id}/currencies")]
-    public async Task<ActionResult<IEnumerable<Currency>>> GetCurrenciesByAccountTypeId(short id)
+    /// <summary>
+    /// Returns currencies available for specified account type. Only for employees.
+    /// </summary>
+    [HttpGet("{accountTypeId}/currencies")]
+    public async Task<ActionResult<IEnumerable<Currency>>> GetCurrenciesByAccountTypeId(short accountTypeId)
     {
-        var currencies = await _accountTypeService.GetCurrenciesByAccountTypeIdAsync(id);
+        var currencies = await _accountTypeService.GetCurrenciesByAccountTypeIdAsync(accountTypeId);
         return Ok(currencies);
     }
 }

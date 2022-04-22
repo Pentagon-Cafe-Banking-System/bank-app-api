@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
+[Authorize(Roles = RoleType.Admin)]
 [Route("api/users")]
+[ApiExplorerSettings(GroupName = "Users")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -20,23 +22,27 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
+    /// <summary>
+    /// Returns all base users. Only for admins.
+    /// </summary>
     [HttpGet]
-    [Authorize(Roles = RoleType.Admin)]
     public ActionResult<IEnumerable<AppUser>> GetAllUsers()
     {
         var users = _userService.GetAllUsers();
         return Ok(users);
     }
 
-    [HttpGet("{id}/refresh-tokens")]
-    [Authorize]
-    public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokens(string id)
+    /// <summary>
+    /// Returns all refresh tokens for specified user. Only for admins.
+    /// </summary>
+    [HttpGet("{userId}/refresh-tokens")]
+    public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokens(string userId)
     {
-        var userId = User.FindFirstValue(ClaimTypes.Sid);
-        if (userId != id)
+        var userIdFromToken = User.FindFirstValue(ClaimTypes.Sid);
+        if (userIdFromToken != userId)
             throw new BadRequestException("Id", "Trying to get refresh tokens of another user");
 
-        var user = await _userService.GetUserByIdAsync(id);
+        var user = await _userService.GetUserByIdAsync(userId);
         return Ok(user.RefreshTokens);
     }
 }

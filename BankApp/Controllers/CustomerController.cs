@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using BankApp.Entities;
-using BankApp.Entities.UserTypes;
+﻿using BankApp.Entities.UserTypes;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.CustomerService;
@@ -12,6 +10,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Route("api/customers")]
+[ApiExplorerSettings(GroupName = "Customers")]
 public class CustomerController : ControllerBase
 {
     private readonly ICustomerService _customerService;
@@ -21,6 +20,9 @@ public class CustomerController : ControllerBase
         _customerService = customerService;
     }
 
+    /// <summary>
+    /// Returns all customers. Only for employees.
+    /// </summary>
     [HttpGet]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<IEnumerable<Customer>>> GetAllCustomers()
@@ -29,14 +31,20 @@ public class CustomerController : ControllerBase
         return Ok(customers);
     }
 
-    [HttpGet("{id}")]
+    /// <summary>
+    /// Returns customer by id. Only for employees.
+    /// </summary>
+    [HttpGet("{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Customer>> GetCustomerById(string id)
+    public async Task<ActionResult<Customer>> GetCustomerById(string customerId)
     {
-        var customer = await _customerService.GetCustomerByIdAsync(id);
+        var customer = await _customerService.GetCustomerByIdAsync(customerId);
         return Ok(customer);
     }
 
+    /// <summary>
+    /// Creates new customer. Only for employees.
+    /// </summary>
     [HttpPost]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<Customer>> CreateCustomer(CreateCustomerRequest request)
@@ -45,36 +53,25 @@ public class CustomerController : ControllerBase
         return Ok(customer);
     }
 
-    [HttpPatch("{id}")]
+    /// <summary>
+    /// Updates customer. Only for employees.
+    /// </summary>
+    [HttpPatch("{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Customer>> UpdateCustomer(UpdateCustomerRequest request, string id)
+    public async Task<ActionResult<Customer>> UpdateCustomer(UpdateCustomerRequest request, string customerId)
     {
-        var customer = await _customerService.UpdateCustomerAsync(request, id);
+        var customer = await _customerService.UpdateCustomerAsync(request, customerId);
         return Ok(customer);
     }
 
-    [HttpDelete("{id}")]
+    /// <summary>
+    /// Deletes customer. Only for employees.
+    /// </summary>
+    [HttpDelete("{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IdentityResult>> DeleteCustomerById(string id)
+    public async Task<ActionResult<IdentityResult>> DeleteCustomerById(string customerId)
     {
-        var result = await _customerService.DeleteCustomerByIdAsync(id);
+        var result = await _customerService.DeleteCustomerByIdAsync(customerId);
         return Ok(result);
-    }
-
-    [HttpGet("{id}/accounts")]
-    [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsByCustomerId(string id)
-    {
-        var accounts = await _customerService.GetAllAccountsByCustomerIdAsync(id);
-        return Ok(accounts);
-    }
-
-    [HttpGet("auth/accounts/")]
-    [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsOfAuthenticatedCustomer()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.Sid);
-        var accounts = await _customerService.GetAllAccountsByCustomerIdAsync(userId);
-        return Ok(accounts);
     }
 }
