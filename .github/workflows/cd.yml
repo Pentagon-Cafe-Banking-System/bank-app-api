@@ -34,7 +34,7 @@ jobs:
       - name: Test
         run: dotnet test --no-build --verbosity normal
       
-  deploy-staging:
+  deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -42,16 +42,5 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{secrets.APP_NAME_STAGING}}
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
-    
-  deploy-production:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: ${{secrets.APP_NAME_PRODUCTION}}
+          heroku_app_name: ${{secrets.APP_NAME}}
           heroku_email: ${{secrets.HEROKU_EMAIL}}
