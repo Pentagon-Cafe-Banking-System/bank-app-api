@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Authorize(Roles = RoleType.Employee)]
-[Route("api/[controller]")]
+[Route("api/customers")]
+[ApiExplorerSettings(GroupName = "Customers")]
 public class CustomerController : ControllerBase
 {
     private readonly ICustomerService _customerService;
@@ -20,38 +20,58 @@ public class CustomerController : ControllerBase
         _customerService = customerService;
     }
 
+    /// <summary>
+    /// Returns all customers. Only for employees.
+    /// </summary>
     [HttpGet]
+    [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<IEnumerable<Customer>>> GetAllCustomers()
     {
         var customers = await _customerService.GetAllCustomersAsync();
         return Ok(customers);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Customer>> GetCustomerById(string id)
+    /// <summary>
+    /// Returns customer by id. Only for employees.
+    /// </summary>
+    [HttpGet("{customerId}")]
+    [Authorize(Roles = RoleType.Employee)]
+    public async Task<ActionResult<Customer>> GetCustomerById(string customerId)
     {
-        var customer = await _customerService.GetCustomerByIdAsync(id);
+        var customer = await _customerService.GetCustomerByIdAsync(customerId);
         return Ok(customer);
     }
 
+    /// <summary>
+    /// Creates new customer. Only for employees.
+    /// </summary>
     [HttpPost]
+    [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<Customer>> CreateCustomer(CreateCustomerRequest request)
     {
         var customer = await _customerService.CreateCustomerAsync(request);
         return Ok(customer);
     }
 
-    [HttpPatch("{id}")]
-    public async Task<ActionResult<Customer>> UpdateCustomer(UpdateCustomerRequest request, string id)
+    /// <summary>
+    /// Updates customer by id. Only for employees.
+    /// </summary>
+    [HttpPatch("{customerId}")] // TODO - make it true PATCH
+    [Authorize(Roles = RoleType.Employee)]
+    public async Task<ActionResult<Customer>> UpdateCustomer(UpdateCustomerRequest request, string customerId)
     {
-        var customer = await _customerService.UpdateCustomerAsync(request, id);
+        var customer = await _customerService.UpdateCustomerAsync(request, customerId);
         return Ok(customer);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<IdentityResult>> DeleteCustomerById(string id)
+    /// <summary>
+    /// Deletes customer by id. Only for employees.
+    /// </summary>
+    [HttpDelete("{customerId}")]
+    [Authorize(Roles = RoleType.Employee)]
+    public async Task<ActionResult<IdentityResult>> DeleteCustomerById(string customerId)
     {
-        var result = await _customerService.DeleteCustomerByIdAsync(id);
+        var result = await _customerService.DeleteCustomerByIdAsync(customerId);
         return Ok(result);
     }
 }

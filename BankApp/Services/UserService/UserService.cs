@@ -61,7 +61,8 @@ public class UserService : IUserService
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Sid, user.Id)
+            new(ClaimTypes.Sid, user.Id),
+            new(ClaimTypes.Name, user.UserName),
         };
         var roles = (await _userManager.GetRolesAsync(user)).ToList();
         roles.ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));

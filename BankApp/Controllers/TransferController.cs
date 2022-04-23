@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Authorize(Roles = RoleType.Customer)]
-[Route("api/[controller]")]
+[Route("api/transfers")]
+[ApiExplorerSettings(GroupName = "Transfers")]
 public class TransferController : ControllerBase
 {
     private readonly IAccountService _accountService;
@@ -24,26 +24,50 @@ public class TransferController : ControllerBase
         _accountService = accountService;
     }
 
+    /// <summary>
+    /// Returns all transfers. Only for employees.
+    /// </summary>
     [HttpGet]
+    [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<IEnumerable<Transfer>>> GetAllTransfers()
     {
         var transfers = await _transferService.GetAllTransfersAsync();
         return Ok(transfers);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Transfer>> GetTransferById(long id)
+    /// <summary>
+    /// Returns all transfers of the authenticated customer sorted descending by order date. Only for customers.
+    /// </summary>
+    [HttpGet("customer/auth")]
+    [Authorize(Roles = RoleType.Customer)]
+    public async Task<ActionResult<IEnumerable<Transfer>>> GetAllCustomerTransfers()
     {
-        var transfer = await _transferService.GetTransferByIdAsync(id);
+        var customerId = User.FindFirstValue(ClaimTypes.Sid);
+        var transfers = await _transferService.GetAllTransfersFromAndToCustomerAsync(customerId);
+        return Ok(transfers);
+    }
+
+    /// <summary>
+    /// Returns transfer by id. Only for employees.
+    /// </summary>
+    [HttpGet("{transferId}")]
+    [Authorize(Roles = RoleType.Employee)]
+    public async Task<ActionResult<Transfer>> GetTransferById(long transferId)
+    {
+        var transfer = await _transferService.GetTransferByIdAsync(transferId);
         return Ok(transfer);
     }
 
+    /// <summary>
+    /// Creates a new transfer. Only for customers.
+    /// </summary>
     [HttpPost]
+    [Authorize(Roles = RoleType.Customer)]
     public async Task<ActionResult<Transfer>> CreateTransfer(CreateTransferRequest request)
     {
-        var userId = User.FindFirstValue(ClaimTypes.Sid);
-        if (!await _accountService.IsUserAccountOwnerAsync(userId, request.AccountId))
-            throw new BadRequestException("AccountId", "Trying to do transfer from another user's account");
+        var customerId = User.FindFirstValue(ClaimTypes.Sid);
+        if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, request.SenderAccountId))
+            throw new BadRequestException("SenderAccountId", "Trying to send transfer from not owned account");
         var transfer = await _transferService.CreateTransferAsync(request);
         return Ok(transfer);
     }

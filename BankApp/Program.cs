@@ -1,11 +1,12 @@
+using System.Reflection;
 using System.Text;
-using System.Text.Json.Serialization;
 using BankApp.Data;
 using BankApp.Entities.UserTypes;
 using BankApp.Middleware;
 using BankApp.Models.Requests;
 using BankApp.Services;
 using BankApp.Services.AccountService;
+using BankApp.Services.AccountTypeService;
 using BankApp.Services.AuthService;
 using BankApp.Services.CurrencyService;
 using BankApp.Services.CustomerService;
@@ -17,6 +18,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -39,6 +41,21 @@ builder.Services.AddSwaggerGen(options =>
     });
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
+
+    // Set the comments path for the Swagger JSON and UI.
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+    options.TagActionsBy(api =>
+    {
+        if (api.GroupName != null)
+            return new[] {api.GroupName};
+        if (api.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
+            return new[] {controllerActionDescriptor.ControllerName};
+
+        throw new InvalidOperationException("Unable to determine tag for endpoint.");
+    });
+    options.DocInclusionPredicate((name, api) => true);
 });
 
 const string corsPolicy = "DefaultPolicy";
@@ -154,8 +171,8 @@ if (!app.Environment.IsProduction())
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
-//if (app.Environment.IsDevelopment())
-//    app.UseDeveloperExceptionPage();
+if (app.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 

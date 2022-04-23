@@ -11,19 +11,19 @@ namespace BankApp.Services.AccountService;
 public class AccountService : IAccountService
 {
     private readonly ApplicationDbContext _dbContext;
-    
+
     public AccountService(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
     }
-    
+
     public async Task<IEnumerable<Account>> GetAllAccountsAsync()
     {
         var accounts = await _dbContext.Accounts.ToListAsync();
         return accounts;
     }
 
-    public async Task<bool> IsUserAccountOwnerAsync(string userId, long accountId)
+    public async Task<bool> IsCustomerAccountOwnerAsync(string userId, long accountId)
     {
         var customer = await _dbContext.Customers.FindAsync(userId);
         if (customer == null)
@@ -31,9 +31,10 @@ public class AccountService : IAccountService
             throw new AppException("Customer with requested id could not be found");
         }
 
-        var result = customer.BankAccounts.Exists(e=>e.Id == accountId);
+        var result = customer.BankAccounts.Exists(e => e.Id == accountId);
         return result;
     }
+
     public async Task<Account> GetAccountByIdAsync(long id)
     {
         var account = await _dbContext.Accounts.FindAsync(id);
@@ -66,8 +67,18 @@ public class AccountService : IAccountService
             var account = mapper.Map<Account>(request);
             account.AccountType = accountType;
             account.Currency = currency;
-            var idAccount = _dbContext.Accounts.Select(acc => acc.Id).Max() + 1;
-            var id = idAccount.ToString();
+
+            long accountNumber;
+            try
+            {
+                accountNumber = _dbContext.Accounts.Select(acc => acc.Id).Max() + 1;
+            }
+            catch (InvalidOperationException)
+            {
+                accountNumber = 1;
+            }
+
+            var id = accountNumber.ToString();
             var paddedId = id.PadLeft(16, '0');
             account.Number = paddedId;
             account.IsActive = true;
@@ -88,5 +99,13 @@ public class AccountService : IAccountService
         account.IsActive = request.IsActive;
         await _dbContext.SaveChangesAsync();
         return account;
+    }
+
+    public async Task<bool> DeleteAccountAsync(long id)
+    {
+        var account = await GetAccountByIdAsync(id);
+        _dbContext.Accounts.Remove(account);
+        await _dbContext.SaveChangesAsync();
+        return true;
     }
 }

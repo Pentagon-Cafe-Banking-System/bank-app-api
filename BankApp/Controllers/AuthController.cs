@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
+[AllowAnonymous]
+[ApiExplorerSettings(GroupName = "Authentication")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -17,7 +19,9 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [AllowAnonymous]
+    /// <summary>
+    /// Returns a pair of access token and refresh token by username and password.
+    /// </summary>
     [HttpPost("authenticate")]
     public async Task<ActionResult<AuthenticateResponse>> Authenticate(LoginRequest request)
     {
@@ -25,7 +29,9 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    [AllowAnonymous]
+    /// <summary>
+    /// Returns a new pair of access token and refresh token or the user by using the refresh token.
+    /// </summary>
     [HttpPost("refresh-token")]
     public async Task<ActionResult<AuthenticateResponse>> RefreshToken(RefreshTokenRequest request)
     {
@@ -34,6 +40,9 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Revokes specified refresh token.
+    /// </summary>
     [HttpPost("revoke-token")]
     public async Task<IActionResult> RevokeToken(RevokeRefreshTokenRequest request)
     {
@@ -41,8 +50,6 @@ public class AuthController : ControllerBase
         await _authService.RevokeTokenAsync(refreshToken, IpAddress());
         return Ok(new {message = "Token revoked"});
     }
-
-    // helper methods
 
     private string? IpAddress()
     {

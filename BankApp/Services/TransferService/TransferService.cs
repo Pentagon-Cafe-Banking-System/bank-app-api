@@ -4,22 +4,37 @@ using BankApp.Entities;
 using BankApp.Exceptions;
 using BankApp.Exceptions.RequestExceptions;
 using BankApp.Models.Requests;
+using BankApp.Services.CustomerService;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.TransferService;
 
 public class TransferService : ITransferService
 {
+    private readonly ICustomerService _customerService;
     private readonly ApplicationDbContext _dbContext;
-    
-    public TransferService(ApplicationDbContext dbContext)
+
+    public TransferService(ApplicationDbContext dbContext, ICustomerService customerService)
     {
         _dbContext = dbContext;
+        _customerService = customerService;
     }
-    
+
     public async Task<IEnumerable<Transfer>> GetAllTransfersAsync()
     {
         var transfers = await _dbContext.Transfers.ToListAsync();
+        return transfers;
+    }
+
+    public async Task<IEnumerable<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId)
+    {
+        var customer = await _customerService.GetCustomerByIdAsync(customerId);
+        var accountIds = customer.BankAccounts.Select(a => a.Id);
+        var accountNumbers = customer.BankAccounts.Select(a => a.Number);
+        var transfers = await _dbContext.Transfers
+            .Where(t => accountNumbers.Contains(t.ReceiverAccountNumber) || accountIds.Contains(t.SenderAccountId))
+            .OrderByDescending(t => t.Ordered)
+            .ToListAsync();
         return transfers;
     }
 
@@ -36,8 +51,8 @@ public class TransferService : ITransferService
         await using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
         {
             var ordered = DateTime.UtcNow;
-            var accountId = request.AccountId;
-            var account = _dbContext.Accounts.Find(accountId);
+            var senderAccountId = request.SenderAccountId;
+            var account = await _dbContext.Accounts.FindAsync(senderAccountId);
             if (account == null)
                 throw new AppException("Account with requested id could not be found");
             var receiverNumber = request.ReceiverAccountNumber;
@@ -47,8 +62,8 @@ public class TransferService : ITransferService
                     cfg.CreateMap<CreateTransferRequest, Transfer>()
                 )
             );
-            var receiverCurrency = _dbContext.Accounts.Single(e=>e.Number == receiverNumber).Currency;
-            var senderCurrency = _dbContext.Accounts.Single(e=>e.Id == accountId).Currency;
+            var receiverCurrency = _dbContext.Accounts.Single(e => e.Number == receiverNumber).Currency;
+            var senderCurrency = _dbContext.Accounts.Single(e => e.Id == senderAccountId).Currency;
             if (receiverCurrency != senderCurrency)
             {
                 account.Balance -= request.Amount;
