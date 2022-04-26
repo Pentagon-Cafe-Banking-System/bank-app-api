@@ -1,5 +1,4 @@
 ﻿using BankApp.Entities;
-using BankApp.Models;
 using BankApp.Services.AccountTypeService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Authorize(Roles = RoleType.Employee)]
+[Authorize]
 [Route("api/account-types")]
 [ApiExplorerSettings(GroupName = "Account types")]
 public class AccountTypeController : ControllerBase
@@ -20,7 +19,7 @@ public class AccountTypeController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all account types. Only for employees.
+    /// Returns all account types. For all authenticated users.
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AccountType>>> GetAllAccountTypes()
@@ -30,7 +29,7 @@ public class AccountTypeController : ControllerBase
     }
 
     /// <summary>
-    /// Returns currencies available for specified account type. Only for employees.
+    /// Returns currencies available for specified account type. For all authenticated users.
     /// </summary>
     [HttpGet("{accountTypeId}/currencies")]
     public async Task<ActionResult<IEnumerable<Currency>>> GetCurrenciesByAccountTypeId(short accountTypeId)

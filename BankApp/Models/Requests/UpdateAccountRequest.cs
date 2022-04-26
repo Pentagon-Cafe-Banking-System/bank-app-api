@@ -1,22 +1,26 @@
-using BankApp.Data;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Models.Requests;
 
 public class UpdateAccountRequest
 {
-    public int Balance { get; set; }
-    public int TransferLimit { get; set; }
-    public bool IsActive { get; set; }
+    public decimal? Balance { get; set; }
+    public decimal? TransferLimit { get; set; }
+    public bool? IsActive { get; set; }
 }
 
 public class UpdateAccountRequestValidator : AbstractValidator<UpdateAccountRequest>
 {
-    public UpdateAccountRequestValidator(ApplicationDbContext applicationDbContext)
+    public UpdateAccountRequestValidator()
     {
-        RuleFor(e => e.Balance).GreaterThanOrEqualTo(0);
-        RuleFor(e => e.TransferLimit).GreaterThan(0);
-        RuleFor(e => e.IsActive).NotNull();
+        RuleFor(e => e.Balance)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("Balance must be greater than or equal to 0");
+
+        RuleFor(e => e.TransferLimit)
+            .GreaterThan(0)
+            .WithMessage("Transfer limit must be greater than 0");
+
+        RuleFor(e => e.IsActive);
     }
 }

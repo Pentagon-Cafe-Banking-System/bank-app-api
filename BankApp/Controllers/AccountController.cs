@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using BankApp.Entities;
+using BankApp.Exceptions.RequestErrors;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.AccountService;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Route("api/accounts")]
+[Route("api")]
 [ApiExplorerSettings(GroupName = "Accounts")]
 public class AccountController : ControllerBase
 {
@@ -26,7 +27,7 @@ public class AccountController : ControllerBase
     /// <summary>
     /// Returns all accounts. Only for employees.
     /// </summary>
-    [HttpGet]
+    [HttpGet("accounts")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<IEnumerable<Account>>> GetAllAccounts()
     {
@@ -35,9 +36,9 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    /// Returns customer by id. Only for employees.
+    /// Returns account by id. Only for employees.
     /// </summary>
-    [HttpGet("{accountId}")]
+    [HttpGet("accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<Account>> GetAccountById(long accountId)
     {
@@ -48,7 +49,7 @@ public class AccountController : ControllerBase
     /// <summary>
     /// Returns all accounts of authenticated customer. Only for customers.
     /// </summary>
-    [HttpGet("customer/auth")]
+    [HttpGet("customers/auth/accounts")]
     [Authorize(Roles = RoleType.Customer)]
     public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsOfAuthenticatedCustomer()
     {
@@ -60,7 +61,7 @@ public class AccountController : ControllerBase
     /// <summary>
     /// Returns all accounts of the specified customer. Only for employees.
     /// </summary>
-    [HttpGet("customer/{customerId}")]
+    [HttpGet("customers/{customerId}/accounts")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsByCustomerId(string customerId)
     {
@@ -69,9 +70,23 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
+    /// Returns account of the authenticated customer by id. Only for customers.
+    /// </summary>
+    [HttpGet("customers/auth/accounts/{accountId:long}")]
+    [Authorize(Roles = RoleType.Customer)]
+    public async Task<ActionResult<IEnumerable<Account>>> GetAccountByIdOfAuthenticatedCustomer(long accountId)
+    {
+        var customerId = User.FindFirstValue(ClaimTypes.Sid);
+        if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, accountId))
+            throw new BadRequestError("AccountId", "Trying to access account that is not owned by the customer.");
+        var account = await _accountService.GetAccountByIdAsync(accountId);
+        return Ok(account);
+    }
+
+    /// <summary>
     /// Creates new account. Only for employees.
     /// </summary>
-    [HttpPost]
+    [HttpPost("accounts")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<Account>> CreateAccount(CreateAccountRequest request)
     {
@@ -80,9 +95,9 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    /// Updates specified account. Only for employees.
+    /// Updates account by id. Only for employees.
     /// </summary>
-    [HttpPatch("{accountId}")] // TODO - make it true PATCH
+    [HttpPatch("accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<Account>> UpdateAccountByEmployee(UpdateAccountRequest request, long accountId)
     {
@@ -91,9 +106,23 @@ public class AccountController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes specified account. Only for employees.
+    /// Updates account of the authenticated customer by id. Only for customers.
     /// </summary>
-    [HttpDelete("{accountId}")]
+    [HttpPatch("customers/auth/accounts/{accountId:long}")]
+    [Authorize(Roles = RoleType.Customer)]
+    public async Task<ActionResult<Account>> UpdateAccountByCustomer(UpdateAccountRequest request, long accountId)
+    {
+        var customerId = User.FindFirstValue(ClaimTypes.Sid);
+        if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, accountId))
+            throw new BadRequestError("AccountId", "Trying to access account that is not owned by the customer.");
+        var account = await _accountService.UpdateAccountAsync(request, accountId);
+        return Ok(account);
+    }
+
+    /// <summary>
+    /// Deletes account by id. Only for employees.
+    /// </summary>
+    [HttpDelete("accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<IActionResult> DeleteAccount(long accountId)
     {

@@ -94,9 +94,9 @@ public class AccountService : IAccountService
     public async Task<Account> UpdateAccountAsync(UpdateAccountRequest request, long id)
     {
         var account = await GetAccountByIdAsync(id);
-        account.Balance = request.Balance;
-        account.TransferLimit = request.TransferLimit;
-        account.IsActive = request.IsActive;
+        account.Balance = request.Balance ?? account.Balance;
+        account.TransferLimit = request.TransferLimit ?? account.TransferLimit;
+        account.IsActive = request.IsActive ?? account.IsActive;
         await _dbContext.SaveChangesAsync();
         return account;
     }
