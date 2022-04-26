@@ -20,6 +20,8 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
 {
     public CreateEmployeeRequestValidator(ApplicationDbContext dbContext)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.UserName)
             .NotEmpty()
             .WithMessage("Username is required")

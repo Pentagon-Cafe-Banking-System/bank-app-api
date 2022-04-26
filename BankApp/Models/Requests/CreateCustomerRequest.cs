@@ -21,6 +21,8 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
 {
     public CreateCustomerRequestValidator(ApplicationDbContext dbContext)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.UserName)
             .NotEmpty()
             .WithMessage("Username is required")

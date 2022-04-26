@@ -17,6 +17,8 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
 {
     public CreateTransferRequestValidator(ApplicationDbContext dbContext)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => new {e.Amount, e.SenderAccountId})
             .MustAsync(async (args, cancellationToken) =>
                 {

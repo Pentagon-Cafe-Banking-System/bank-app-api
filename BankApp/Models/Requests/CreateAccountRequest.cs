@@ -17,6 +17,8 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
 {
     public CreateAccountRequestValidator(ApplicationDbContext dbContext)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.Balance)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Balance must be greater than or equal to 0");

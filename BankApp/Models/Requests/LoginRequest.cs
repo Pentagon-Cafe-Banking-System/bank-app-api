@@ -14,6 +14,8 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator(UserManager<AppUser> userManager)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.UserName)
             .MustAsync(async (userName, _) =>
             {
