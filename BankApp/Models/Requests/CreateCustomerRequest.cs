@@ -9,7 +9,7 @@ public class CreateCustomerRequest
     public string UserName { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
-    public string SecondName { get; set; } = string.Empty;
+    public string MiddleName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string NationalId { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; }
@@ -54,13 +54,13 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
             .MaximumLength(50)
             .WithMessage("First name must be at most 50 characters long");
 
-        RuleFor(e => e.SecondName)
+        RuleFor(e => e.MiddleName)
             .NotEmpty()
-            .WithMessage("Second name is required")
+            .WithMessage("Middle name is required")
             .MinimumLength(1)
-            .WithMessage("Second name must be at least 1 character long")
+            .WithMessage("Middle name must be at least 1 character long")
             .MaximumLength(50)
-            .WithMessage("Second name must be at most 50 characters long");
+            .WithMessage("Middle name must be at most 50 characters long");
 
         RuleFor(e => e.LastName)
             .NotEmpty()
