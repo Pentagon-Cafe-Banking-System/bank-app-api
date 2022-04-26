@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Route("api/transfers")]
+[Route("api")]
 [ApiExplorerSettings(GroupName = "Transfers")]
 public class TransferController : ControllerBase
 {
@@ -27,7 +27,7 @@ public class TransferController : ControllerBase
     /// <summary>
     /// Returns all transfers. Only for employees.
     /// </summary>
-    [HttpGet]
+    [HttpGet("transfers")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<IEnumerable<Transfer>>> GetAllTransfers()
     {
@@ -38,7 +38,7 @@ public class TransferController : ControllerBase
     /// <summary>
     /// Returns all transfers of the authenticated customer sorted descending by order date. Only for customers.
     /// </summary>
-    [HttpGet("customer/auth")]
+    [HttpGet("customer/auth/transfers")]
     [Authorize(Roles = RoleType.Customer)]
     public async Task<ActionResult<IEnumerable<Transfer>>> GetAllCustomerTransfers()
     {
@@ -50,7 +50,7 @@ public class TransferController : ControllerBase
     /// <summary>
     /// Returns transfer by id. Only for employees.
     /// </summary>
-    [HttpGet("{transferId}")]
+    [HttpGet("transfers/{transferId}")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<Transfer>> GetTransferById(long transferId)
     {
@@ -61,7 +61,7 @@ public class TransferController : ControllerBase
     /// <summary>
     /// Creates a new transfer. Only for customers.
     /// </summary>
-    [HttpPost]
+    [HttpPost("transfers")]
     [Authorize(Roles = RoleType.Customer)]
     public async Task<ActionResult<Transfer>> CreateTransfer(CreateTransferRequest request)
     {

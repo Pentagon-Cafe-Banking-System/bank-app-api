@@ -47,12 +47,9 @@ public class AccountService : IAccountService
     {
         await using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
         {
-            var accountTypeId = request.AccountTypeId;
-            var currencyId = request.CurrencyId;
-            var customerId = request.CustomerId;
-            var accountType = _dbContext.AccountTypes.Find(accountTypeId);
-            var currency = _dbContext.Currencies.Find(currencyId);
-            var customer = _dbContext.Customers.Find(customerId);
+            var accountType = await _dbContext.AccountTypes.FindAsync(request.AccountTypeId);
+            var currency = await _dbContext.Currencies.FindAsync(request.CurrencyId);
+            var customer = await _dbContext.Customers.FindAsync(request.CustomerId);
             if (accountType == null)
                 throw new AppException("Account type with requested id could not be found");
             if (currency == null)
@@ -64,6 +61,7 @@ public class AccountService : IAccountService
                     cfg.CreateMap<CreateAccountRequest, Account>()
                 )
             );
+
             var account = mapper.Map<Account>(request);
             account.AccountType = accountType;
             account.Currency = currency;
@@ -81,7 +79,7 @@ public class AccountService : IAccountService
             var id = accountNumber.ToString();
             var paddedId = id.PadLeft(16, '0');
             account.Number = paddedId;
-            account.IsActive = true;
+            account.IsActive = request.IsActive;
             customer.BankAccounts.Add(account);
 
             await _dbContext.SaveChangesAsync();
@@ -94,9 +92,9 @@ public class AccountService : IAccountService
     public async Task<Account> UpdateAccountAsync(UpdateAccountRequest request, long id)
     {
         var account = await GetAccountByIdAsync(id);
-        account.Balance = request.Balance;
-        account.TransferLimit = request.TransferLimit;
-        account.IsActive = request.IsActive;
+        account.Balance = request.Balance ?? account.Balance;
+        account.TransferLimit = request.TransferLimit ?? account.TransferLimit;
+        account.IsActive = request.IsActive ?? account.IsActive;
         await _dbContext.SaveChangesAsync();
         return account;
     }

@@ -8,6 +8,7 @@ public class CreateAccountRequest
 {
     public int Balance { get; set; }
     public int TransferLimit { get; set; }
+    public bool IsActive { get; set; }
     public short AccountTypeId { get; set; }
     public short CurrencyId { get; set; }
     public string CustomerId { get; set; } = string.Empty;
@@ -24,6 +25,10 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
         RuleFor(e => e.TransferLimit)
             .GreaterThan(0)
             .WithMessage("Transfer limit must be greater than 0");
+
+        RuleFor(e => e.IsActive)
+            .NotEmpty()
+            .WithMessage("IsActive must be specified");
 
         RuleFor(e => e.AccountTypeId)
             .MustAsync(async (e, cancellationToken) =>
