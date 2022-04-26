@@ -2,7 +2,7 @@ using AutoMapper;
 using BankApp.Data;
 using BankApp.Entities;
 using BankApp.Exceptions;
-using BankApp.Exceptions.RequestExceptions;
+using BankApp.Exceptions.RequestErrors;
 using BankApp.Models.Requests;
 using BankApp.Services.CustomerService;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +42,7 @@ public class TransferService : ITransferService
     {
         var transfer = await _dbContext.Transfers.FindAsync(id);
         if (transfer == null)
-            throw new NotFoundException("Id", "Transfer with requested id could not be found");
+            throw new NotFoundError("Id", "Transfer with requested id could not be found");
         return transfer;
     }
 

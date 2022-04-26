@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
-using BankApp.Exceptions.RequestExceptions;
+using BankApp.Exceptions.RequestErrors;
 using Microsoft.AspNetCore.Identity;
 
 namespace BankApp.Services.UserService;
@@ -27,7 +27,7 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
-            throw new NotFoundException("Id", "User with requested id could not be found");
+            throw new NotFoundError("Id", "User with requested id could not be found");
         return user;
     }
 
@@ -53,7 +53,7 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null)
-            throw new NotFoundException("Id", "User with requested id could not be found");
+            throw new NotFoundError("Id", "User with requested id could not be found");
         return await _userManager.DeleteAsync(user);
     }
 

@@ -1,7 +1,7 @@
 using System.Linq;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
-using BankApp.Exceptions.RequestExceptions;
+using BankApp.Exceptions.RequestErrors;
 using BankApp.Services.UserService;
 using FakeItEasy;
 using FluentAssertions;
@@ -76,7 +76,7 @@ public class UserServiceTests
         var action = async () => await _userService.GetUserByIdAsync("1");
 
         // assert
-        await action.Should().ThrowExactlyAsync<NotFoundException>();
+        await action.Should().ThrowExactlyAsync<NotFoundError>();
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class UserServiceTests
         var action = async () => await _userService.DeleteUserByIdAsync("1");
 
         // assert
-        await action.Should().ThrowExactlyAsync<NotFoundException>();
+        await action.Should().ThrowExactlyAsync<NotFoundError>();
     }
 
     [Fact]

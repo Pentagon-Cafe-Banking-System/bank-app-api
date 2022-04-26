@@ -2,7 +2,7 @@ using AutoMapper;
 using BankApp.Data;
 using BankApp.Entities;
 using BankApp.Exceptions;
-using BankApp.Exceptions.RequestExceptions;
+using BankApp.Exceptions.RequestErrors;
 using BankApp.Models.Requests;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,7 +39,7 @@ public class AccountService : IAccountService
     {
         var account = await _dbContext.Accounts.FindAsync(id);
         if (account == null)
-            throw new NotFoundException("Id", "Account with requested id could not be found");
+            throw new NotFoundError("Id", "Account with requested id could not be found");
         return account;
     }
 

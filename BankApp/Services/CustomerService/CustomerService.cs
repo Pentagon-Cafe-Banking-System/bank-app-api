@@ -2,7 +2,7 @@
 using BankApp.Data;
 using BankApp.Entities;
 using BankApp.Entities.UserTypes;
-using BankApp.Exceptions.RequestExceptions;
+using BankApp.Exceptions.RequestErrors;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
@@ -32,7 +32,7 @@ public class CustomerService : ICustomerService
     {
         var customer = await _dbContext.Customers.FindAsync(id);
         if (customer == null)
-            throw new NotFoundException("Id", "Customer with requested id could not be found");
+            throw new NotFoundError("Id", "Customer with requested id could not be found");
         return customer;
     }
 

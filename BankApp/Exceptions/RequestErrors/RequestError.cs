@@ -1,4 +1,4 @@
-﻿namespace BankApp.Exceptions.RequestExceptions;
+﻿namespace BankApp.Exceptions.RequestErrors;
 
 public class RequestError
 {

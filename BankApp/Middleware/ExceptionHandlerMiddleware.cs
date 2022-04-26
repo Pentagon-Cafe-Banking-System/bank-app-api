@@ -1,6 +1,6 @@
 using System.Net;
 using System.Text.Json;
-using BankApp.Exceptions.RequestExceptions;
+using BankApp.Exceptions.RequestErrors;
 
 namespace BankApp.Middleware;
 
@@ -19,8 +19,8 @@ public class ExceptionHandlerMiddleware : IMiddleware
 
             response.StatusCode = error switch
             {
-                BadRequestException => (int) HttpStatusCode.BadRequest,
-                NotFoundException => (int) HttpStatusCode.NotFound,
+                BadRequestError => (int) HttpStatusCode.BadRequest,
+                NotFoundError => (int) HttpStatusCode.NotFound,
                 _ => (int) HttpStatusCode.InternalServerError
             };
 
