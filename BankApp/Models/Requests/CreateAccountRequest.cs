@@ -15,39 +15,58 @@ public class CreateAccountRequest
 
 public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequest>
 {
-    public CreateAccountRequestValidator(ApplicationDbContext applicationDbContext)
+    public CreateAccountRequestValidator(ApplicationDbContext dbContext)
     {
-        RuleFor(e => e.Balance).GreaterThanOrEqualTo(0);
-        RuleFor(e => e.TransferLimit).GreaterThan(0);
-        RuleFor(e => e.AccountTypeId).MustAsync(async (e, cancellationToken) =>
-        {
-            var accountType =
-                await applicationDbContext.AccountTypes.FirstOrDefaultAsync(accountType => accountType.Id == e,
-                    cancellationToken);
-            return accountType != null;
-        }).WithMessage("Account type not found");
-        RuleFor(e => e.CurrencyId).MustAsync(async (e, cancellationToken) =>
-        {
-            var currency =
-                await applicationDbContext.Currencies.FirstOrDefaultAsync(currency => currency.Id == e,
-                    cancellationToken);
-            return currency != null;
-        }).WithMessage("Currency not found");        
-        RuleFor(e => new {e.AccountTypeId, e.CurrencyId}).Must((args, _) =>
+        RuleFor(e => e.Balance)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("Balance must be greater than or equal to 0");
+
+        RuleFor(e => e.TransferLimit)
+            .GreaterThan(0)
+            .WithMessage("Transfer limit must be greater than 0");
+
+        RuleFor(e => e.AccountTypeId)
+            .MustAsync(async (e, cancellationToken) =>
             {
-                var result = 
-                    (args.AccountTypeId is 1 or 2 && args.CurrencyId == 1) || 
-                    (args.AccountTypeId == 3 && args.CurrencyId != 1);
-                return result;
-            }
-        ).WithMessage("Current and savings accounts must be in PLN currency. Foreign currency accounts must be in foreign currency");
-        RuleFor(e => e.CustomerId).MustAsync(async (customerId, _) =>
+                var accountType = await dbContext.AccountTypes
+                    .FirstOrDefaultAsync(accountType => accountType.Id == e, cancellationToken);
+                return accountType != null;
+            })
+            .WithMessage("Account type could not be found");
+
+        RuleFor(e => e.CurrencyId)
+            .MustAsync(async (e, cancellationToken) =>
             {
-                var result = await applicationDbContext.Customers.AnyAsync(customer =>
-                    customer.Id == customerId
-                );
-                return result;
-            }
-        ).WithMessage("Customer doesn't exist");
+                var currency = await dbContext.Currencies
+                    .FirstOrDefaultAsync(currency => currency.Id == e, cancellationToken);
+                return currency != null;
+            })
+            .WithMessage("Currency could not be found");
+
+        RuleFor(e => new {e.AccountTypeId, e.CurrencyId})
+            .Must((args, _) =>
+            {
+                if (args.AccountTypeId is 1 or 2) return args.AccountTypeId is 1 or 2 && args.CurrencyId == 1;
+                return true;
+            })
+            .WithName("CurrencyId")
+            .WithMessage("Chosen account type only supports PLN currency")
+            .Must((args, _) =>
+            {
+                if (args.AccountTypeId == 3) return args.AccountTypeId == 3 && args.CurrencyId != 1;
+                return true;
+            })
+            .WithName("CurrencyId")
+            .WithMessage("Foreign currency accounts don't support this currency");
+
+        RuleFor(e => e.CustomerId)
+            .MustAsync(async (customerId, cancellationToken) =>
+                {
+                    var result = await dbContext.Customers
+                        .AnyAsync(customer => customer.Id == customerId, cancellationToken: cancellationToken);
+                    return result;
+                }
+            )
+            .WithMessage("Customer doesn't exist");
     }
 }
