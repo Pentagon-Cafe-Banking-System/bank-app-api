@@ -142,6 +142,7 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
 
 builder.Services.AddFluentValidation();
+builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateCustomerRequest>, CreateCustomerRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateEmployeeRequest>, UpdateEmployeeRequestValidator>();
@@ -171,8 +172,8 @@ if (!app.Environment.IsProduction())
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
-if (app.Environment.IsDevelopment())
-    app.UseDeveloperExceptionPage();
+// if (app.Environment.IsDevelopment())
+//     app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 

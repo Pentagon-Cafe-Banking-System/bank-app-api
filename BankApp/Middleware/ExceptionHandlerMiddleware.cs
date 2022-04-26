@@ -27,11 +27,11 @@ public class ExceptionHandlerMiddleware : IMiddleware
             try
             {
                 var requestError = JsonSerializer.Deserialize<RequestError>(error.Message);
-                await response.WriteAsJsonAsync(new {succeeded = false, error = requestError});
+                await response.WriteAsJsonAsync(new {succeeded = false, errors = requestError?.GetError()});
             }
             catch (JsonException)
             {
-                await response.WriteAsJsonAsync(new {succeeded = false, error = "Something went wrong"});
+                await response.WriteAsJsonAsync(new {succeeded = false, error = "An error occurred."});
             }
         }
     }
