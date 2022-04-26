@@ -25,6 +25,10 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
         RuleFor(e => e.UserName)
             .NotEmpty()
             .WithMessage("Username is required")
+            .MinimumLength(4)
+            .WithMessage("Username must be at least 4 characters long")
+            .MaximumLength(16)
+            .WithMessage("Username must be at most 16 characters long")
             .MustAsync(async (username, cancellationToken) =>
                 {
                     var usernameExists = await dbContext.Users.AnyAsync(
@@ -37,15 +41,27 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
 
         RuleFor(e => e.Password)
             .NotEmpty()
-            .WithMessage("Password is required");
+            .WithMessage("Password is required")
+            .MinimumLength(8)
+            .WithMessage("Password must be at least 8 characters long")
+            .MaximumLength(16)
+            .WithMessage("Password must be at most 16 characters long");
 
         RuleFor(e => e.FirstName)
             .NotEmpty()
-            .WithMessage("First name is required");
+            .WithMessage("First name is required")
+            .MinimumLength(1)
+            .WithMessage("First name must be at least 1 character long")
+            .MaximumLength(50)
+            .WithMessage("First name must be at most 50 characters long");
 
         RuleFor(e => e.LastName)
             .NotEmpty()
-            .WithMessage("Last name is required");
+            .WithMessage("Last name is required")
+            .MinimumLength(1)
+            .WithMessage("Last name must be at least 1 character long")
+            .MaximumLength(50)
+            .WithMessage("Last name must be at most 50 characters long");
 
         RuleFor(e => e.Salary)
             .GreaterThan(0)
@@ -55,16 +71,24 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
         RuleFor(e => e.Gender)
             .Must(g => genders.Contains(g));
 
+        RuleFor(e => e.DateOfBirth)
+            .Must(dateOfBirth =>
+                {
+                    var age = DateTime.UtcNow.Year - dateOfBirth.Year;
+                    return age >= 18;
+                }
+            )
+            .WithMessage("Employee must be at least 18 years old");
+
         RuleFor(e => e.DateOfEmployment)
             .GreaterThan(e => e.DateOfBirth)
-            .WithMessage("Date of employment cannot be before than date of birth");
-
-        RuleFor(e => e.DateOfBirth)
-            .NotEmpty()
-            .WithMessage("Date of birth is required");
-
-        RuleFor(e => e.DateOfEmployment)
-            .NotEmpty()
-            .WithMessage("Date of employment is required");
+            .WithMessage("Date of employment cannot be before than date of birth")
+            .Must(dateOfEmployment =>
+                {
+                    var now = DateTime.UtcNow;
+                    return dateOfEmployment >= now;
+                }
+            )
+            .WithMessage("Date of employment cannot be in the past");
     }
 }

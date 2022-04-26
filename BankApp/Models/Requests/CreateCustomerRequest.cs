@@ -26,6 +26,10 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
         RuleFor(e => e.UserName)
             .NotEmpty()
             .WithMessage("Username is required")
+            .MinimumLength(4)
+            .WithMessage("Username must be at least 4 characters long")
+            .MaximumLength(16)
+            .WithMessage("Username must be at most 16 characters long")
             .MustAsync(async (username, cancellationToken) =>
                 {
                     var usernameExists = await dbContext.Users
@@ -38,34 +42,65 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
 
         RuleFor(e => e.Password)
             .NotEmpty()
-            .WithMessage("Password is required");
+            .WithMessage("Password is required")
+            .MinimumLength(8)
+            .WithMessage("Password must be at least 8 characters long")
+            .MaximumLength(16)
+            .WithMessage("Password must be at most 16 characters long");
 
         RuleFor(e => e.FirstName)
             .NotEmpty()
-            .WithMessage("First name is required");
+            .WithMessage("First name is required")
+            .MinimumLength(1)
+            .WithMessage("First name must be at least 1 character long")
+            .MaximumLength(50)
+            .WithMessage("First name must be at most 50 characters long");
 
         RuleFor(e => e.SecondName)
             .NotEmpty()
-            .WithMessage("Second name is required");
+            .WithMessage("Second name is required")
+            .MinimumLength(1)
+            .WithMessage("Second name must be at least 1 character long")
+            .MaximumLength(50)
+            .WithMessage("Second name must be at most 50 characters long");
 
         RuleFor(e => e.LastName)
             .NotEmpty()
-            .WithMessage("Last name is required");
+            .WithMessage("Last name is required")
+            .MinimumLength(1)
+            .WithMessage("Last name must be at least 1 character long")
+            .MaximumLength(50)
+            .WithMessage("Last name must be at most 50 characters long");
 
         RuleFor(e => e.NationalId)
+            .MinimumLength(9)
+            .WithMessage("National id must be at least 9 digits long")
             .Matches("\\d+")
             .WithMessage("National id must consist of digits only");
 
         RuleFor(e => e.DateOfBirth)
-            .LessThan(DateTime.UtcNow)
-            .WithMessage("Date of birth must be in the past");
+            .Must(dateOfBirth =>
+                {
+                    var age = DateTime.UtcNow.Year - dateOfBirth.Year;
+                    return age >= 18;
+                }
+            )
+            .WithMessage("Customer must be at least 18 years old");
 
         RuleFor(e => e.CityOfBirth)
             .NotEmpty()
-            .WithMessage("City of birth is required");
+            .WithMessage("City of birth is required")
+            .MinimumLength(1)
+            .WithMessage("City of birth must be at least 1 character long")
+            .MaximumLength(50)
+            .WithMessage("City of birth must be at most 50 characters long");
 
         RuleFor(e => e.FathersName)
             .NotEmpty()
-            .WithMessage("Father's name is required");
+            .WithMessage("Father's name is required")
+            .MinimumLength(1)
+            .WithMessage("Father's name must be at least 1 character long")
+            .MaximumLength(50)
+            .WithMessage("Father's name must be at most 50 characters long");
     }
 }

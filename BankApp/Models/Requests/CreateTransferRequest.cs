@@ -74,10 +74,14 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
 
         RuleFor(e => e.ReceiverName)
             .NotEmpty()
-            .WithMessage("Receiver's name is required");
+            .WithMessage("Receiver's name is required")
+            .MaximumLength(50)
+            .WithMessage("Receiver's name must be less than 50 characters");
 
         RuleFor(e => e.Title)
             .NotEmpty()
-            .WithMessage("Title is required");
+            .WithMessage("Title is required")
+            .MaximumLength(50)
+            .WithMessage("Title must be less than 50 characters");
     }
 }
