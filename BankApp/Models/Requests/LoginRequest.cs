@@ -12,11 +12,11 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator()
     {
-        RuleFor(x => x.UserName)
+        RuleFor(e => e.UserName)
             .NotEmpty()
             .WithMessage("Username is required");
 
-        RuleFor(x => x.Password)
+        RuleFor(e => e.Password)
             .NotEmpty()
             .WithMessage("Password is required");
     }

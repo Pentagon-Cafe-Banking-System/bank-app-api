@@ -19,23 +19,51 @@ public class CreateCustomerRequest
 
 public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRequest>
 {
-    public CreateCustomerRequestValidator(ApplicationDbContext applicationDbContext)
+    public CreateCustomerRequestValidator(ApplicationDbContext dbContext)
     {
-        RuleFor(e => e.UserName).MustAsync(async (username, _) =>
-            {
-                var result = await applicationDbContext.Users.AnyAsync(user =>
-                    user.NormalizedUserName == username.ToUpperInvariant()
-                );
-                return !result;
-            }
-        ).WithMessage("Username already exists");
-        RuleFor(e => e.Password).NotNull();
-        RuleFor(e => e.FirstName).NotNull();
-        RuleFor(e => e.SecondName).NotNull();
-        RuleFor(e => e.LastName).NotNull();
-        RuleFor(e => e.NationalId).Matches("\\d+");
-        RuleFor(e => e.DateOfBirth).GreaterThan(DateTime.Now.AddYears(-100));
-        RuleFor(e => e.CityOfBirth).NotNull();
-        RuleFor(e => e.FathersName).NotNull();
+        RuleFor(e => e.UserName)
+            .NotEmpty()
+            .WithMessage("Username is required")
+            .MustAsync(async (username, cancellationToken) =>
+                {
+                    var usernameExists = await dbContext.Users
+                        .AnyAsync(user => user.NormalizedUserName == username.ToUpperInvariant(),
+                            cancellationToken: cancellationToken);
+                    return !usernameExists;
+                }
+            )
+            .WithMessage("Username already exists");
+
+        RuleFor(e => e.Password)
+            .NotEmpty()
+            .WithMessage("Password is required");
+
+        RuleFor(e => e.FirstName)
+            .NotEmpty()
+            .WithMessage("First name is required");
+
+        RuleFor(e => e.SecondName)
+            .NotEmpty()
+            .WithMessage("Second name is required");
+
+        RuleFor(e => e.LastName)
+            .NotEmpty()
+            .WithMessage("Last name is required");
+
+        RuleFor(e => e.NationalId)
+            .Matches("\\d+")
+            .WithMessage("National id must consist of digits only");
+
+        RuleFor(e => e.DateOfBirth)
+            .LessThan(DateTime.UtcNow)
+            .WithMessage("Date of birth must be in the past");
+
+        RuleFor(e => e.CityOfBirth)
+            .NotEmpty()
+            .WithMessage("City of birth is required");
+
+        RuleFor(e => e.FathersName)
+            .NotEmpty()
+            .WithMessage("Father's name is required");
     }
 }

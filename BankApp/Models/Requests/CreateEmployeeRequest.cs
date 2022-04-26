@@ -21,11 +21,13 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
     public CreateEmployeeRequestValidator(ApplicationDbContext dbContext)
     {
         RuleFor(e => e.UserName)
-            .MustAsync(async (username, _) =>
+            .NotEmpty()
+            .WithMessage("Username is required")
+            .MustAsync(async (username, cancellationToken) =>
                 {
                     var usernameExists = await dbContext.Users.AnyAsync(
-                        user => user.NormalizedUserName == username.ToUpperInvariant()
-                    );
+                        user => user.NormalizedUserName == username.ToUpperInvariant(),
+                        cancellationToken: cancellationToken);
                     return !usernameExists;
                 }
             )
