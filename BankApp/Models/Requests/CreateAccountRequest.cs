@@ -26,9 +26,7 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
             .GreaterThan(0)
             .WithMessage("Transfer limit must be greater than 0");
 
-        RuleFor(e => e.IsActive)
-            .NotEmpty()
-            .WithMessage("IsActive must be specified");
+        RuleFor(e => e.IsActive);
 
         RuleFor(e => e.AccountTypeId)
             .MustAsync(async (e, cancellationToken) =>
