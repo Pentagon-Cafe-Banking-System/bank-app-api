@@ -1,4 +1,4 @@
-﻿namespace BankApp.Exceptions.RequestExceptions;
+﻿namespace BankApp.Exceptions.RequestErrors;
 
 public class RequestError
 {
@@ -10,4 +10,10 @@ public class RequestError
 
     public string Name { get; set; }
     public string Description { get; set; }
+
+    public Dictionary<string, string> GetError()
+    {
+        var errors = new Dictionary<string, string> {{Name, Description}};
+        return errors;
+    }
 }

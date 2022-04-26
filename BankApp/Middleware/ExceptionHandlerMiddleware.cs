@@ -1,6 +1,6 @@
 using System.Net;
 using System.Text.Json;
-using BankApp.Exceptions.RequestExceptions;
+using BankApp.Exceptions.RequestErrors;
 
 namespace BankApp.Middleware;
 
@@ -19,19 +19,19 @@ public class ExceptionHandlerMiddleware : IMiddleware
 
             response.StatusCode = error switch
             {
-                BadRequestException => (int) HttpStatusCode.BadRequest,
-                NotFoundException => (int) HttpStatusCode.NotFound,
+                BadRequestError => (int) HttpStatusCode.BadRequest,
+                NotFoundError => (int) HttpStatusCode.NotFound,
                 _ => (int) HttpStatusCode.InternalServerError
             };
 
             try
             {
                 var requestError = JsonSerializer.Deserialize<RequestError>(error.Message);
-                await response.WriteAsJsonAsync(new {succeeded = false, error = requestError});
+                await response.WriteAsJsonAsync(new {succeeded = false, errors = requestError?.GetError()});
             }
             catch (JsonException)
             {
-                await response.WriteAsJsonAsync(new {succeeded = false, error = "Something went wrong"});
+                await response.WriteAsJsonAsync(new {succeeded = false, error = "An error occurred."});
             }
         }
     }

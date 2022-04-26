@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using BankApp.Entities;
 using BankApp.Entities.UserTypes;
-using BankApp.Exceptions.RequestExceptions;
+using BankApp.Exceptions.RequestErrors;
 using BankApp.Models;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
@@ -40,7 +40,7 @@ public class UserController : ControllerBase
     {
         var userIdFromToken = User.FindFirstValue(ClaimTypes.Sid);
         if (userIdFromToken != userId)
-            throw new BadRequestException("Id", "Trying to get refresh tokens of another user");
+            throw new BadRequestError("Id", "Trying to get refresh tokens of another user");
 
         var user = await _userService.GetUserByIdAsync(userId);
         return Ok(user.RefreshTokens);

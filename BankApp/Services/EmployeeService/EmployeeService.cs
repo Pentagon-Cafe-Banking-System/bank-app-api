@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BankApp.Data;
 using BankApp.Entities.UserTypes;
-using BankApp.Exceptions.RequestExceptions;
+using BankApp.Exceptions.RequestErrors;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
@@ -31,7 +31,7 @@ public class EmployeeService : IEmployeeService
     {
         var employee = await _dbContext.Employees.FindAsync(id);
         if (employee == null)
-            throw new NotFoundException("Id", "Employee with requested id could not be found");
+            throw new NotFoundError("Id", "Employee with requested id could not be found");
         return employee;
     }
 
