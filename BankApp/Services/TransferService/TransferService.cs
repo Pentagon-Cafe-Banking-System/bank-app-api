@@ -79,6 +79,7 @@ public class TransferService : ITransferService
             transfer.Ordered = ordered;
             transfer.Executed = DateTime.UtcNow;
             transfer.IsCompleted = true;
+
             account.Transfers.Add(transfer);
             await _dbContext.SaveChangesAsync();
             await dbContextTransaction.CommitAsync();

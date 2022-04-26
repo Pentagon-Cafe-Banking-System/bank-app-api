@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using BankApp.Entities.UserTypes;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 
 namespace BankApp.Models.Requests;
 
@@ -10,14 +12,24 @@ public class LoginRequest
 
 public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
-    public LoginRequestValidator()
+    public LoginRequestValidator(UserManager<AppUser> userManager)
     {
         RuleFor(e => e.UserName)
-            .NotEmpty()
-            .WithMessage("Username is required");
+            .MustAsync(async (userName, _) =>
+            {
+                var user = await userManager.FindByNameAsync(userName);
+                return user != null;
+            })
+            .WithMessage("Username does not exist");
 
-        RuleFor(e => e.Password)
-            .NotEmpty()
-            .WithMessage("Password is required");
+        RuleFor(e => new {e.UserName, e.Password})
+            .MustAsync(async (args, _) =>
+            {
+                var user = await userManager.FindByNameAsync(args.UserName);
+                var isPasswordCorrect = await userManager.CheckPasswordAsync(user, args.Password);
+                return isPasswordCorrect;
+            })
+            .WithName("Password")
+            .WithMessage("Password is incorrect");
     }
 }

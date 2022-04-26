@@ -26,7 +26,7 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
                 }
             )
             .WithName("SenderAccountId")
-            .WithMessage("Sender account could not be found")
+            .WithMessage("Sender's account could not be found")
             .MustAsync(async (args, cancellationToken) =>
                 {
                     var senderAccount = await dbContext.Accounts

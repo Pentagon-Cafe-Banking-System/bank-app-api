@@ -31,13 +31,6 @@ public class AuthService : IAuthService
     public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress)
     {
         var user = await _userManager.FindByNameAsync(request.UserName);
-        if (user == null)
-            throw new NotFoundError("UserName", "Username not found");
-
-        var passwordCheck = await _userManager.CheckPasswordAsync(user, request.Password);
-        if (!passwordCheck)
-            throw new NotFoundError("Password", "Password is not correct");
-
         var jwtToken = _jwtService.GenerateJwtToken(await _userService.GetUserClaims(user));
         var refreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
 
