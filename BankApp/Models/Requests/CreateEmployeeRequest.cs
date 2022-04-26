@@ -18,24 +18,49 @@ public class CreateEmployeeRequest
 
 public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRequest>
 {
-    public CreateEmployeeRequestValidator(ApplicationDbContext applicationDbContext)
+    public CreateEmployeeRequestValidator(ApplicationDbContext dbContext)
     {
-        RuleFor(e => e.UserName).MustAsync(async (username, _) =>
-            {
-                var result = await applicationDbContext.Users.AnyAsync(user =>
-                    user.NormalizedUserName == username.ToUpperInvariant()
-                );
-                return !result;
-            }
-        ).WithMessage("Username already exists");
-        RuleFor(e => e.Password).NotNull();
-        RuleFor(e => e.FirstName).NotNull();
-        RuleFor(e => e.LastName).NotNull();
-        RuleFor(e => e.Salary).GreaterThan(0);
+        RuleFor(e => e.UserName)
+            .MustAsync(async (username, _) =>
+                {
+                    var usernameExists = await dbContext.Users.AnyAsync(
+                        user => user.NormalizedUserName == username.ToUpperInvariant()
+                    );
+                    return !usernameExists;
+                }
+            )
+            .WithMessage("Username already exists");
+
+        RuleFor(e => e.Password)
+            .NotEmpty()
+            .WithMessage("Password is required");
+
+        RuleFor(e => e.FirstName)
+            .NotEmpty()
+            .WithMessage("First name is required");
+
+        RuleFor(e => e.LastName)
+            .NotEmpty()
+            .WithMessage("Last name is required");
+
+        RuleFor(e => e.Salary)
+            .GreaterThan(0)
+            .WithMessage("Salary must be greater than 0");
+
         var genders = new List<char> {GenderType.Male, GenderType.Female};
-        RuleFor(e => e.Gender).Must(g => genders.Contains(g));
-        RuleFor(e => e.DateOfEmployment).GreaterThan(e => e.DateOfBirth);
-        RuleFor(e => e.DateOfBirth).NotNull();
-        RuleFor(e => e.DateOfEmployment).NotNull();
+        RuleFor(e => e.Gender)
+            .Must(g => genders.Contains(g));
+
+        RuleFor(e => e.DateOfEmployment)
+            .GreaterThan(e => e.DateOfBirth)
+            .WithMessage("Date of employment cannot be before than date of birth");
+
+        RuleFor(e => e.DateOfBirth)
+            .NotEmpty()
+            .WithMessage("Date of birth is required");
+
+        RuleFor(e => e.DateOfEmployment)
+            .NotEmpty()
+            .WithMessage("Date of employment is required");
     }
 }
