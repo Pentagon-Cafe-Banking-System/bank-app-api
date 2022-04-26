@@ -9,7 +9,7 @@ public class CreateTransferRequest
     public decimal Amount { get; set; }
     public string ReceiverAccountNumber { get; set; } = string.Empty;
     public string ReceiverName { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
     public long SenderAccountId { get; set; }
 }
 
@@ -74,8 +74,8 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
             .NotEmpty()
             .WithMessage("Receiver's name is required");
 
-        RuleFor(e => e.Description)
+        RuleFor(e => e.Title)
             .NotEmpty()
-            .WithMessage("Description is required");
+            .WithMessage("Title is required");
     }
 }

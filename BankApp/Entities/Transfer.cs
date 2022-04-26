@@ -10,7 +10,7 @@ public class Transfer
     public decimal Amount { get; set; }
     public string ReceiverAccountNumber { get; set; } = string.Empty;
     public string ReceiverName { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
     public DateTime Ordered { get; set; }
     public DateTime Executed { get; set; }
     public string? ReasonFailed { get; set; }
