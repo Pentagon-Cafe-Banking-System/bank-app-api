@@ -20,8 +20,6 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
 {
     public CreateEmployeeRequestValidator(ApplicationDbContext dbContext)
     {
-        CascadeMode = CascadeMode.Stop;
-
         RuleFor(e => e.UserName)
             .NotEmpty()
             .WithMessage("Username is required")
@@ -74,21 +72,15 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
         RuleFor(e => e.DateOfBirth)
             .Must(dateOfBirth =>
                 {
-                    var age = DateTime.UtcNow.Year - dateOfBirth.Year;
-                    return age >= 18;
+                    var timeSpan = DateTime.UtcNow - dateOfBirth;
+                    var years = timeSpan.TotalDays / 365.25;
+                    return years >= 18;
                 }
             )
             .WithMessage("Employee must be at least 18 years old");
 
         RuleFor(e => e.DateOfEmployment)
             .GreaterThan(e => e.DateOfBirth)
-            .WithMessage("Date of employment cannot be before than date of birth")
-            .Must(dateOfEmployment =>
-                {
-                    var now = DateTime.UtcNow;
-                    return dateOfEmployment >= now;
-                }
-            )
-            .WithMessage("Date of employment cannot be in the past");
+            .WithMessage("Date of employment cannot be before than date of birth");
     }
 }

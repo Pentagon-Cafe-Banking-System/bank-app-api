@@ -21,8 +21,6 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
 {
     public CreateCustomerRequestValidator(ApplicationDbContext dbContext)
     {
-        CascadeMode = CascadeMode.Stop;
-
         RuleFor(e => e.UserName)
             .NotEmpty()
             .WithMessage("Username is required")
@@ -73,6 +71,14 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
             .WithMessage("Last name must be at most 50 characters long");
 
         RuleFor(e => e.NationalId)
+            .MustAsync(async (nationalId, cancellationToken) =>
+                {
+                    var nationalIdExists = await dbContext.Customers
+                        .AnyAsync(customer => customer.NationalId == nationalId, cancellationToken: cancellationToken);
+                    return !nationalIdExists;
+                }
+            )
+            .WithMessage("National ID already exists")
             .MinimumLength(9)
             .WithMessage("National id must be at least 9 digits long")
             .Matches("\\d+")
@@ -81,8 +87,9 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
         RuleFor(e => e.DateOfBirth)
             .Must(dateOfBirth =>
                 {
-                    var age = DateTime.UtcNow.Year - dateOfBirth.Year;
-                    return age >= 18;
+                    var timeSpan = DateTime.UtcNow - dateOfBirth;
+                    var years = timeSpan.TotalDays / 365.25;
+                    return years >= 18;
                 }
             )
             .WithMessage("Customer must be at least 18 years old");
