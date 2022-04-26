@@ -1860,11 +1860,11 @@ namespace BankApp.Migrations
                         {
                             Id = "7a4165b4-0aca-43fb-a390-294781ee377f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "33955989-e010-4521-b1b4-de0108a80515",
+                            ConcurrencyStamp = "3d660395-0ce6-4a81-9e40-4bcb5c6e0130",
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPQAoRa7JRjQcLu09Y3PxUJxcZ5FS4aE3rNnSqE2hSe1O2v1g1HlKszNoROWiCcuNg==",
-                            SecurityStamp = "5e348759-48bd-42bf-8035-d09a3577cb3a",
+                            PasswordHash = "AQAAAAEAACcQAAAAELsKpTNOeoMAyYMo/KDDIY4wa0BGExU5oYVgFXPxmlq2i4ZamgolT+MfyO7L5pHLVw==",
+                            SecurityStamp = "c137321f-adb6-418c-99f3-daee5a76b3ad",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1966,21 +1966,21 @@ namespace BankApp.Migrations
                         new
                         {
                             Id = "fa2640a0-0496-4010-bc27-424e0e5c6f78",
-                            ConcurrencyStamp = "9ae22fdd-0f88-4d65-8ced-fe9886d32d82",
+                            ConcurrencyStamp = "119642d2-57de-422f-8080-95d9f114fd97",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "a2abddb1-8856-4223-ba41-b8c611dcb3d2",
-                            ConcurrencyStamp = "ac32d118-3330-42ca-b0d6-1935ccc380a6",
+                            Id = "7f46b697-d1f8-4a88-bcb9-e172d89c152e",
+                            ConcurrencyStamp = "ba59350d-9f2e-470b-9d71-bec1b71d096a",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = "7fc593ff-a977-498a-b8be-2b6ec64f36fb",
-                            ConcurrencyStamp = "c20b2650-ecf6-43f8-a63e-8d3da63e4b79",
+                            Id = "f7ec9b62-5008-4691-b66c-82644ad446a4",
+                            ConcurrencyStamp = "ea560f8f-46a6-420a-9069-63756c66db6f",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });

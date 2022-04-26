@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace BankApp.Migrations
 {
-    public partial class Initial : Migration
+    public partial class SquashedMigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -18,7 +18,7 @@ namespace BankApp.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Code = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    InterestRate = table.Column<float>(type: "real", nullable: false)
+                    InterestRate = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -94,7 +94,8 @@ namespace BankApp.Migrations
                     Id = table.Column<short>(type: "smallint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Code = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Bid = table.Column<decimal>(type: "numeric", nullable: false),
+                    Ask = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -190,7 +191,7 @@ namespace BankApp.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
-                    SecondName = table.Column<string>(type: "text", nullable: false),
+                    MiddleName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     NationalId = table.Column<string>(type: "text", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -377,22 +378,33 @@ namespace BankApp.Migrations
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     ReceiverAccountNumber = table.Column<string>(type: "text", nullable: false),
                     ReceiverName = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
                     Ordered = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Executed = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ReasonFailed = table.Column<string>(type: "text", nullable: true),
                     IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsFailed = table.Column<bool>(type: "boolean", nullable: false),
-                    AccountId = table.Column<long>(type: "bigint", nullable: true)
+                    SenderAccountId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Transfers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Transfers_Accounts_AccountId",
-                        column: x => x.AccountId,
+                        name: "FK_Transfers_Accounts_SenderAccountId",
+                        column: x => x.SenderAccountId,
                         principalTable: "Accounts",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AccountTypes",
+                columns: new[] { "Id", "Code", "InterestRate", "Name" },
+                values: new object[,]
+                {
+                    { (short)1, "CA", 0.5m, "Current Account" },
+                    { (short)2, "SA", 3m, "Savings Account" },
+                    { (short)3, "FCA", 0m, "Foreign Currency Account" }
                 });
 
             migrationBuilder.InsertData(
@@ -400,15 +412,15 @@ namespace BankApp.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "45729abd-61e4-4843-96ba-4e31fa790cef", "b526fd67-6782-49df-9018-a25c7fb151da", "Customer", "CUSTOMER" },
-                    { "cf65d6a7-70fa-48f0-ba2c-31c2ea2d6c67", "09122fde-d315-48ae-95c6-2f18e7d244fc", "Employee", "EMPLOYEE" },
-                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "1e9d42cc-87b6-4357-a4b0-e2c64bdde014", "Admin", "ADMIN" }
+                    { "7f46b697-d1f8-4a88-bcb9-e172d89c152e", "ba59350d-9f2e-470b-9d71-bec1b71d096a", "Employee", "EMPLOYEE" },
+                    { "f7ec9b62-5008-4691-b66c-82644ad446a4", "ea560f8f-46a6-420a-9069-63756c66db6f", "Customer", "CUSTOMER" },
+                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "119642d2-57de-422f-8080-95d9f114fd97", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "LockoutEnabled", "LockoutEnd", "NormalizedUserName", "PasswordHash", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "cc16f24a-a280-406c-b83e-b6290865ca21", false, null, "ADMIN", "AQAAAAEAACcQAAAAEIf9ZgZOH8qGSa8YKMAxu4+R/xNnY5eYxZES0FW29+AWmIQO+V+/Hu+tehQ70okk7w==", "dad330da-8536-490b-a3fd-6542086f1bf2", false, "admin" });
+                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "3d660395-0ce6-4a81-9e40-4bcb5c6e0130", false, null, "ADMIN", "AQAAAAEAACcQAAAAELsKpTNOeoMAyYMo/KDDIY4wa0BGExU5oYVgFXPxmlq2i4ZamgolT+MfyO7L5pHLVw==", "c137321f-adb6-418c-99f3-daee5a76b3ad", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "Countries",
@@ -741,9 +753,9 @@ namespace BankApp.Migrations
                 column: "AppUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transfers_AccountId",
+                name: "IX_Transfers_SenderAccountId",
                 table: "Transfers",
-                column: "AccountId");
+                column: "SenderAccountId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
