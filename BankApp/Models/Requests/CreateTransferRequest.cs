@@ -17,6 +17,14 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
 {
     public CreateTransferRequestValidator(ApplicationDbContext dbContext)
     {
+        RuleFor(e => e.SenderAccountId)
+            .Must(id =>
+            {
+                var account = dbContext.Accounts.FirstOrDefault(a => a.Id == id);
+                return account?.IsActive == true;
+            })
+            .WithMessage("Selected account is deactivated");
+
         RuleFor(e => new {e.Amount, e.SenderAccountId})
             .MustAsync(async (args, cancellationToken) =>
                 {
@@ -61,14 +69,24 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
             .WithMessage("Amount must be greater than 0");
 
         RuleFor(e => e.ReceiverAccountNumber)
-            .MustAsync(async (numberAccount, cancellationToken) =>
+            .MustAsync(async (accountNumber, cancellationToken) =>
                 {
                     var result = await dbContext.Accounts
-                        .AnyAsync(number => number.Number == numberAccount, cancellationToken: cancellationToken);
+                        .AnyAsync(number => number.Number == accountNumber, cancellationToken: cancellationToken);
                     return result;
                 }
             )
-            .WithMessage("Receiver's account number does not exist");
+            .WithMessage("Receiver's account number does not exist")
+            .MustAsync(async (accountNumber, cancellationToken) =>
+                {
+                    var account = await dbContext.Accounts
+                        .FirstOrDefaultAsync(number =>
+                                number.Number == accountNumber, cancellationToken: cancellationToken
+                        );
+                    return account?.IsActive == true;
+                }
+            )
+            .WithMessage("Receiver's account is deactivated");
 
         RuleFor(e => e.ReceiverName)
             .NotEmpty()
