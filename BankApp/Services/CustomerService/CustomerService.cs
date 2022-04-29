@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using BankApp.Data;
-using BankApp.Entities;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions.RequestErrors;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.CustomerService;
 
@@ -22,9 +20,9 @@ public class CustomerService : ICustomerService
         _userService = userService;
     }
 
-    public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
+    public IEnumerable<Customer> GetAllCustomers()
     {
-        var employees = await _dbContext.Customers.ToListAsync();
+        var employees = _dbContext.Customers.AsEnumerable();
         return employees;
     }
 
@@ -46,23 +44,21 @@ public class CustomerService : ICustomerService
             };
             await _userService.CreateUserAsync(user, request.Password, RoleType.Customer);
 
-            var mapper = new Mapper(
-                new MapperConfiguration(cfg =>
-                    cfg.CreateMap<CreateCustomerRequest, Customer>()
-                )
-            );
+            var mapper = new Mapper(new MapperConfiguration(cfg =>
+                cfg.CreateMap<CreateCustomerRequest, Customer>()
+            ));
             var customer = mapper.Map<Customer>(request);
             customer.AppUser = user;
-            var entity = (await _dbContext.Customers.AddAsync(customer)).Entity;
+            var customerEntity = (await _dbContext.Customers.AddAsync(customer)).Entity;
 
             await _dbContext.SaveChangesAsync();
             await dbContextTransaction.CommitAsync();
 
-            return entity;
+            return customerEntity;
         }
     }
 
-    public async Task<Customer> UpdateCustomerAsync(UpdateCustomerRequest request, string id)
+    public async Task<Customer> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string id)
     {
         var hasher = new PasswordHasher<AppUser>();
         var customer = await GetCustomerByIdAsync(id);
@@ -78,14 +74,6 @@ public class CustomerService : ICustomerService
 
     public async Task<IdentityResult> DeleteCustomerByIdAsync(string id)
     {
-        var employee = await GetCustomerByIdAsync(id);
-        var appUser = employee.AppUser;
-        return await _userService.DeleteUserAsync(appUser);
-    }
-
-    public async Task<IEnumerable<Account>> GetAllAccountsByCustomerIdAsync(string id)
-    {
-        var customer = await GetCustomerByIdAsync(id);
-        return customer.BankAccounts;
+        return await _userService.DeleteUserByIdAsync(id);
     }
 }
