@@ -6,9 +6,9 @@ namespace BankApp.Services.EmployeeService;
 
 public interface IEmployeeService
 {
-    Task<IEnumerable<Employee>> GetAllEmployeesAsync();
+    IEnumerable<Employee> GetAllEmployees();
     Task<Employee> GetEmployeeByIdAsync(string id);
     Task<Employee> CreateEmployeeAsync(CreateEmployeeRequest request);
-    Task<Employee> UpdateEmployeeAsync(UpdateEmployeeRequest request, string id);
+    Task<Employee> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request, string id);
     Task<IdentityResult> DeleteEmployeeByIdAsync(string id);
 }

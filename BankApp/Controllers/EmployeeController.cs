@@ -25,9 +25,9 @@ public class EmployeeController : ControllerBase
     /// Returns all employees. Only for admins.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Employee>>> GetAllEmployees()
+    public ActionResult<IEnumerable<Employee>> GetAllEmployees()
     {
-        var employees = await _employeeService.GetAllEmployeesAsync();
+        var employees = _employeeService.GetAllEmployees();
         return Ok(employees);
     }
 
@@ -35,7 +35,7 @@ public class EmployeeController : ControllerBase
     /// Returns employee by id. Only for admins.
     /// </summary>
     [HttpGet("{employeeId}")]
-    public async Task<ActionResult<Employee>> GetEmployeeById(string employeeId)
+    public async Task<ActionResult<Employee>> GetEmployeeByIdAsync(string employeeId)
     {
         var employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
         return Ok(employee);
@@ -45,7 +45,7 @@ public class EmployeeController : ControllerBase
     /// Creates new employee. Only for admins.
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<Employee>> CreateEmployee(CreateEmployeeRequest request)
+    public async Task<ActionResult<Employee>> CreateEmployeeAsync(CreateEmployeeRequest request)
     {
         var employee = await _employeeService.CreateEmployeeAsync(request);
         return Ok(employee);
@@ -55,9 +55,9 @@ public class EmployeeController : ControllerBase
     /// Updates employee by id. Only for admins.
     /// </summary>
     [HttpPatch("{employeeId}")] // TODO - make it true PATCH
-    public async Task<ActionResult<Employee>> UpdateEmployee(UpdateEmployeeRequest request, string employeeId)
+    public async Task<ActionResult<Employee>> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request, string employeeId)
     {
-        var employee = await _employeeService.UpdateEmployeeAsync(request, employeeId);
+        var employee = await _employeeService.UpdateEmployeeByIdAsync(request, employeeId);
         return Ok(employee);
     }
 
@@ -65,7 +65,7 @@ public class EmployeeController : ControllerBase
     /// Deletes employee by id. Only for admins.
     /// </summary>
     [HttpDelete("{employeeId}")]
-    public async Task<ActionResult<IdentityResult>> DeleteEmployeeById(string employeeId)
+    public async Task<ActionResult<IdentityResult>> DeleteEmployeeByIdAsync(string employeeId)
     {
         var result = await _employeeService.DeleteEmployeeByIdAsync(employeeId);
         return Ok(result);

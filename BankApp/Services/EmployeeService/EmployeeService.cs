@@ -6,7 +6,6 @@ using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.EmployeeService;
 
@@ -21,9 +20,9 @@ public class EmployeeService : IEmployeeService
         _userService = userService;
     }
 
-    public async Task<IEnumerable<Employee>> GetAllEmployeesAsync()
+    public IEnumerable<Employee> GetAllEmployees()
     {
-        var employees = await _dbContext.Employees.ToListAsync();
+        var employees = _dbContext.Employees.AsEnumerable();
         return employees;
     }
 
@@ -45,24 +44,21 @@ public class EmployeeService : IEmployeeService
             };
             await _userService.CreateUserAsync(user, request.Password, RoleType.Employee);
 
-            var mapper = new Mapper(
-                new MapperConfiguration(cfg =>
-                    cfg.CreateMap<CreateEmployeeRequest, Employee>()
-                )
-            );
+            var mapper = new Mapper(new MapperConfiguration(cfg =>
+                cfg.CreateMap<CreateEmployeeRequest, Employee>()
+            ));
             var employee = mapper.Map<Employee>(request);
             employee.AppUser = user;
-
-            var entity = (await _dbContext.Employees.AddAsync(employee)).Entity;
+            var employeeEntity = (await _dbContext.Employees.AddAsync(employee)).Entity;
 
             await _dbContext.SaveChangesAsync();
             await dbContextTransaction.CommitAsync();
 
-            return entity;
+            return employeeEntity;
         }
     }
 
-    public async Task<Employee> UpdateEmployeeAsync(UpdateEmployeeRequest request, string id)
+    public async Task<Employee> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request, string id)
     {
         var hasher = new PasswordHasher<AppUser>();
         var employee = await GetEmployeeByIdAsync(id);
@@ -78,8 +74,6 @@ public class EmployeeService : IEmployeeService
 
     public async Task<IdentityResult> DeleteEmployeeByIdAsync(string id)
     {
-        var employee = await GetEmployeeByIdAsync(id);
-        var appUser = employee.AppUser;
-        return await _userService.DeleteUserAsync(appUser);
+        return await _userService.DeleteUserByIdAsync(id);
     }
 }
