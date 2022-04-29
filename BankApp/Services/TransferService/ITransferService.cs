@@ -5,8 +5,8 @@ namespace BankApp.Services.TransferService;
 
 public interface ITransferService
 {
-    Task<IEnumerable<Transfer>> GetAllTransfersAsync();
-    Task<IEnumerable<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId);
+    IEnumerable<Transfer> GetAllTransfers();
+    Task<IEnumerable<Transfer>> GetAllTransfersFromAndToCustomerByIdAsync(string customerId);
     Task<Transfer> GetTransferByIdAsync(long id);
     Task<Transfer> CreateTransferAsync(CreateTransferRequest request);
 }

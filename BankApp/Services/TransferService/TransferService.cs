@@ -5,7 +5,6 @@ using BankApp.Exceptions;
 using BankApp.Exceptions.RequestErrors;
 using BankApp.Models.Requests;
 using BankApp.Services.CustomerService;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.TransferService;
 
@@ -20,21 +19,21 @@ public class TransferService : ITransferService
         _customerService = customerService;
     }
 
-    public async Task<IEnumerable<Transfer>> GetAllTransfersAsync()
+    public IEnumerable<Transfer> GetAllTransfers()
     {
-        var transfers = await _dbContext.Transfers.ToListAsync();
+        var transfers = _dbContext.Transfers.AsEnumerable();
         return transfers;
     }
 
-    public async Task<IEnumerable<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId)
+    public async Task<IEnumerable<Transfer>> GetAllTransfersFromAndToCustomerByIdAsync(string customerId)
     {
         var customer = await _customerService.GetCustomerByIdAsync(customerId);
         var accountIds = customer.BankAccounts.Select(a => a.Id);
         var accountNumbers = customer.BankAccounts.Select(a => a.Number);
-        var transfers = await _dbContext.Transfers
+        var transfers = _dbContext.Transfers
             .Where(t => accountNumbers.Contains(t.ReceiverAccountNumber) || accountIds.Contains(t.SenderAccountId))
             .OrderByDescending(t => t.Ordered)
-            .ToListAsync();
+            .AsEnumerable();
         return transfers;
     }
 

@@ -29,9 +29,9 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpGet("transfers")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IEnumerable<Transfer>>> GetAllTransfers()
+    public ActionResult<IEnumerable<Transfer>> GetAllTransfers()
     {
-        var transfers = await _transferService.GetAllTransfersAsync();
+        var transfers = _transferService.GetAllTransfers();
         return Ok(transfers);
     }
 
@@ -40,19 +40,19 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpGet("customer/auth/transfers")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IEnumerable<Transfer>>> GetAllCustomerTransfers()
+    public async Task<ActionResult<IEnumerable<Transfer>>> GetAllTransfersFromAndToCustomerByIdAsync()
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
-        var transfers = await _transferService.GetAllTransfersFromAndToCustomerAsync(customerId);
+        var transfers = await _transferService.GetAllTransfersFromAndToCustomerByIdAsync(customerId);
         return Ok(transfers);
     }
 
     /// <summary>
     /// Returns transfer by id. Only for employees.
     /// </summary>
-    [HttpGet("transfers/{transferId}")]
+    [HttpGet("transfers/{transferId:long}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Transfer>> GetTransferById(long transferId)
+    public async Task<ActionResult<Transfer>> GetTransferByIdAsync(long transferId)
     {
         var transfer = await _transferService.GetTransferByIdAsync(transferId);
         return Ok(transfer);
@@ -63,7 +63,7 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpPost("transfers")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<Transfer>> CreateTransfer(CreateTransferRequest request)
+    public async Task<ActionResult<Transfer>> CreateTransferAsync(CreateTransferRequest request)
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, request.SenderAccountId))
