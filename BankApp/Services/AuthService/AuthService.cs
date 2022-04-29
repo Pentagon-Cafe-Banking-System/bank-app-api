@@ -30,8 +30,9 @@ public class AuthService : IAuthService
 
     public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress)
     {
-        var user = await _userManager.FindByNameAsync(request.UserName);
-        var jwtToken = _jwtService.GenerateJwtToken(await _userService.GetUserClaims(user));
+        var user = await _userService.GetUserByUserNameAsync(request.UserName);
+        var userClaims = await _userService.GetUserClaimsAsync(user);
+        var jwtToken = _jwtService.GenerateJwtToken(userClaims);
         var refreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
 
         // remove old refresh tokens from user
@@ -70,12 +71,12 @@ public class AuthService : IAuthService
         await _userManager.UpdateAsync(user);
 
         // generate new jwt
-        var jwtToken = _jwtService.GenerateJwtToken(await _userService.GetUserClaims(user));
+        var jwtToken = _jwtService.GenerateJwtToken(await _userService.GetUserClaimsAsync(user));
 
         return new AuthenticateResponse(jwtToken, newRefreshToken.Token);
     }
 
-    public async Task<IdentityResult> RevokeTokenAsync(string token, string? ipAddress)
+    public async Task<IdentityResult> RevokeRefreshTokenAsync(string token, string? ipAddress)
     {
         if (string.IsNullOrEmpty(token))
             throw new BadRequestError("Token", "Refresh token is null");
@@ -95,7 +96,9 @@ public class AuthService : IAuthService
 
     private async Task<AppUser> GetUserByRefreshTokenAsync(string token)
     {
-        var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+        var user = await _userManager.Users.SingleOrDefaultAsync(u =>
+            u.RefreshTokens.Any(t => t.Token == token)
+        );
         if (user == null)
             throw new NotFoundError("RefreshToken", "Refresh token not found");
 
@@ -113,7 +116,8 @@ public class AuthService : IAuthService
     {
         // remove old inactive refresh tokens from user based on TTL in app settings
         user.RefreshTokens.RemoveAll(x =>
-            !x.IsActive && x.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow);
+            !x.IsActive && x.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow
+        );
     }
 
     private void RevokeDescendantRefreshTokens(RefreshToken refreshToken, AppUser user, string? ipAddress,

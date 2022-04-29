@@ -32,6 +32,14 @@ public class UserService : IUserService
         return user;
     }
 
+    public async Task<AppUser> GetUserByUserNameAsync(string userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName);
+        if (user == null)
+            throw new NotFoundError("UserName", "Username not be found");
+        return user;
+    }
+
     public async Task<IdentityResult> CreateUserAsync(AppUser user, string password, string roleName)
     {
         var roleExists = await _roleManager.RoleExistsAsync(roleName);

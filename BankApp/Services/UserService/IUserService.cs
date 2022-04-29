@@ -8,6 +8,7 @@ public interface IUserService
 {
     IEnumerable<AppUser> GetAllUsers();
     Task<AppUser> GetUserByIdAsync(string id);
+    Task<AppUser> GetUserByUserNameAsync(string userName);
     Task<IdentityResult> CreateUserAsync(AppUser user, string password, string roleName);
     Task<IdentityResult> DeleteUserAsync(AppUser user);
     Task<IdentityResult> DeleteUserByIdAsync(string id);
