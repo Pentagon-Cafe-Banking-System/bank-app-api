@@ -1,5 +1,6 @@
 ﻿using BankApp.Data;
 using BankApp.Entities;
+using BankApp.Exceptions;
 
 namespace BankApp.Services.CurrencyService;
 
@@ -15,5 +16,13 @@ public class CurrencyService : ICurrencyService
     public IEnumerable<Currency> GetAllCurrencies()
     {
         return _dbContext.Currencies.AsEnumerable();
+    }
+
+    public async Task<Currency> GetCurrencyByIdAsync(short id)
+    {
+        var currency = await _dbContext.Currencies.FindAsync(id);
+        if (currency == null)
+            throw new AppException("Currency with requested id does not exist");
+        return currency;
     }
 }

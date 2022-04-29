@@ -4,7 +4,6 @@ using BankApp.Exceptions.RequestErrors;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.AccountService;
-using BankApp.Services.CustomerService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,12 +15,10 @@ namespace BankApp.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
-    private readonly ICustomerService _customerService;
 
-    public AccountController(IAccountService accountService, ICustomerService customerService)
+    public AccountController(IAccountService accountService)
     {
         _accountService = accountService;
-        _customerService = customerService;
     }
 
     /// <summary>
@@ -29,9 +26,9 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("accounts")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccounts()
+    public ActionResult<IEnumerable<Account>> GetAllAccounts()
     {
-        var accounts = await _accountService.GetAllAccountsAsync();
+        var accounts = _accountService.GetAllAccounts();
         return Ok(accounts);
     }
 
@@ -40,7 +37,7 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Account>> GetAccountById(long accountId)
+    public async Task<ActionResult<Account>> GetAccountByIdAsync(long accountId)
     {
         var account = await _accountService.GetAccountByIdAsync(accountId);
         return Ok(account);
@@ -51,10 +48,10 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("customers/auth/accounts")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsOfAuthenticatedCustomer()
+    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsOfAuthenticatedCustomerAsync()
     {
         var userId = User.FindFirstValue(ClaimTypes.Sid);
-        var accounts = await _customerService.GetAllAccountsByCustomerIdAsync(userId);
+        var accounts = await _accountService.GetAccountsByCustomerIdAsync(userId);
         return Ok(accounts);
     }
 
@@ -63,9 +60,9 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("customers/{customerId}/accounts")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsByCustomerId(string customerId)
+    public async Task<ActionResult<IEnumerable<Account>>> GetAccountsByCustomerIdAsync(string customerId)
     {
-        var accounts = await _customerService.GetAllAccountsByCustomerIdAsync(customerId);
+        var accounts = await _accountService.GetAccountsByCustomerIdAsync(customerId);
         return Ok(accounts);
     }
 
@@ -74,7 +71,7 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("customers/auth/accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAccountByIdOfAuthenticatedCustomer(long accountId)
+    public async Task<ActionResult<IEnumerable<Account>>> GetAccountByIdOfAuthenticatedCustomerAsync(long accountId)
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, accountId))
@@ -88,7 +85,7 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpPost("accounts")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Account>> CreateAccount(CreateAccountRequest request)
+    public async Task<ActionResult<Account>> CreateAccountAsync(CreateAccountRequest request)
     {
         var account = await _accountService.CreateAccountAsync(request);
         return Ok(account);
@@ -99,7 +96,7 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpPatch("accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Account>> UpdateAccountByEmployee(UpdateAccountRequest request, long accountId)
+    public async Task<ActionResult<Account>> UpdateAccountByEmployeeAsync(UpdateAccountRequest request, long accountId)
     {
         var account = await _accountService.UpdateAccountAsync(request, accountId);
         return Ok(account);
@@ -110,7 +107,7 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpPatch("customers/auth/accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<Account>> UpdateAccountByCustomer(UpdateAccountRequest request, long accountId)
+    public async Task<ActionResult<Account>> UpdateAccountByCustomerAsync(UpdateAccountRequest request, long accountId)
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, accountId))
@@ -124,9 +121,9 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpDelete("accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<IActionResult> DeleteAccount(long accountId)
+    public async Task<IActionResult> DeleteAccountByIdAsync(long accountId)
     {
-        await _accountService.DeleteAccountAsync(accountId);
+        await _accountService.DeleteAccountByIdAsync(accountId);
         return Ok();
     }
 }
