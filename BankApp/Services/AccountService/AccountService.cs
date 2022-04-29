@@ -6,6 +6,7 @@ using BankApp.Models.Requests;
 using BankApp.Services.AccountTypeService;
 using BankApp.Services.CurrencyService;
 using BankApp.Services.CustomerService;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.AccountService;
 
@@ -46,6 +47,14 @@ public class AccountService : IAccountService
         return account;
     }
 
+    public Task<Account> GetAccountByNumberAsync(string number)
+    {
+        var account = _dbContext.Accounts.SingleAsync(a => a.Number == number);
+        if (account == null)
+            throw new NotFoundError("Number", "Account with requested number could not be found");
+        return account;
+    }
+
     public async Task<IEnumerable<Account>> GetAccountsByCustomerIdAsync(string customerId)
     {
         var customer = await _customerService.GetCustomerByIdAsync(customerId);
@@ -55,29 +64,23 @@ public class AccountService : IAccountService
 
     public async Task<Account> CreateAccountAsync(CreateAccountRequest request)
     {
-        await using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
-        {
-            var accountType = await _accountTypeService.GetAccountTypeByIdAsync(request.AccountTypeId);
-            var currency = await _currencyService.GetCurrencyByIdAsync(request.CurrencyId);
-            var customer = await _customerService.GetCustomerByIdAsync(request.CustomerId);
+        var accountType = await _accountTypeService.GetAccountTypeByIdAsync(request.AccountTypeId);
+        var currency = await _currencyService.GetCurrencyByIdAsync(request.CurrencyId);
+        var customer = await _customerService.GetCustomerByIdAsync(request.CustomerId);
 
-            var mapper = new Mapper(new MapperConfiguration(cfg =>
-                cfg.CreateMap<CreateAccountRequest, Account>()
-            ));
+        var mapper = new Mapper(new MapperConfiguration(cfg =>
+            cfg.CreateMap<CreateAccountRequest, Account>()
+        ));
+        var account = mapper.Map<Account>(request);
+        var accountNumber = GenerateAccountNumber();
+        account.Number = accountNumber;
+        account.AccountType = accountType;
+        account.Currency = currency;
+        account.IsActive = request.IsActive;
+        customer.BankAccounts.Add(account);
 
-            var account = mapper.Map<Account>(request);
-            var accountNumber = GenerateAccountNumber();
-            account.Number = accountNumber;
-            account.AccountType = accountType;
-            account.Currency = currency;
-            account.IsActive = request.IsActive;
-
-            customer.BankAccounts.Add(account);
-            await _dbContext.SaveChangesAsync();
-            await dbContextTransaction.CommitAsync();
-
-            return account;
-        }
+        await _dbContext.SaveChangesAsync();
+        return account;
     }
 
     public async Task<Account> UpdateAccountAsync(UpdateAccountRequest request, long id)

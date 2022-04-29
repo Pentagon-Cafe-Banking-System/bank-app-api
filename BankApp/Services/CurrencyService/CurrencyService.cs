@@ -15,7 +15,8 @@ public class CurrencyService : ICurrencyService
 
     public IEnumerable<Currency> GetAllCurrencies()
     {
-        return _dbContext.Currencies.AsEnumerable();
+        var currencies = _dbContext.Currencies.AsEnumerable();
+        return currencies;
     }
 
     public async Task<Currency> GetCurrencyByIdAsync(short id)

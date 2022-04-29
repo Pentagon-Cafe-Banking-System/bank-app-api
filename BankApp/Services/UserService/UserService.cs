@@ -81,6 +81,6 @@ public class UserService : IUserService
         };
         var roles = (await _userManager.GetRolesAsync(user)).ToList();
         roles.ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));
-        return claims;
+        return claims.AsEnumerable();
     }
 }
