@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Transactions;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
 using BankApp.Exceptions.RequestErrors;
@@ -19,7 +20,7 @@ public class UserService : IUserService
 
     public IEnumerable<AppUser> GetAllUsers()
     {
-        var users = _userManager.Users.ToList();
+        var users = _userManager.Users.AsEnumerable();
         return users;
     }
 
@@ -31,17 +32,25 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task CreateUserAsync(AppUser user, string password, string roleName)
+    public async Task<IdentityResult> CreateUserAsync(AppUser user, string password, string roleName)
     {
         var roleExists = await _roleManager.RoleExistsAsync(roleName);
         if (!roleExists)
             throw new AppException($"Role '{roleName}' does not exist");
 
-        var identityResult = await _userManager.CreateAsync(user, password);
-        if (!identityResult.Succeeded)
-            throw new AppException("UserManager could not create user");
+        using (var scope = new TransactionScope())
+        {
+            var createUserIdentityResult = await _userManager.CreateAsync(user, password);
+            if (!createUserIdentityResult.Succeeded)
+                throw new AppException("UserManager could not create user");
 
-        await _userManager.AddToRoleAsync(user, roleName);
+            var addToRoleIdentityResult = await _userManager.AddToRoleAsync(user, roleName);
+            if (!addToRoleIdentityResult.Succeeded)
+                throw new AppException("UserManager could not add user to role");
+
+            scope.Complete();
+            return addToRoleIdentityResult;
+        }
     }
 
     public async Task<IdentityResult> DeleteUserAsync(AppUser user)
@@ -51,13 +60,11 @@ public class UserService : IUserService
 
     public async Task<IdentityResult> DeleteUserByIdAsync(string id)
     {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user == null)
-            throw new NotFoundError("Id", "User with requested id could not be found");
+        var user = await GetUserByIdAsync(id);
         return await _userManager.DeleteAsync(user);
     }
 
-    public async Task<IEnumerable<Claim>> GetUserClaims(AppUser user)
+    public async Task<IEnumerable<Claim>> GetUserClaimsAsync(AppUser user)
     {
         var claims = new List<Claim>
         {

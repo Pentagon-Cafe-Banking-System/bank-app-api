@@ -36,7 +36,7 @@ public class UserController : ControllerBase
     /// Returns all refresh tokens for specified user. Only for admins.
     /// </summary>
     [HttpGet("{userId}/refresh-tokens")]
-    public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokens(string userId)
+    public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokensAsync(string userId)
     {
         var userIdFromToken = User.FindFirstValue(ClaimTypes.Sid);
         if (userIdFromToken != userId)

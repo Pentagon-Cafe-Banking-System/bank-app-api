@@ -8,8 +8,8 @@ public interface IUserService
 {
     IEnumerable<AppUser> GetAllUsers();
     Task<AppUser> GetUserByIdAsync(string id);
-    Task CreateUserAsync(AppUser user, string password, string roleName);
+    Task<IdentityResult> CreateUserAsync(AppUser user, string password, string roleName);
     Task<IdentityResult> DeleteUserAsync(AppUser user);
     Task<IdentityResult> DeleteUserByIdAsync(string id);
-    Task<IEnumerable<Claim>> GetUserClaims(AppUser user);
+    Task<IEnumerable<Claim>> GetUserClaimsAsync(AppUser user);
 }
