@@ -23,12 +23,12 @@ public class CurrencyServiceTests
     }
 
     [Fact]
-    public async void GetAllCurrenciesAsync_Always_ReturnsListOfCurrency()
+    public void GetAllCurrenciesAsync_Always_ReturnsListOfCurrency()
     {
         // arrange
 
         // act
-        var result = await _currencyService.GetAllCurrenciesAsync();
+        var result = _currencyService.GetAllCurrencies();
 
         // assert
         result.Should().BeOfType<List<Currency>>();

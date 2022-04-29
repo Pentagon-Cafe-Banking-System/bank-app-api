@@ -4,5 +4,5 @@ namespace BankApp.Services.CurrencyService;
 
 public interface ICurrencyService
 {
-    Task<IEnumerable<Currency>> GetAllCurrenciesAsync();
+    IEnumerable<Currency> GetAllCurrencies();
 }

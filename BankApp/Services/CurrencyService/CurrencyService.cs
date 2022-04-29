@@ -1,6 +1,5 @@
 ﻿using BankApp.Data;
 using BankApp.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.CurrencyService;
 
@@ -13,8 +12,8 @@ public class CurrencyService : ICurrencyService
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<Currency>> GetAllCurrenciesAsync()
+    public IEnumerable<Currency> GetAllCurrencies()
     {
-        return await _dbContext.Currencies.ToListAsync();
+        return _dbContext.Currencies.AsEnumerable();
     }
 }
