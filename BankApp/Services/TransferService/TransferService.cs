@@ -56,11 +56,9 @@ public class TransferService : ITransferService
                 throw new AppException("Account with requested id could not be found");
             var receiverNumber = request.ReceiverAccountNumber;
             var receiver = _dbContext.Accounts.Single(e => e.Number == receiverNumber);
-            var mapper = new Mapper(
-                new MapperConfiguration(cfg =>
-                    cfg.CreateMap<CreateTransferRequest, Transfer>()
-                )
-            );
+            var mapper = new Mapper(new MapperConfiguration(cfg =>
+                cfg.CreateMap<CreateTransferRequest, Transfer>()
+            ));
             var receiverCurrency = _dbContext.Accounts.Single(e => e.Number == receiverNumber).Currency;
             var senderCurrency = _dbContext.Accounts.Single(e => e.Id == senderAccountId).Currency;
             if (receiverCurrency != senderCurrency)

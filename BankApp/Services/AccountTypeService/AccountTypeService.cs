@@ -1,6 +1,5 @@
 ﻿using BankApp.Data;
 using BankApp.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.AccountTypeService;
 
@@ -13,15 +12,16 @@ public class AccountTypeService : IAccountTypeService
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<AccountType>> GetAllAccountTypesAsync()
+    public IEnumerable<AccountType> GetAllAccountTypes()
     {
-        return await _dbContext.AccountTypes.ToListAsync();
+        var accountTypes = _dbContext.AccountTypes.AsEnumerable();
+        return accountTypes;
     }
 
-    public async Task<IEnumerable<Currency>> GetCurrenciesByAccountTypeIdAsync(short accountTypeId)
+    public IEnumerable<Currency> GetCurrenciesByAccountTypeId(short accountTypeId)
     {
         if (accountTypeId == 3)
-            return await _dbContext.Currencies.ToListAsync();
-        return await _dbContext.Currencies.Where(x => x.Code == "PLN").ToListAsync();
+            return _dbContext.Currencies.AsEnumerable();
+        return new List<Currency> {_dbContext.Currencies.Single(x => x.Code == "PLN")}.AsEnumerable();
     }
 }
