@@ -6,10 +6,10 @@ namespace BankApp.Models.Requests;
 
 public class CreateEmployeeRequest
 {
-    public string UserName { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
+    public string UserName { get; set; } = default!;
+    public string Password { get; set; } = default!;
+    public string FirstName { get; set; } = default!;
+    public string LastName { get; set; } = default!;
     public double Salary { get; set; }
     public char Gender { get; set; }
     public DateTime DateOfEmployment { get; set; }

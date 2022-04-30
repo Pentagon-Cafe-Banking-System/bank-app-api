@@ -8,7 +8,7 @@ namespace BankApp.Entities;
 public class Account
 {
     [Key] public long Id { get; set; }
-    public string Number { get; set; } = string.Empty;
+    public string Number { get; set; } = default!;
     public decimal Balance { get; set; }
     public decimal TransferLimit { get; set; }
     public bool IsActive { get; set; }

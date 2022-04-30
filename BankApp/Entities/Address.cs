@@ -8,11 +8,11 @@ namespace BankApp.Entities;
 public class Address
 {
     [Key] public long Id { get; set; }
-    public string City { get; set; } = string.Empty;
-    public string PostCode { get; set; } = string.Empty;
-    public string Street { get; set; } = string.Empty;
+    public string City { get; set; } = default!;
+    public string PostCode { get; set; } = default!;
+    public string Street { get; set; } = default!;
 
-    public string CustomerId { get; set; } = string.Empty;
+    public string CustomerId { get; set; } = default!;
     public virtual Customer Customer { get; set; } = default!;
     public virtual Country Country { get; set; } = default!;
 }

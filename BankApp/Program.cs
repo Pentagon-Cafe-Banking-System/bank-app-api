@@ -16,6 +16,7 @@ using BankApp.Services.TransferService;
 using BankApp.Services.UserService;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -55,8 +56,9 @@ builder.Services.AddSwaggerGen(options =>
 
         throw new InvalidOperationException("Unable to determine tag for endpoint.");
     });
-    options.DocInclusionPredicate((name, api) => true);
+    options.DocInclusionPredicate((_, _) => true);
 });
+builder.Services.AddFluentValidationRulesToSwagger();
 
 const string corsPolicy = "DefaultPolicy";
 builder.Services.AddCors(options =>

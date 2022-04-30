@@ -8,5 +8,5 @@ public class CardOrder
 {
     [Key] public long Id { get; set; }
     public DateTime OrderDate { get; set; }
-    public string CardType { get; set; } = string.Empty;
+    public string CardType { get; set; } = default!;
 }

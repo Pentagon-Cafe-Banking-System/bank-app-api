@@ -9,14 +9,14 @@ namespace BankApp.Entities;
 public class RefreshToken
 {
     [Key] public long Id { get; set; }
-    public string Token { get; set; } = string.Empty;
+    public string Token { get; set; } = default!;
     public DateTime Expires { get; set; }
     public DateTime Created { get; set; }
-    public string? CreatedByIp { get; set; } = string.Empty;
+    public string? CreatedByIp { get; set; }
     public DateTime? Revoked { get; set; }
-    public string? RevokedByIp { get; set; } = string.Empty;
-    public string? ReplacedByToken { get; set; } = string.Empty;
-    public string? ReasonRevoked { get; set; } = string.Empty;
+    public string? RevokedByIp { get; set; } = default!;
+    public string? ReplacedByToken { get; set; } = default!;
+    public string? ReasonRevoked { get; set; } = default!;
     public bool IsExpired => DateTime.UtcNow >= Expires;
     public bool IsRevoked => Revoked != null;
     public bool IsActive => !IsRevoked && !IsExpired;
