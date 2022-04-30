@@ -83,15 +83,14 @@ public class UserServiceTests
     public async void CreateUserAsync_ForValidData_DoesNotThrowAnyException()
     {
         // arrange
-        var appUser = A.Dummy<AppUser>();
-        A.CallTo(() => _fakeRoleManager.RoleExistsAsync(A<string>.Ignored)).Returns(true);
-
+        var dummyAppUser = A.Dummy<AppUser>();
         var fakeIdentityResult = IdentityResult.Success;
-        A.CallTo(() =>
-            _fakeUserManager.CreateAsync(A<AppUser>.Ignored, A<string>.Ignored)).Returns(fakeIdentityResult);
+        A.CallTo(() => _fakeRoleManager.RoleExistsAsync(A<string>.Ignored)).Returns(true);
+        A.CallTo(() => _fakeUserManager.AddToRoleAsync(dummyAppUser, A<string>.Ignored)).Returns(fakeIdentityResult);
+        A.CallTo(() => _fakeUserManager.CreateAsync(dummyAppUser, A<string>.Ignored)).Returns(fakeIdentityResult);
 
         // act
-        var action = async () => await _userService.CreateUserAsync(appUser, "password", "roleName");
+        var action = async () => await _userService.CreateUserAsync(dummyAppUser, "password", "roleName");
 
         // assert
         await action.Should().NotThrowAsync();
