@@ -31,7 +31,7 @@ public class CustomerService : ICustomerService
     {
         var customer = await _dbContext.Customers.FindAsync(customerId);
         if (customer == null)
-            throw new NotFoundException("Customer with requested id could not be found");
+            throw new NotFoundException("Customer with requested id does not exist");
         return customer;
     }
 

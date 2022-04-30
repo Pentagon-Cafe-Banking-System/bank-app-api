@@ -31,7 +31,7 @@ public class EmployeeService : IEmployeeService
     {
         var employee = await _dbContext.Employees.FindAsync(employeeId);
         if (employee == null)
-            throw new NotFoundException("Employee with requested id could not be found");
+            throw new NotFoundException("Employee with requested id does not exist");
         return employee;
     }
 

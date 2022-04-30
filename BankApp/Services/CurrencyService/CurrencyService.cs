@@ -14,17 +14,17 @@ public class CurrencyService : ICurrencyService
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<Currency>> GetAllCurrencies()
+    public async Task<IList<Currency>> GetAllCurrenciesAsync()
     {
         var currencies = await _dbContext.Currencies.ToListAsync();
         return currencies;
     }
 
-    public async Task<Currency> GetCurrencyByIdAsync(short id)
+    public async Task<Currency> GetCurrencyByIdAsync(short currencyId)
     {
-        var currency = await _dbContext.Currencies.FindAsync(id);
+        var currency = await _dbContext.Currencies.FindAsync(currencyId);
         if (currency == null)
-            throw new AppException("Currency with requested id does not exist");
+            throw new NotFoundException("Currency with requested id does not exist");
         return currency;
     }
 }

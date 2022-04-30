@@ -77,7 +77,7 @@ public class AuthService : IAuthService
         return new AuthenticateResponse(jwtToken, newRefreshToken.Token);
     }
 
-    public async Task<IdentityResult> RevokeRefreshTokenAsync(string token, string? ipAddress)
+    public async Task<bool> RevokeRefreshTokenAsync(string token, string? ipAddress)
     {
         if (string.IsNullOrEmpty(token))
             throw new BadRequestError("Token", "Refresh token is null");
@@ -90,7 +90,8 @@ public class AuthService : IAuthService
 
         // revoke token and save
         RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");
-        return await _userManager.UpdateAsync(user);
+        var identityResult = await _userManager.UpdateAsync(user);
+        return identityResult.Succeeded;
     }
 
     // helper methods
