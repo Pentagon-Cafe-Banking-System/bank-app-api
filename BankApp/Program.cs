@@ -29,6 +29,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+// Swagger
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -60,6 +62,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddFluentValidationRulesToSwagger();
 
+// Cors policy
 const string corsPolicy = "DefaultPolicy";
 builder.Services.AddCors(options =>
 {
@@ -76,6 +79,7 @@ builder.Services.AddCors(options =>
         });
 });
 
+// Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -96,6 +100,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// Database
 string GetHerokuConnectionString()
 {
     var connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
@@ -113,6 +118,7 @@ var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
 var connectionString = isDevelopment ? builder.Configuration.GetConnectionString("AppDb") : GetHerokuConnectionString();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
+// Identity
 builder.Services.AddIdentityCore<AppUser>(options =>
     {
         options.Password = new PasswordOptions
@@ -129,10 +135,13 @@ builder.Services.AddIdentityCore<AppUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// App settings
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
+// Exception handling
 builder.Services.AddScoped<ExceptionHandlerMiddleware>();
 
+// Services
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -143,6 +152,7 @@ builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
 
+// Fluent validation
 builder.Services.AddFluentValidation();
 builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateEmployeeRequest>, CreateEmployeeRequestValidator>();
