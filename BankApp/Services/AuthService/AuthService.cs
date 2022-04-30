@@ -1,6 +1,7 @@
 ﻿using BankApp.Data;
 using BankApp.Entities;
 using BankApp.Entities.UserTypes;
+using BankApp.Exceptions;
 using BankApp.Exceptions.RequestErrors;
 using BankApp.Models.Requests;
 using BankApp.Models.Responses;
@@ -80,13 +81,13 @@ public class AuthService : IAuthService
     public async Task<bool> RevokeRefreshTokenAsync(string token, string? ipAddress)
     {
         if (string.IsNullOrEmpty(token))
-            throw new BadRequestError("Token", "Refresh token is null");
+            throw new AppException("Refresh token is null");
 
         var user = await GetUserByRefreshTokenAsync(token);
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
 
         if (!refreshToken.IsActive)
-            throw new BadRequestError("Token", "Refresh token is already invalidated");
+            throw new AppException("Refresh token is already invalidated");
 
         // revoke token and save
         RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");
@@ -98,12 +99,9 @@ public class AuthService : IAuthService
 
     private async Task<AppUser> GetUserByRefreshTokenAsync(string token)
     {
-        var user = await _userManager.Users.SingleOrDefaultAsync(u =>
+        var user = await _userManager.Users.SingleAsync(u =>
             u.RefreshTokens.Any(t => t.Token == token)
         );
-        if (user == null)
-            throw new NotFoundError("RefreshToken", "Refresh token not found");
-
         return user;
     }
 

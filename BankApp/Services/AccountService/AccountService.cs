@@ -1,7 +1,7 @@
 using AutoMapper;
 using BankApp.Data;
 using BankApp.Entities;
-using BankApp.Exceptions.RequestErrors;
+using BankApp.Exceptions;
 using BankApp.Models.Requests;
 using BankApp.Services.AccountTypeService;
 using BankApp.Services.CurrencyService;
@@ -43,7 +43,7 @@ public class AccountService : IAccountService
     {
         var account = await _dbContext.Accounts.FindAsync(accountId);
         if (account == null)
-            throw new NotFoundError("Id", "Account with requested id could not be found");
+            throw new NotFoundException("Account with requested id does not exist");
         return account;
     }
 
@@ -51,7 +51,7 @@ public class AccountService : IAccountService
     {
         var account = _dbContext.Accounts.SingleAsync(a => a.Number == number);
         if (account == null)
-            throw new NotFoundError("Number", "Account with requested number could not be found");
+            throw new NotFoundException("Account with requested number does not exist");
         return account;
     }
 

@@ -28,7 +28,7 @@ public class CurrencyServiceTests
         // arrange
 
         // act
-        var result = await _currencyService.GetAllCurrencies();
+        var result = await _currencyService.GetAllCurrenciesAsync();
 
         // assert
         result.Should().BeOfType<List<Currency>>();
