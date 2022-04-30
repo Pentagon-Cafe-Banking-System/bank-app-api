@@ -4,7 +4,7 @@ namespace BankApp.Services.AccountTypeService;
 
 public interface IAccountTypeService
 {
-    IEnumerable<AccountType> GetAllAccountTypes();
-    Task<IEnumerable<Currency>> GetCurrenciesByAccountTypeId(short accountTypeId);
+    Task<IList<AccountType>> GetAllAccountTypesAsync();
+    Task<IList<Currency>> GetCurrenciesOfAccountTypeAsync(short accountTypeId);
     Task<AccountType> GetAccountTypeByIdAsync(short accountTypeId);
 }

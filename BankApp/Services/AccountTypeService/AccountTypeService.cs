@@ -14,18 +14,18 @@ public class AccountTypeService : IAccountTypeService
         _dbContext = dbContext;
     }
 
-    public IEnumerable<AccountType> GetAllAccountTypes()
+    public async Task<IList<AccountType>> GetAllAccountTypesAsync()
     {
-        var accountTypes = _dbContext.AccountTypes.AsEnumerable();
+        var accountTypes = await _dbContext.AccountTypes.ToListAsync();
         return accountTypes;
     }
 
-    public async Task<IEnumerable<Currency>> GetCurrenciesByAccountTypeId(short accountTypeId)
+    public async Task<IList<Currency>> GetCurrenciesOfAccountTypeAsync(short accountTypeId)
     {
         if (accountTypeId == 3)
-            return _dbContext.Currencies.AsEnumerable();
+            return await _dbContext.Currencies.ToListAsync();
         var plnCurrency = await _dbContext.Currencies.SingleAsync(x => x.Code == "PLN");
-        return new List<Currency> {plnCurrency}.AsEnumerable();
+        return new List<Currency> {plnCurrency};
     }
 
     public async Task<AccountType> GetAccountTypeByIdAsync(short accountTypeId)
