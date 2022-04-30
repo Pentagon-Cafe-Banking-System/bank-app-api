@@ -31,7 +31,7 @@ public class AuthService : IAuthService
     public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress)
     {
         var user = await _userService.GetUserByUserNameAsync(request.UserName);
-        var userClaims = await _userService.GetUserClaimsAsync(user);
+        var userClaims = await _userService.GetUserRolesAsClaimsAsync(user);
         var jwtToken = _jwtService.GenerateJwtToken(userClaims);
         var refreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
 
@@ -71,7 +71,8 @@ public class AuthService : IAuthService
         await _userManager.UpdateAsync(user);
 
         // generate new jwt
-        var jwtToken = _jwtService.GenerateJwtToken(await _userService.GetUserClaimsAsync(user));
+        var claims = await _userService.GetUserRolesAsClaimsAsync(user);
+        var jwtToken = _jwtService.GenerateJwtToken(claims);
 
         return new AuthenticateResponse(jwtToken, newRefreshToken.Token);
     }

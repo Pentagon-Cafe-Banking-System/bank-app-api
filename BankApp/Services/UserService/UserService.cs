@@ -1,9 +1,10 @@
 ﻿using System.Security.Claims;
 using System.Transactions;
+using BankApp.Entities;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
-using BankApp.Exceptions.RequestErrors;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.UserService;
 
@@ -18,17 +19,17 @@ public class UserService : IUserService
         _roleManager = roleManager;
     }
 
-    public IEnumerable<AppUser> GetAllUsers()
+    public async Task<IList<AppUser>> GetAllUsersAsync()
     {
-        var users = _userManager.Users.AsEnumerable();
+        var users = await _userManager.Users.ToListAsync();
         return users;
     }
 
-    public async Task<AppUser> GetUserByIdAsync(string id)
+    public async Task<AppUser> GetUserByIdAsync(string userId)
     {
-        var user = await _userManager.FindByIdAsync(id);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
-            throw new NotFoundError("Id", "User with requested id could not be found");
+            throw new NotFoundException("User with requested id does not exist");
         return user;
     }
 
@@ -36,16 +37,17 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByNameAsync(userName);
         if (user == null)
-            throw new NotFoundError("UserName", "Username not be found");
+            throw new NotFoundException("User with requested username does not exist");
         return user;
     }
 
-    public async Task<IdentityResult> CreateUserAsync(AppUser user, string password, string roleName)
+    public async Task<AppUser> CreateUserAsync(string userName, string password, string roleName)
     {
         var roleExists = await _roleManager.RoleExistsAsync(roleName);
         if (!roleExists)
-            throw new AppException($"Role '{roleName}' does not exist");
+            throw new NotFoundException($"Role '{roleName}' does not exist");
 
+        var user = new AppUser {UserName = userName};
         using (var scope = new TransactionScope())
         {
             var createUserIdentityResult = await _userManager.CreateAsync(user, password);
@@ -57,22 +59,18 @@ public class UserService : IUserService
                 throw new AppException("UserManager could not add user to role");
 
             scope.Complete();
-            return addToRoleIdentityResult;
+            return user;
         }
     }
 
-    public async Task<IdentityResult> DeleteUserAsync(AppUser user)
+    public async Task<bool> DeleteUserByIdAsync(string userId)
     {
-        return await _userManager.DeleteAsync(user);
+        var user = await GetUserByIdAsync(userId);
+        var deleteIdentityResult = await _userManager.DeleteAsync(user);
+        return deleteIdentityResult.Succeeded;
     }
 
-    public async Task<IdentityResult> DeleteUserByIdAsync(string id)
-    {
-        var user = await GetUserByIdAsync(id);
-        return await _userManager.DeleteAsync(user);
-    }
-
-    public async Task<IEnumerable<Claim>> GetUserClaimsAsync(AppUser user)
+    public async Task<IList<Claim>> GetUserRolesAsClaimsAsync(AppUser user)
     {
         var claims = new List<Claim>
         {
@@ -81,6 +79,13 @@ public class UserService : IUserService
         };
         var roles = (await _userManager.GetRolesAsync(user)).ToList();
         roles.ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));
-        return claims.AsEnumerable();
+        return claims;
+    }
+
+    public async Task<IList<RefreshToken>> GetUserRefreshTokensAsync(string userId)
+    {
+        var user = await GetUserByIdAsync(userId);
+        var refreshTokens = user.RefreshTokens.ToList();
+        return refreshTokens;
     }
 }
