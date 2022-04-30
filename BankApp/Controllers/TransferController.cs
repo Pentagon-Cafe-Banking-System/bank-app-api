@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using BankApp.Entities;
-using BankApp.Exceptions.RequestErrors;
+using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.AccountService;
@@ -67,7 +67,7 @@ public class TransferController : ControllerBase
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, request.SenderAccountId))
-            throw new BadRequestError("SenderAccountId", "Trying to send transfer from not owned account");
+            throw new ForbiddenException("Trying to send transfer from not owned account");
         var transfer = await _transferService.CreateTransferAsync(request);
         return Ok(transfer);
     }

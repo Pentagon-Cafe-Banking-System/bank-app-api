@@ -1,7 +1,5 @@
 using System.Net;
-using System.Text.Json;
 using BankApp.Exceptions;
-using BankApp.Exceptions.RequestErrors;
 
 namespace BankApp.Middleware;
 
@@ -22,18 +20,14 @@ public class ExceptionHandlerMiddleware : IMiddleware
             {
                 BadRequestException => (int) HttpStatusCode.BadRequest,
                 NotFoundException => (int) HttpStatusCode.NotFound,
+                ForbiddenException => (int) HttpStatusCode.Forbidden,
                 _ => (int) HttpStatusCode.InternalServerError
             };
 
-            try
-            {
-                var requestError = JsonSerializer.Deserialize<RequestError>(error.Message);
-                await response.WriteAsJsonAsync(new {succeeded = false, errors = requestError?.GetError()});
-            }
-            catch (JsonException)
-            {
-                await response.WriteAsJsonAsync(new {succeeded = false, error = "An error occurred."});
-            }
+            if (response.StatusCode == (int) HttpStatusCode.InternalServerError)
+                await response.WriteAsJsonAsync(new {succeeded = false, error = "Internal server error"});
+            else
+                await response.WriteAsJsonAsync(new {succeeded = false, error = error.Message});
         }
     }
 }

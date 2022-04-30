@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using BankApp.Entities;
-using BankApp.Exceptions.RequestErrors;
+using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.AccountService;
@@ -75,7 +75,7 @@ public class AccountController : ControllerBase
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, accountId))
-            throw new BadRequestError("AccountId", "Trying to access account that is not owned by the customer.");
+            throw new ForbiddenException("Trying to access account that is not owned by the customer");
         var account = await _accountService.GetAccountByIdAsync(accountId);
         return Ok(account);
     }
@@ -111,7 +111,7 @@ public class AccountController : ControllerBase
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, accountId))
-            throw new BadRequestError("AccountId", "Trying to access account that is not owned by the customer.");
+            throw new ForbiddenException("Trying to access account that is not owned by the customer");
         var account = await _accountService.UpdateAccountAsync(request, accountId);
         return Ok(account);
     }

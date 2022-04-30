@@ -2,7 +2,6 @@
 using BankApp.Entities;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
-using BankApp.Exceptions.RequestErrors;
 using BankApp.Models.Requests;
 using BankApp.Models.Responses;
 using BankApp.Services.JwtService;
@@ -59,7 +58,7 @@ public class AuthService : IAuthService
         }
 
         if (!refreshToken.IsActive)
-            throw new BadRequestError("Token", "Refresh token is invalid");
+            throw new BadRequestException("Refresh token is invalid");
 
         // replace old refresh token with a new one (rotate token)
         var newRefreshToken = await RotateRefreshTokenAsync(refreshToken, ipAddress);
