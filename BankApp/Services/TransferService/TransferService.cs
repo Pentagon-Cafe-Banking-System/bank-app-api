@@ -1,10 +1,11 @@
 using AutoMapper;
 using BankApp.Data;
 using BankApp.Entities;
-using BankApp.Exceptions.RequestErrors;
+using BankApp.Exceptions;
 using BankApp.Models.Requests;
 using BankApp.Services.AccountService;
 using BankApp.Services.CustomerService;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.TransferService;
 
@@ -22,22 +23,22 @@ public class TransferService : ITransferService
         _accountService = accountService;
     }
 
-    public IEnumerable<Transfer> GetAllTransfers()
+    public async Task<IList<Transfer>> GetAllTransfersAsync()
     {
-        var transfers = _dbContext.Transfers.AsEnumerable();
+        var transfers = await _dbContext.Transfers.ToListAsync();
         return transfers;
     }
 
-    public async Task<IEnumerable<Transfer>> GetAllTransfersFromAndToCustomerByIdAsync(string customerId)
+    public async Task<IList<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId)
     {
         var customer = await _customerService.GetCustomerByIdAsync(customerId);
         var customerBankAccounts = customer.BankAccounts;
         var accountIds = customerBankAccounts.Select(a => a.Id);
         var accountNumbers = customerBankAccounts.Select(a => a.Number);
-        var transfers = _dbContext.Transfers
+        var transfers = await _dbContext.Transfers
             .Where(t => accountNumbers.Contains(t.ReceiverAccountNumber) || accountIds.Contains(t.SenderAccountId))
             .OrderByDescending(t => t.Ordered)
-            .AsEnumerable();
+            .ToListAsync();
         return transfers;
     }
 
@@ -45,7 +46,7 @@ public class TransferService : ITransferService
     {
         var transfer = await _dbContext.Transfers.FindAsync(id);
         if (transfer == null)
-            throw new NotFoundError("Id", "Transfer with requested id could not be found");
+            throw new NotFoundException("Transfer with requested id could not be found");
         return transfer;
     }
 
