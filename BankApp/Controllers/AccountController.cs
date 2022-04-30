@@ -26,9 +26,9 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("accounts")]
     [Authorize(Roles = RoleType.Employee)]
-    public ActionResult<IEnumerable<Account>> GetAllAccounts()
+    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsAsync()
     {
-        var accounts = _accountService.GetAllAccounts();
+        var accounts = await _accountService.GetAllAccountsAsync();
         return Ok(accounts);
     }
 

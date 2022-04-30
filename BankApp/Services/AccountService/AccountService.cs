@@ -26,9 +26,9 @@ public class AccountService : IAccountService
         _accountTypeService = accountTypeService;
     }
 
-    public IEnumerable<Account> GetAllAccounts()
+    public async Task<IList<Account>> GetAllAccountsAsync()
     {
-        var accounts = _dbContext.Accounts.AsEnumerable();
+        var accounts = await _dbContext.Accounts.ToListAsync();
         return accounts;
     }
 
@@ -39,9 +39,9 @@ public class AccountService : IAccountService
         return result;
     }
 
-    public async Task<Account> GetAccountByIdAsync(long id)
+    public async Task<Account> GetAccountByIdAsync(long accountId)
     {
-        var account = await _dbContext.Accounts.FindAsync(id);
+        var account = await _dbContext.Accounts.FindAsync(accountId);
         if (account == null)
             throw new NotFoundError("Id", "Account with requested id could not be found");
         return account;
@@ -55,10 +55,10 @@ public class AccountService : IAccountService
         return account;
     }
 
-    public async Task<IEnumerable<Account>> GetAccountsByCustomerIdAsync(string customerId)
+    public async Task<IList<Account>> GetAccountsByCustomerIdAsync(string customerId)
     {
         var customer = await _customerService.GetCustomerByIdAsync(customerId);
-        var accounts = customer.BankAccounts.AsEnumerable();
+        var accounts = customer.BankAccounts.ToList();
         return accounts;
     }
 
@@ -83,9 +83,9 @@ public class AccountService : IAccountService
         return account;
     }
 
-    public async Task<Account> UpdateAccountAsync(UpdateAccountRequest request, long id)
+    public async Task<Account> UpdateAccountAsync(UpdateAccountRequest request, long accountId)
     {
-        var account = await GetAccountByIdAsync(id);
+        var account = await GetAccountByIdAsync(accountId);
         account.Balance = request.Balance ?? account.Balance;
         account.TransferLimit = request.TransferLimit ?? account.TransferLimit;
         account.IsActive = request.IsActive ?? account.IsActive;
