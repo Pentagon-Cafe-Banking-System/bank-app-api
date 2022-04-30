@@ -5,7 +5,7 @@ namespace BankApp.Services.CustomerService;
 
 public interface ICustomerService
 {
-    Task<IList<Customer>> GetAllCustomers();
+    Task<IList<Customer>> GetAllCustomersAsync();
     Task<Customer> GetCustomerByIdAsync(string customerId);
     Task<Customer> CreateCustomerAsync(CreateCustomerRequest request);
     Task<Customer> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId);

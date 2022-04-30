@@ -25,9 +25,9 @@ public class CustomerController : ControllerBase
     /// </summary>
     [HttpGet]
     [Authorize(Roles = RoleType.Employee)]
-    public ActionResult<IEnumerable<Customer>> GetAllCustomers()
+    public async Task<ActionResult<IEnumerable<Customer>>> GetAllCustomersAsync()
     {
-        var customers = _customerService.GetAllCustomers();
+        var customers = await _customerService.GetAllCustomersAsync();
         return Ok(customers);
     }
 

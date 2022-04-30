@@ -24,7 +24,7 @@ public class UserController : ControllerBase
     /// Returns all base users. Only for admins.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetAllUsers()
+    public async Task<ActionResult<IEnumerable<AppUser>>> GetAllUsersAsync()
     {
         var users = await _userService.GetAllUsersAsync();
         return Ok(users);

@@ -21,7 +21,7 @@ public class CustomerService : ICustomerService
         _userService = userService;
     }
 
-    public async Task<IList<Customer>> GetAllCustomers()
+    public async Task<IList<Customer>> GetAllCustomersAsync()
     {
         var employees = await _dbContext.Customers.ToListAsync();
         return employees;
