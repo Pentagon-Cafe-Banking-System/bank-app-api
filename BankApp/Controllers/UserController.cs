@@ -9,7 +9,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Authorize(Roles = RoleType.Admin)]
-[Route("api/users")]
+[Route("api/user-management")]
 [ApiExplorerSettings(GroupName = "Users")]
 public class UserController : ControllerBase
 {
@@ -23,7 +23,7 @@ public class UserController : ControllerBase
     /// <summary>
     /// Returns all base users. Only for admins.
     /// </summary>
-    [HttpGet]
+    [HttpGet("users")]
     public async Task<ActionResult<IList<AppUserDto>>> GetAllUsersAsync()
     {
         var users = await _userService.GetAllUsersAsync();
@@ -34,7 +34,7 @@ public class UserController : ControllerBase
     /// <summary>
     /// Returns all refresh tokens for specified user. Only for admins.
     /// </summary>
-    [HttpGet("{userId}/refresh-tokens")]
+    [HttpGet("users/{userId}/refresh-tokens")]
     public async Task<ActionResult<IList<RefreshToken>>> GetUserRefreshTokensAsync(string userId)
     {
         var refreshTokens = await _userService.GetUserRefreshTokensAsync(userId);

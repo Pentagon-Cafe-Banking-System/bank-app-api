@@ -7,7 +7,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/account-types")]
+[Route("api/account-type-management")]
 [ApiExplorerSettings(GroupName = "Account types")]
 public class AccountTypeController : ControllerBase
 {
@@ -21,7 +21,7 @@ public class AccountTypeController : ControllerBase
     /// <summary>
     /// Returns all account types. For all authenticated users.
     /// </summary>
-    [HttpGet]
+    [HttpGet("account-types")]
     public async Task<ActionResult<IList<AccountTypeDto>>> GetAllAccountTypesAsync()
     {
         var accountTypes = await _accountTypeService.GetAllAccountTypesAsync();
@@ -32,7 +32,7 @@ public class AccountTypeController : ControllerBase
     /// <summary>
     /// Returns currencies available for specified account type. For all authenticated users.
     /// </summary>
-    [HttpGet("{accountTypeId:int}/currencies")]
+    [HttpGet("account-types/{accountTypeId:int}/currencies")]
     public async Task<ActionResult<IList<CurrencyDto>>> GetCurrenciesOfAccountTypeAsync(int accountTypeId)
     {
         var currencies = await _accountTypeService.GetCurrenciesOfAccountTypeAsync(accountTypeId);

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Route("api")]
+[Route("api/account-management")]
 [ApiExplorerSettings(GroupName = "Accounts")]
 public class AccountController : ControllerBase
 {

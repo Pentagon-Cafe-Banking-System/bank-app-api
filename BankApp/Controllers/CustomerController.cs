@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Route("api/customers")]
+[Route("api/customer-management")]
 [ApiExplorerSettings(GroupName = "Customers")]
 public class CustomerController : ControllerBase
 {
@@ -23,7 +23,7 @@ public class CustomerController : ControllerBase
     /// <summary>
     /// Returns all customers. Only for employees.
     /// </summary>
-    [HttpGet]
+    [HttpGet("customers")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<IList<CustomerDto>>> GetAllCustomersAsync()
     {
@@ -35,7 +35,7 @@ public class CustomerController : ControllerBase
     /// <summary>
     /// Returns customer by id. Only for employees.
     /// </summary>
-    [HttpGet("{customerId}")]
+    [HttpGet("customers/{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<CustomerDto>> GetCustomerByIdAsync(string customerId)
     {
@@ -47,7 +47,7 @@ public class CustomerController : ControllerBase
     /// <summary>
     /// Creates new customer. Only for employees.
     /// </summary>
-    [HttpPost]
+    [HttpPost("customers")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<CustomerDto>> CreateCustomerAsync(CreateCustomerRequest request)
     {
@@ -59,7 +59,7 @@ public class CustomerController : ControllerBase
     /// <summary>
     /// Updates customer by id. Only for employees.
     /// </summary>
-    [HttpPatch("{customerId}")] // TODO - make it true PATCH
+    [HttpPatch("customers/{customerId}")] // TODO - make it true PATCH
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<CustomerDto>> UpdateCustomerByIdAsync(UpdateCustomerRequest request,
         string customerId)
@@ -72,7 +72,7 @@ public class CustomerController : ControllerBase
     /// <summary>
     /// Deletes customer by id. Only for employees.
     /// </summary>
-    [HttpDelete("{customerId}")]
+    [HttpDelete("customers/{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<IdentityResult>> DeleteCustomerByIdAsync(string customerId)
     {

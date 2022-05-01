@@ -10,7 +10,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Authorize(Roles = RoleType.Admin)]
-[Route("api/employees")]
+[Route("api/employee-management")]
 [ApiExplorerSettings(GroupName = "Employees")]
 public class EmployeeController : ControllerBase
 {
@@ -24,7 +24,7 @@ public class EmployeeController : ControllerBase
     /// <summary>
     /// Returns all employees. Only for admins.
     /// </summary>
-    [HttpGet]
+    [HttpGet("employees")]
     public async Task<ActionResult<IList<EmployeeDto>>> GetAllEmployeesAsync()
     {
         var employees = await _employeeService.GetAllEmployeesAsync();
@@ -35,7 +35,7 @@ public class EmployeeController : ControllerBase
     /// <summary>
     /// Returns employee by id. Only for admins.
     /// </summary>
-    [HttpGet("{employeeId}")]
+    [HttpGet("employees/{employeeId}")]
     public async Task<ActionResult<EmployeeDto>> GetEmployeeByIdAsync(string employeeId)
     {
         var employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
@@ -46,7 +46,7 @@ public class EmployeeController : ControllerBase
     /// <summary>
     /// Creates new employee. Only for admins.
     /// </summary>
-    [HttpPost]
+    [HttpPost("employees")]
     public async Task<ActionResult<EmployeeDto>> CreateEmployeeAsync(CreateEmployeeRequest request)
     {
         var employee = await _employeeService.CreateEmployeeAsync(request);
@@ -57,7 +57,7 @@ public class EmployeeController : ControllerBase
     /// <summary>
     /// Updates employee by id. Only for admins.
     /// </summary>
-    [HttpPatch("{employeeId}")] // TODO - make it true PATCH
+    [HttpPatch("employees/{employeeId}")] // TODO - make it true PATCH
     public async Task<ActionResult<EmployeeDto>> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request,
         string employeeId)
     {
@@ -69,7 +69,7 @@ public class EmployeeController : ControllerBase
     /// <summary>
     /// Deletes employee by id. Only for admins.
     /// </summary>
-    [HttpDelete("{employeeId}")]
+    [HttpDelete("employees/{employeeId}")]
     public async Task<ActionResult<IdentityResult>> DeleteEmployeeByIdAsync(string employeeId)
     {
         var result = await _employeeService.DeleteEmployeeByIdAsync(employeeId);

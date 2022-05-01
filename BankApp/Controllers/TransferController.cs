@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Route("api")]
+[Route("api/transfer-management")]
 [ApiExplorerSettings(GroupName = "Transfers")]
 public class TransferController : ControllerBase
 {
