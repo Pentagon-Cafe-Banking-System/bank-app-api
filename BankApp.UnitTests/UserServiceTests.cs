@@ -88,8 +88,7 @@ public class UserServiceTests
         A.CallTo(() => _fakeRoleManager.RoleExistsAsync(A<string>.Ignored)).Returns(true);
         A.CallTo(() => _fakeUserManager.CreateAsync(A<AppUser>.Ignored, A<string>.Ignored)).Returns(fakeIdentityResult);
         A.CallTo(() =>
-            _fakeUserManager.AddToRoleAsync(A<AppUser>.Ignored, A<string>.Ignored)
-        ).Returns(fakeIdentityResult);
+            _fakeUserManager.AddToRoleAsync(A<AppUser>.Ignored, A<string>.Ignored)).Returns(fakeIdentityResult);
 
         // act
         var action = async () => await _userService.CreateUserAsync("userName", "password", "roleName");
@@ -129,24 +128,12 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async void DeleteUserByIdAsync_IdDoesntExist_ThrowsNotFoundException()
+    public async void DeleteUserByIdAsync_IdExists_CallsUserManagerDeleteAsyncMethod()
     {
         // arrange
-        AppUser appUser = null!;
-        A.CallTo(() => _fakeUserManager.FindByIdAsync(A<string>.Ignored)).Returns(appUser);
-
-        // act
-        var action = async () => await _userService.DeleteUserByIdAsync("1");
-
-        // assert
-        await action.Should().ThrowExactlyAsync<NotFoundException>();
-    }
-
-    [Fact]
-    public async void DeleteUserByIdAsync_CallsUserManagerDeleteAsyncMethod()
-    {
-        // arrange
+        var appUser = A.Dummy<AppUser>();
         var id = Guid.NewGuid().ToString();
+        A.CallTo(() => _fakeUserManager.FindByIdAsync(A<string>.Ignored)).Returns(appUser);
 
         // act
         await _userService.DeleteUserByIdAsync(id);
@@ -156,16 +143,38 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async void DeleteUserByIdAsync_IdExists_CallsUserManagerDeleteAsyncMethod()
+    public async void DeleteUserByIdAsync_IdDoesntExist_ThrowsNotFoundException()
     {
         // arrange
-        AppUser appUser = A.Dummy<AppUser>();
+        AppUser appUser = null!;
+        var id = Guid.NewGuid().ToString();
         A.CallTo(() => _fakeUserManager.FindByIdAsync(A<string>.Ignored)).Returns(appUser);
 
         // act
-        await _userService.DeleteUserByIdAsync("1");
+        var action = async () => await _userService.DeleteUserByIdAsync(id);
 
         // assert
-        A.CallTo(() => _fakeUserManager.DeleteAsync(A<AppUser>.Ignored)).MustHaveHappenedOnceExactly();
+        await action.Should().ThrowExactlyAsync<NotFoundException>();
+    }
+
+    [Fact]
+    public async void DeleteUserByIdAsync_IdDoesntExist_DoesntCallUserManagerDeleteAsyncMethod()
+    {
+        // arrange
+        AppUser appUser = null!;
+        var id = Guid.NewGuid().ToString();
+        A.CallTo(() => _fakeUserManager.FindByIdAsync(A<string>.Ignored)).Returns(appUser);
+
+        // act
+        try
+        {
+            await _userService.DeleteUserByIdAsync(id);
+        }
+        catch (NotFoundException)
+        {
+        }
+
+        // assert
+        A.CallTo(() => _fakeUserManager.DeleteAsync(A<AppUser>.Ignored)).MustNotHaveHappened();
     }
 }
