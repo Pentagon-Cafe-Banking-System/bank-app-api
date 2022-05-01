@@ -58,7 +58,7 @@ public class EmployeeService : IEmployeeService
         var hasher = new PasswordHasher<AppUser>();
         var employee = await GetEmployeeByIdAsync(employeeId, cancellationToken);
         employee.AppUser.UserName = request.UserName;
-        employee.AppUser.NormalizedUserName = request.UserName.ToUpperInvariant();
+        employee.AppUser.NormalizedUserName = request.UserName.ToUpper();
         employee.AppUser.PasswordHash = hasher.HashPassword(null!, request.Password);
         employee.FirstName = request.FirstName;
         employee.LastName = request.LastName;

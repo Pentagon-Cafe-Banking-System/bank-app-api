@@ -58,7 +58,7 @@ public class CustomerService : ICustomerService
         var hasher = new PasswordHasher<AppUser>();
         var customer = await GetCustomerByIdAsync(customerId, cancellationToken);
         customer.AppUser.UserName = request.UserName;
-        customer.AppUser.NormalizedUserName = request.UserName.ToUpperInvariant();
+        customer.AppUser.NormalizedUserName = request.UserName.ToUpper();
         customer.AppUser.PasswordHash = hasher.HashPassword(null!, request.Password);
         customer.FirstName = request.FirstName;
         customer.MiddleName = request.SecondName;

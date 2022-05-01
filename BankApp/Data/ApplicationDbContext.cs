@@ -91,9 +91,9 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         var roles = new List<IdentityRole>
         {
-            new() {Name = RoleType.Admin, NormalizedName = RoleType.Admin.ToUpperInvariant(), Id = adminRoleId},
-            new() {Name = RoleType.Employee, NormalizedName = RoleType.Employee.ToUpperInvariant()},
-            new() {Name = RoleType.Customer, NormalizedName = RoleType.Customer.ToUpperInvariant()}
+            new() {Name = RoleType.Admin, NormalizedName = RoleType.Admin.ToUpper(), Id = adminRoleId},
+            new() {Name = RoleType.Employee, NormalizedName = RoleType.Employee.ToUpper()},
+            new() {Name = RoleType.Customer, NormalizedName = RoleType.Customer.ToUpper()}
         };
         builder.Entity<IdentityRole>().HasData(roles);
     }
@@ -107,7 +107,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
             {
                 Id = adminUserId,
                 UserName = "admin",
-                NormalizedUserName = "admin".ToUpperInvariant(),
+                NormalizedUserName = "admin".ToUpper(),
                 PasswordHash = hasher.HashPassword(null!, "admin")
             }
         );

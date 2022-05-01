@@ -22,7 +22,7 @@ public class UpdateCustomerRequestValidator : AbstractValidator<UpdateCustomerRe
         RuleFor(e => e.UserName).MustAsync(async (username, _) =>
             {
                 var result = await applicationDbContext.Users.AnyAsync(user =>
-                    user.NormalizedUserName == username.ToUpperInvariant()
+                    user.NormalizedUserName == username.ToUpper()
                 );
                 return !result;
             }
