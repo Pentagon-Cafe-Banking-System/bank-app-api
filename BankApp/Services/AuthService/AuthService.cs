@@ -80,13 +80,13 @@ public class AuthService : IAuthService
     public async Task<bool> RevokeRefreshTokenAsync(string token, string? ipAddress)
     {
         if (string.IsNullOrEmpty(token))
-            throw new AppException("Refresh token is null");
+            throw new BadRequestException("Refresh token is null");
 
         var user = await GetUserByRefreshTokenAsync(token);
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
 
         if (!refreshToken.IsActive)
-            throw new AppException("Refresh token is already invalidated");
+            throw new BadRequestException("Refresh token is already invalidated");
 
         // revoke token and save
         RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");

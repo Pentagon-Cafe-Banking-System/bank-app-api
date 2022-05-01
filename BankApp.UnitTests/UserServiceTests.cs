@@ -6,6 +6,7 @@ using BankApp.Services.UserService;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
+using MockQueryable.FakeItEasy;
 using Xunit;
 
 namespace BankApp.UnitTests;
@@ -27,7 +28,7 @@ public class UserServiceTests
     public async void GetAllUsers_NoUsers_ReturnsEmptyCollection()
     {
         // arrange
-        var fakeAppUserQueryable = A.CollectionOfDummy<AppUser>(0).AsQueryable();
+        var fakeAppUserQueryable = A.CollectionOfDummy<AppUser>(0).AsQueryable().BuildMock();
         A.CallTo(() => _fakeUserManager.Users).Returns(fakeAppUserQueryable);
 
         // act
@@ -41,7 +42,7 @@ public class UserServiceTests
     public async void GetAllUsers_UsersExist_ReturnsUsersCollection()
     {
         // arrange
-        var fakeAppUserQueryable = A.CollectionOfDummy<AppUser>(3).AsQueryable();
+        var fakeAppUserQueryable = A.CollectionOfDummy<AppUser>(3).AsQueryable().BuildMock();
         A.CallTo(() => _fakeUserManager.Users).Returns(fakeAppUserQueryable);
 
         // act
@@ -83,11 +84,12 @@ public class UserServiceTests
     public async void CreateUserAsync_ForValidData_DoesNotThrowAnyException()
     {
         // arrange
-        var dummyAppUser = A.Dummy<AppUser>();
         var fakeIdentityResult = IdentityResult.Success;
         A.CallTo(() => _fakeRoleManager.RoleExistsAsync(A<string>.Ignored)).Returns(true);
-        A.CallTo(() => _fakeUserManager.AddToRoleAsync(dummyAppUser, A<string>.Ignored)).Returns(fakeIdentityResult);
-        A.CallTo(() => _fakeUserManager.CreateAsync(dummyAppUser, A<string>.Ignored)).Returns(fakeIdentityResult);
+        A.CallTo(() => _fakeUserManager.CreateAsync(A<AppUser>.Ignored, A<string>.Ignored)).Returns(fakeIdentityResult);
+        A.CallTo(() =>
+            _fakeUserManager.AddToRoleAsync(A<AppUser>.Ignored, A<string>.Ignored)
+        ).Returns(fakeIdentityResult);
 
         // act
         var action = async () => await _userService.CreateUserAsync("userName", "password", "roleName");
@@ -97,7 +99,7 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async void CreateUserAsync_RoleNameDoesntExist_ThrowsAppException()
+    public async void CreateUserAsync_RoleNameDoesntExist_ThrowsNotFoundException()
     {
         // arrange
         A.CallTo(() => _fakeRoleManager.RoleExistsAsync(A<string>.Ignored)).Returns(false);
@@ -106,7 +108,7 @@ public class UserServiceTests
         var action = async () => await _userService.CreateUserAsync("userName", "password", "roleName");
 
         // assert
-        await action.Should().ThrowExactlyAsync<AppException>();
+        await action.Should().ThrowExactlyAsync<NotFoundException>();
     }
 
     [Fact]

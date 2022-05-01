@@ -32,7 +32,7 @@ public class AccountTypeService : IAccountTypeService
     {
         var accountType = await _dbContext.AccountTypes.FindAsync(accountTypeId);
         if (accountType == null)
-            throw new AppException("Account type with requested id does not exist");
+            throw new NotFoundException("Account type with requested id does not exist");
         return accountType;
     }
 }
