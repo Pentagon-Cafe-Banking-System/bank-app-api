@@ -103,7 +103,16 @@ public class AccountService : IAccountService
 
     private string GenerateAccountNumber()
     {
-        var id = (_dbContext.Accounts.MaxBy(acc => acc.Id)?.Id ?? 0) + 1;
+        long id;
+        try
+        {
+            id = _dbContext.Accounts.Max(acc => acc.Id) + 1;
+        }
+        catch (Exception)
+        {
+            id = 1;
+        }
+
         var accountNumber = id.ToString().PadLeft(16, '0');
         return accountNumber;
     }
