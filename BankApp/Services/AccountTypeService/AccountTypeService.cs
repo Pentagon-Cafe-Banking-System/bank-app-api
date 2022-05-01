@@ -48,4 +48,12 @@ public class AccountTypeService : IAccountTypeService
         );
         return exists;
     }
+
+    public async Task<bool> AccountTypeSupportsCurrencyAsync(int accountTypeId, int currencyId,
+        CancellationToken cancellationToken = default)
+    {
+        var accountType = await GetAccountTypeByIdAsync(accountTypeId, cancellationToken);
+        var supportsCurrency = accountType.AvailableCurrencies.Any(x => x.CurrencyId == currencyId);
+        return supportsCurrency;
+    }
 }

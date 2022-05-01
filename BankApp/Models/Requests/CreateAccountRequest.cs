@@ -50,21 +50,9 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
             .WithMessage("Currency does not exist");
 
         RuleFor(e => new {e.AccountTypeId, e.CurrencyId})
-            .Must((args, _) =>
-            {
-                if (args.AccountTypeId is 1 or 2)
-                    return args.CurrencyId == 1;
-                return true;
-            })
+            .MustAsync(async (args, cancellationToken) => await accountTypeService
+                .AccountTypeSupportsCurrencyAsync(args.AccountTypeId, args.CurrencyId, cancellationToken))
             .WithName("CurrencyId")
-            .WithMessage("Chosen account type only supports PLN currency")
-            .Must((args, _) =>
-            {
-                if (args.AccountTypeId == 3)
-                    return args.CurrencyId != 1;
-                return true;
-            })
-            .WithName("CurrencyId")
-            .WithMessage("Foreign currency accounts don't support this currency");
+            .WithMessage("Chosen account does not support this currency");
     }
 }
