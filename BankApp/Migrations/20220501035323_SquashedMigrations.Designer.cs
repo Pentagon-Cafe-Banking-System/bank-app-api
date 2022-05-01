@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220426132252_SquashedMigrations")]
+    [Migration("20220501035323_SquashedMigrations")]
     partial class SquashedMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1862,11 +1862,11 @@ namespace BankApp.Migrations
                         {
                             Id = "7a4165b4-0aca-43fb-a390-294781ee377f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3d660395-0ce6-4a81-9e40-4bcb5c6e0130",
+                            ConcurrencyStamp = "4e3c2cfa-ff2d-470f-954b-7794e426ca4c",
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAELsKpTNOeoMAyYMo/KDDIY4wa0BGExU5oYVgFXPxmlq2i4ZamgolT+MfyO7L5pHLVw==",
-                            SecurityStamp = "c137321f-adb6-418c-99f3-daee5a76b3ad",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFvErt+WV4ByJ2Nmsx0pRPqly8uNI7Ocmg20P9A/Ia8vh66TLpGTZKjjeNFKUP56NQ==",
+                            SecurityStamp = "6f9b6c34-6557-40ff-ae22-506994299721",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1968,21 +1968,21 @@ namespace BankApp.Migrations
                         new
                         {
                             Id = "fa2640a0-0496-4010-bc27-424e0e5c6f78",
-                            ConcurrencyStamp = "119642d2-57de-422f-8080-95d9f114fd97",
+                            ConcurrencyStamp = "f6e21ecf-0c53-430e-ac00-e63310869e5f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "7f46b697-d1f8-4a88-bcb9-e172d89c152e",
-                            ConcurrencyStamp = "ba59350d-9f2e-470b-9d71-bec1b71d096a",
+                            Id = "8d746f98-ea62-46eb-9577-db25954163ca",
+                            ConcurrencyStamp = "69b3909c-a152-4f97-a609-85d5b8fa1b44",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = "f7ec9b62-5008-4691-b66c-82644ad446a4",
-                            ConcurrencyStamp = "ea560f8f-46a6-420a-9069-63756c66db6f",
+                            Id = "1bdd1cab-e0c4-4b27-9aa8-742cecf0a42e",
+                            ConcurrencyStamp = "aba22bcb-468c-4036-ae90-a12c2e3c0d2f",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });

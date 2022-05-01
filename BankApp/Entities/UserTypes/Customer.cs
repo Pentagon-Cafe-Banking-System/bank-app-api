@@ -6,7 +6,7 @@ namespace BankApp.Entities.UserTypes;
 [Table("Customers")]
 public class Customer
 {
-    [Key] [ForeignKey("AppUser")] public string Id { get; set; } = default!;
+    [Key] [ForeignKey(nameof(AppUser))] public string Id { get; set; } = default!;
     public string FirstName { get; set; } = default!;
     public string MiddleName { get; set; } = default!;
     public string LastName { get; set; } = default!;
