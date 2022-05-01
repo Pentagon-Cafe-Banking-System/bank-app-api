@@ -1,6 +1,6 @@
 ﻿using BankApp.Entities;
-using BankApp.Entities.UserTypes;
 using BankApp.Models;
+using BankApp.Models.Responses;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,10 +24,11 @@ public class UserController : ControllerBase
     /// Returns all base users. Only for admins.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IList<AppUser>>> GetAllUsersAsync()
+    public async Task<ActionResult<IList<AppUserDto>>> GetAllUsersAsync()
     {
         var users = await _userService.GetAllUsersAsync();
-        return Ok(users);
+        var usersDto = users.Select(u => u.ToDto()).ToList();
+        return Ok(usersDto);
     }
 
     /// <summary>

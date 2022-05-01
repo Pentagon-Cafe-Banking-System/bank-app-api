@@ -1,4 +1,4 @@
-﻿using BankApp.Entities;
+﻿using BankApp.Models.Responses;
 using BankApp.Services.AccountTypeService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,19 +22,21 @@ public class AccountTypeController : ControllerBase
     /// Returns all account types. For all authenticated users.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IList<AccountType>>> GetAllAccountTypesAsync()
+    public async Task<ActionResult<IList<AccountTypeDto>>> GetAllAccountTypesAsync()
     {
         var accountTypes = await _accountTypeService.GetAllAccountTypesAsync();
-        return Ok(accountTypes);
+        var accountTypesDto = accountTypes.Select(a => a.ToDto()).ToList();
+        return Ok(accountTypesDto);
     }
 
     /// <summary>
     /// Returns currencies available for specified account type. For all authenticated users.
     /// </summary>
     [HttpGet("{accountTypeId:int}/currencies")]
-    public async Task<ActionResult<IList<Currency>>> GetCurrenciesOfAccountTypeAsync(int accountTypeId)
+    public async Task<ActionResult<IList<CurrencyDto>>> GetCurrenciesOfAccountTypeAsync(int accountTypeId)
     {
         var currencies = await _accountTypeService.GetCurrenciesOfAccountTypeAsync(accountTypeId);
-        return Ok(currencies);
+        var currenciesDto = currencies.Select(c => c.ToDto()).ToList();
+        return Ok(currenciesDto);
     }
 }

@@ -1,4 +1,4 @@
-﻿using BankApp.Entities;
+﻿using BankApp.Models.Responses;
 using BankApp.Services.CurrencyService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,9 +20,10 @@ public class CurrencyController : Controller
     /// Returns all available currencies with their rates.
     /// </summary>
     [HttpGet]
-    public async Task<IList<Currency>> GetAllCurrenciesAsync()
+    public async Task<ActionResult<IList<CurrencyDto>>> GetAllCurrenciesAsync()
     {
         var currencies = await _currencyService.GetAllCurrenciesAsync();
-        return currencies;
+        var currenciesDto = currencies.Select(c => c.ToDto()).ToList();
+        return Ok(currenciesDto);
     }
 }

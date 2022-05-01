@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using BankApp.Entities;
 using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
+using BankApp.Models.Responses;
 using BankApp.Services.AccountService;
 using BankApp.Services.TransferService;
 using Microsoft.AspNetCore.Authorization;
@@ -29,10 +29,11 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpGet("transfers")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IList<Transfer>>> GetAllTransfers()
+    public async Task<ActionResult<IList<TransferDto>>> GetAllTransfers()
     {
         var transfers = await _transferService.GetAllTransfersAsync();
-        return Ok(transfers);
+        var transfersDto = transfers.Select(t => t.ToDto()).ToList();
+        return Ok(transfersDto);
     }
 
     /// <summary>
@@ -40,11 +41,12 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpGet("customer/auth/transfers")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IList<Transfer>>> GetAllTransfersFromAndToCustomerByIdAsync()
+    public async Task<ActionResult<IList<TransferDto>>> GetAllTransfersFromAndToCustomerByIdAsync()
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         var transfers = await _transferService.GetAllTransfersFromAndToCustomerAsync(customerId);
-        return Ok(transfers);
+        var transfersDto = transfers.Select(t => t.ToDto()).ToList();
+        return Ok(transfersDto);
     }
 
     /// <summary>
@@ -52,10 +54,11 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpGet("transfers/{transferId:long}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Transfer>> GetTransferByIdAsync(long transferId)
+    public async Task<ActionResult<TransferDto>> GetTransferByIdAsync(long transferId)
     {
         var transfer = await _transferService.GetTransferByIdAsync(transferId);
-        return Ok(transfer);
+        var transferDto = transfer.ToDto();
+        return Ok(transferDto);
     }
 
     /// <summary>
@@ -63,12 +66,13 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpPost("transfers")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<Transfer>> CreateTransferAsync(CreateTransferRequest request)
+    public async Task<ActionResult<TransferDto>> CreateTransferAsync(CreateTransferRequest request)
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, request.SenderAccountId))
             throw new ForbiddenException("Trying to send transfer from not owned account");
         var transfer = await _transferService.CreateTransferAsync(request);
-        return Ok(transfer);
+        var transferDto = transfer.ToDto();
+        return Ok(transferDto);
     }
 }

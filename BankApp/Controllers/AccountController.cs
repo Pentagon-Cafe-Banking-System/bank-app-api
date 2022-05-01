@@ -1,8 +1,8 @@
 using System.Security.Claims;
-using BankApp.Entities;
 using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
+using BankApp.Models.Responses;
 using BankApp.Services.AccountService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,10 +26,11 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("accounts")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IList<Account>>> GetAllAccountsAsync()
+    public async Task<ActionResult<IList<AccountDto>>> GetAllAccountsAsync()
     {
         var accounts = await _accountService.GetAllAccountsAsync();
-        return Ok(accounts);
+        var accountsDto = accounts.Select(a => a.ToDto()).ToList();
+        return Ok(accountsDto);
     }
 
     /// <summary>
@@ -37,10 +38,11 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Account>> GetAccountByIdAsync(long accountId)
+    public async Task<ActionResult<AccountDto>> GetAccountByIdAsync(long accountId)
     {
         var account = await _accountService.GetAccountByIdAsync(accountId);
-        return Ok(account);
+        var accountDto = account.ToDto();
+        return Ok(accountDto);
     }
 
     /// <summary>
@@ -48,11 +50,12 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("customers/auth/accounts")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IList<Account>>> GetAllAccountsOfAuthenticatedCustomerAsync()
+    public async Task<ActionResult<IList<AccountDto>>> GetAllAccountsOfAuthenticatedCustomerAsync()
     {
         var userId = User.FindFirstValue(ClaimTypes.Sid);
         var accounts = await _accountService.GetAccountsByCustomerIdAsync(userId);
-        return Ok(accounts);
+        var accountsDto = accounts.Select(a => a.ToDto()).ToList();
+        return Ok(accountsDto);
     }
 
     /// <summary>
@@ -60,10 +63,11 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("customers/{customerId}/accounts")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IList<Account>>> GetAccountsByCustomerIdAsync(string customerId)
+    public async Task<ActionResult<IList<AccountDto>>> GetAccountsByCustomerIdAsync(string customerId)
     {
         var accounts = await _accountService.GetAccountsByCustomerIdAsync(customerId);
-        return Ok(accounts);
+        var accountsDto = accounts.Select(a => a.ToDto()).ToList();
+        return Ok(accountsDto);
     }
 
     /// <summary>
@@ -71,13 +75,14 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("customers/auth/accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IList<Account>>> GetAccountByIdOfAuthenticatedCustomerAsync(long accountId)
+    public async Task<ActionResult<IList<AccountDto>>> GetAccountByIdOfAuthenticatedCustomerAsync(long accountId)
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, accountId))
             throw new ForbiddenException("Trying to access account that is not owned by the customer");
         var account = await _accountService.GetAccountByIdAsync(accountId);
-        return Ok(account);
+        var accountDto = account.ToDto();
+        return Ok(accountDto);
     }
 
     /// <summary>
@@ -85,10 +90,11 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpPost("accounts")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Account>> CreateAccountAsync(CreateAccountRequest request)
+    public async Task<ActionResult<AccountDto>> CreateAccountAsync(CreateAccountRequest request)
     {
         var account = await _accountService.CreateAccountAsync(request);
-        return Ok(account);
+        var accountDto = account.ToDto();
+        return Ok(accountDto);
     }
 
     /// <summary>
@@ -96,10 +102,12 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpPatch("accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Account>> UpdateAccountByEmployeeAsync(UpdateAccountRequest request, long accountId)
+    public async Task<ActionResult<AccountDto>> UpdateAccountByEmployeeAsync(UpdateAccountRequest request,
+        long accountId)
     {
         var account = await _accountService.UpdateAccountAsync(request, accountId);
-        return Ok(account);
+        var accountDto = account.ToDto();
+        return Ok(accountDto);
     }
 
     /// <summary>
@@ -107,13 +115,15 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpPatch("customers/auth/accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<Account>> UpdateAccountByCustomerAsync(UpdateAccountRequest request, long accountId)
+    public async Task<ActionResult<AccountDto>> UpdateAccountByCustomerAsync(UpdateAccountRequest request,
+        long accountId)
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, accountId))
             throw new ForbiddenException("Trying to access account that is not owned by the customer");
         var account = await _accountService.UpdateAccountAsync(request, accountId);
-        return Ok(account);
+        var accountDto = account.ToDto();
+        return Ok(accountDto);
     }
 
     /// <summary>
