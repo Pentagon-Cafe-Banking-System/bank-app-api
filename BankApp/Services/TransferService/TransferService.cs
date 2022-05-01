@@ -23,37 +23,40 @@ public class TransferService : ITransferService
         _accountService = accountService;
     }
 
-    public async Task<IList<Transfer>> GetAllTransfersAsync()
+    public async Task<IList<Transfer>> GetAllTransfersAsync(CancellationToken cancellationToken = default)
     {
-        var transfers = await _dbContext.Transfers.ToListAsync();
+        var transfers = await _dbContext.Transfers.ToListAsync(cancellationToken: cancellationToken);
         return transfers;
     }
 
-    public async Task<IList<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId)
+    public async Task<IList<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId,
+        CancellationToken cancellationToken = default)
     {
-        var customer = await _customerService.GetCustomerByIdAsync(customerId);
+        var customer = await _customerService.GetCustomerByIdAsync(customerId, cancellationToken);
         var customerBankAccounts = customer.BankAccounts;
         var accountIds = customerBankAccounts.Select(a => a.Id);
         var accountNumbers = customerBankAccounts.Select(a => a.Number);
         var transfers = await _dbContext.Transfers
             .Where(t => accountNumbers.Contains(t.ReceiverAccountNumber) || accountIds.Contains(t.SenderAccountId))
             .OrderByDescending(t => t.Ordered)
-            .ToListAsync();
+            .ToListAsync(cancellationToken: cancellationToken);
         return transfers;
     }
 
-    public async Task<Transfer> GetTransferByIdAsync(long id)
+    public async Task<Transfer> GetTransferByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var transfer = await _dbContext.Transfers.FindAsync(id);
+        var transfer = await _dbContext.Transfers.FindAsync(new object?[] {id}, cancellationToken: cancellationToken);
         if (transfer == null)
-            throw new NotFoundException("Transfer with requested id could not be found");
+            throw new NotFoundException("Transfer with requested id does not exist");
         return transfer;
     }
 
-    public async Task<Transfer> CreateTransferAsync(CreateTransferRequest request)
+    public async Task<Transfer> CreateTransferAsync(CreateTransferRequest request,
+        CancellationToken cancellationToken = default)
     {
-        var senderAccount = await _accountService.GetAccountByIdAsync(request.SenderAccountId);
-        var receiverAccount = await _accountService.GetAccountByNumberAsync(request.ReceiverAccountNumber);
+        var senderAccount = await _accountService.GetAccountByIdAsync(request.SenderAccountId, cancellationToken);
+        var receiverAccount =
+            await _accountService.GetAccountByNumberAsync(request.ReceiverAccountNumber, cancellationToken);
         var receiverCurrency = receiverAccount.Currency;
         var senderCurrency = senderAccount.Currency;
 
@@ -77,7 +80,7 @@ public class TransferService : ITransferService
         transfer.IsCompleted = true;
         senderAccount.Transfers.Add(transfer);
 
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(cancellationToken);
         return transfer;
     }
 }

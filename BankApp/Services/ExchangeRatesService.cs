@@ -57,17 +57,9 @@ public class ExchangeRatesService : IHostedService, IDisposable
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            var plnCurrency = await dbContext.Currencies.SingleOrDefaultAsync(c => c.Code.Equals("PLN"));
-            if (plnCurrency == null)
-            {
-                plnCurrency = new Currency
-                {
-                    Code = "PLN",
-                    Ask = 1,
-                    Bid = 1
-                };
-                await dbContext.AddAsync(plnCurrency);
-            }
+            var plnCurrency = await dbContext.Currencies.SingleAsync(c => c.Code.Equals("PLN"));
+            plnCurrency.Ask = 1;
+            plnCurrency.Bid = 1;
 
             foreach (var rate in rates.EnumerateArray())
             {
@@ -78,16 +70,9 @@ public class ExchangeRatesService : IHostedService, IDisposable
                     Bid = rate.GetProperty("bid").GetDecimal()
                 };
 
-                var entity = await dbContext.Currencies.SingleOrDefaultAsync(c => c.Code.Equals(currency.Code));
-                if (entity != null)
-                {
-                    entity.Ask = currency.Ask;
-                    entity.Bid = currency.Bid;
-                }
-                else
-                {
-                    await dbContext.AddAsync(currency);
-                }
+                var entity = await dbContext.Currencies.SingleAsync(c => c.Code.Equals(currency.Code));
+                entity.Ask = currency.Ask;
+                entity.Bid = currency.Bid;
             }
 
             await dbContext.SaveChangesAsync();

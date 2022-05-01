@@ -1,6 +1,5 @@
-using BankApp.Data;
+using BankApp.Services.AccountService;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Models.Requests;
 
@@ -15,51 +14,41 @@ public class CreateTransferRequest
 
 public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRequest>
 {
-    public CreateTransferRequestValidator(ApplicationDbContext dbContext)
+    public CreateTransferRequestValidator(IAccountService accountService)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.SenderAccountId)
-            .Must(id =>
-            {
-                var account = dbContext.Accounts.FirstOrDefault(a => a.Id == id);
-                return account?.IsActive == true;
-            })
+            .MustAsync(async (accountId, cancellationToken) =>
+                await accountService.AccountExistsByIdAsync(accountId, cancellationToken))
+            .WithMessage("Sender's account does not exist")
+            .MustAsync(async (accountId, cancellationToken) =>
+                await accountService.IsAccountActiveByIdAsync(accountId, cancellationToken))
             .WithMessage("Selected account is deactivated");
+
+        RuleFor(e => e.ReceiverAccountNumber)
+            .MustAsync(async (accountNumber, cancellationToken) =>
+                await accountService.AccountExistsByNumberAsync(accountNumber, cancellationToken))
+            .WithMessage("Receiver's account number does not exist")
+            .MustAsync(async (accountNumber, cancellationToken) =>
+                await accountService.IsAccountActiveByNumberAsync(accountNumber, cancellationToken))
+            .WithMessage("Receiver's account is deactivated");
 
         RuleFor(e => new {e.Amount, e.SenderAccountId})
             .MustAsync(async (args, cancellationToken) =>
-                {
-                    var senderAccount = await dbContext.Accounts
-                        .FindAsync(new object?[] {args.SenderAccountId}, cancellationToken: cancellationToken);
-                    return senderAccount != null;
-                }
-            )
-            .WithName("SenderAccountId")
-            .WithMessage("Sender's account could not be found")
-            .MustAsync(async (args, cancellationToken) =>
-                {
-                    var senderAccount = await dbContext.Accounts
-                        .FindAsync(new object?[] {args.SenderAccountId}, cancellationToken: cancellationToken);
-                    return senderAccount?.Balance >= args.Amount;
-                }
-            )
+                await accountService.HasSufficientFundsAsync(args.SenderAccountId, args.Amount, cancellationToken))
             .WithName("Amount")
             .WithMessage("Insufficient funds")
             .MustAsync(async (args, cancellationToken) =>
-                {
-                    var senderAccount = await dbContext.Accounts
-                        .FindAsync(new object?[] {args.SenderAccountId}, cancellationToken: cancellationToken);
-                    return args.Amount <= senderAccount?.TransferLimit;
-                }
-            )
+                await accountService.IsWithinTransferLimitAsync(args.SenderAccountId, args.Amount, cancellationToken))
             .WithName("Amount")
             .WithMessage("Transfer limit exceeded");
 
         RuleFor(e => new {e.ReceiverAccountNumber, e.SenderAccountId})
             .MustAsync(async (args, cancellationToken) =>
             {
-                var senderAccount = await dbContext.Accounts
-                    .FindAsync(new object?[] {args.SenderAccountId}, cancellationToken: cancellationToken);
-                return senderAccount?.Number != args.ReceiverAccountNumber;
+                var senderAccount = await accountService.GetAccountByIdAsync(args.SenderAccountId, cancellationToken);
+                return senderAccount.Number != args.ReceiverAccountNumber;
             })
             .WithName("ReceiverAccountNumber")
             .WithMessage("Cannot send money to yourself");
@@ -67,26 +56,6 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
         RuleFor(e => e.Amount)
             .GreaterThan(0)
             .WithMessage("Amount must be greater than 0");
-
-        RuleFor(e => e.ReceiverAccountNumber)
-            .MustAsync(async (accountNumber, cancellationToken) =>
-                {
-                    var result = await dbContext.Accounts
-                        .AnyAsync(number => number.Number == accountNumber, cancellationToken: cancellationToken);
-                    return result;
-                }
-            )
-            .WithMessage("Receiver's account number does not exist")
-            .MustAsync(async (accountNumber, cancellationToken) =>
-                {
-                    var account = await dbContext.Accounts
-                        .FirstOrDefaultAsync(number =>
-                                number.Number == accountNumber, cancellationToken: cancellationToken
-                        );
-                    return account?.IsActive == true;
-                }
-            )
-            .WithMessage("Receiver's account is deactivated");
 
         RuleFor(e => e.ReceiverName)
             .NotEmpty()

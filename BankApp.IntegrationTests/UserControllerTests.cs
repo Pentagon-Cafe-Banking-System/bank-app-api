@@ -60,10 +60,7 @@ public class UserControllerTests : IClassFixture<WebApplicationFactory<Program>>
     public async Task GetAllUsers_ForAdmin_ReturnsOkResult()
     {
         // arrange
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.Role, "Admin")
-        };
+        var claims = new List<Claim> {new(ClaimTypes.Role, "Admin")};
         var token = _jwtServiceMock.GenerateJwtToken(claims);
 
         var client = _factory.CreateClient();

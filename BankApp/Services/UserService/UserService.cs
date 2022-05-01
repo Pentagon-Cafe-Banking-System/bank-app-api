@@ -18,9 +18,9 @@ public class UserService : IUserService
         _roleManager = roleManager;
     }
 
-    public async Task<IList<AppUser>> GetAllUsersAsync()
+    public async Task<IList<AppUser>> GetAllUsersAsync(CancellationToken cancellationToken = default)
     {
-        var users = await _userManager.Users.ToListAsync();
+        var users = await _userManager.Users.ToListAsync(cancellationToken: cancellationToken);
         return users;
     }
 
@@ -82,5 +82,19 @@ public class UserService : IUserService
         var user = await GetUserByIdAsync(userId);
         var refreshTokens = user.RefreshTokens.ToList();
         return refreshTokens;
+    }
+
+    public async Task<bool> UserNameExistsAsync(string userName, CancellationToken cancellationToken = default)
+    {
+        var exists = await _userManager.Users.AnyAsync(user =>
+            user.NormalizedUserName == userName.ToUpper(), cancellationToken: cancellationToken);
+        return exists;
+    }
+
+    public async Task<bool> ValidateUserPasswordAsync(string userName, string password)
+    {
+        var user = await GetUserByUserNameAsync(userName);
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
+        return isPasswordValid;
     }
 }

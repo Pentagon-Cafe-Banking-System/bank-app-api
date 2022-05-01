@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220501035323_SquashedMigrations")]
+    [Migration("20220501111221_SquashedMigrations")]
     partial class SquashedMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,14 +32,14 @@ namespace BankApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<short>("AccountTypeId")
-                        .HasColumnType("smallint");
+                    b.Property<int>("AccountTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Balance")
                         .HasColumnType("numeric");
 
-                    b.Property<short>("CurrencyId")
-                        .HasColumnType("smallint");
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("CustomerId")
                         .HasColumnType("text");
@@ -67,11 +67,11 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("BankApp.Entities.AccountType", b =>
                 {
-                    b.Property<short>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint");
+                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<short>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -91,24 +91,116 @@ namespace BankApp.Migrations
                     b.HasData(
                         new
                         {
-                            Id = (short)1,
+                            Id = 1,
                             Code = "CA",
                             InterestRate = 0.5m,
                             Name = "Current Account"
                         },
                         new
                         {
-                            Id = (short)2,
+                            Id = 2,
                             Code = "SA",
                             InterestRate = 3m,
                             Name = "Savings Account"
                         },
                         new
                         {
-                            Id = (short)3,
+                            Id = 3,
                             Code = "FCA",
                             InterestRate = 0m,
                             Name = "Foreign Currency Account"
+                        });
+                });
+
+            modelBuilder.Entity("BankApp.Entities.AccountTypeCurrency", b =>
+                {
+                    b.Property<int>("AccountTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("AccountTypeId", "CurrencyId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.ToTable("AccountTypeCurrencies");
+
+                    b.HasData(
+                        new
+                        {
+                            AccountTypeId = 1,
+                            CurrencyId = 1
+                        },
+                        new
+                        {
+                            AccountTypeId = 2,
+                            CurrencyId = 1
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 2
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 3
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 4
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 5
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 6
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 7
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 8
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 9
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 10
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 11
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 12
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 13
+                        },
+                        new
+                        {
+                            AccountTypeId = 3,
+                            CurrencyId = 14
                         });
                 });
 
@@ -124,8 +216,8 @@ namespace BankApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<short>("CountryId")
-                        .HasColumnType("smallint");
+                    b.Property<int>("CountryId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("CustomerId")
                         .IsRequired()
@@ -157,8 +249,8 @@ namespace BankApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<short>("CardTypeId")
-                        .HasColumnType("smallint");
+                    b.Property<int>("CardTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Cvv")
                         .IsRequired()
@@ -215,11 +307,11 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("BankApp.Entities.CardType", b =>
                 {
-                    b.Property<short>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint");
+                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<short>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -236,11 +328,11 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("BankApp.Entities.Country", b =>
                 {
-                    b.Property<short>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint");
+                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<short>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -257,1471 +349,1471 @@ namespace BankApp.Migrations
                     b.HasData(
                         new
                         {
-                            Id = (short)1,
+                            Id = 1,
                             Code = "AD",
                             Name = "Andorra"
                         },
                         new
                         {
-                            Id = (short)2,
+                            Id = 2,
                             Code = "AE",
                             Name = "United Arab Emirates"
                         },
                         new
                         {
-                            Id = (short)3,
+                            Id = 3,
                             Code = "AF",
                             Name = "Afghanistan"
                         },
                         new
                         {
-                            Id = (short)4,
+                            Id = 4,
                             Code = "AG",
                             Name = "Antigua and Barbuda"
                         },
                         new
                         {
-                            Id = (short)5,
+                            Id = 5,
                             Code = "AI",
                             Name = "Anguilla"
                         },
                         new
                         {
-                            Id = (short)6,
+                            Id = 6,
                             Code = "AL",
                             Name = "Albania"
                         },
                         new
                         {
-                            Id = (short)7,
+                            Id = 7,
                             Code = "AM",
                             Name = "Armenia"
                         },
                         new
                         {
-                            Id = (short)8,
+                            Id = 8,
                             Code = "AN",
                             Name = "Netherlands Antilles"
                         },
                         new
                         {
-                            Id = (short)9,
+                            Id = 9,
                             Code = "AO",
                             Name = "Angola"
                         },
                         new
                         {
-                            Id = (short)10,
+                            Id = 10,
                             Code = "AQ",
                             Name = "Antarctica"
                         },
                         new
                         {
-                            Id = (short)11,
+                            Id = 11,
                             Code = "AR",
                             Name = "Argentina"
                         },
                         new
                         {
-                            Id = (short)12,
+                            Id = 12,
                             Code = "AS",
                             Name = "American Samoa"
                         },
                         new
                         {
-                            Id = (short)13,
+                            Id = 13,
                             Code = "AT",
                             Name = "Austria"
                         },
                         new
                         {
-                            Id = (short)14,
+                            Id = 14,
                             Code = "AU",
                             Name = "Australia"
                         },
                         new
                         {
-                            Id = (short)15,
+                            Id = 15,
                             Code = "AW",
                             Name = "Aruba"
                         },
                         new
                         {
-                            Id = (short)16,
+                            Id = 16,
                             Code = "AZ",
                             Name = "Azerbaijan"
                         },
                         new
                         {
-                            Id = (short)17,
+                            Id = 17,
                             Code = "BA",
                             Name = "Bosnia and Herzegovina"
                         },
                         new
                         {
-                            Id = (short)18,
+                            Id = 18,
                             Code = "BB",
                             Name = "Barbados"
                         },
                         new
                         {
-                            Id = (short)19,
+                            Id = 19,
                             Code = "BD",
                             Name = "Bangladesh"
                         },
                         new
                         {
-                            Id = (short)20,
+                            Id = 20,
                             Code = "BE",
                             Name = "Belgium"
                         },
                         new
                         {
-                            Id = (short)21,
+                            Id = 21,
                             Code = "BF",
                             Name = "Burkina Faso"
                         },
                         new
                         {
-                            Id = (short)22,
+                            Id = 22,
                             Code = "BG",
                             Name = "Bulgaria"
                         },
                         new
                         {
-                            Id = (short)23,
+                            Id = 23,
                             Code = "BH",
                             Name = "Bahrain"
                         },
                         new
                         {
-                            Id = (short)24,
+                            Id = 24,
                             Code = "BI",
                             Name = "Burundi"
                         },
                         new
                         {
-                            Id = (short)25,
+                            Id = 25,
                             Code = "BJ",
                             Name = "Benin"
                         },
                         new
                         {
-                            Id = (short)26,
+                            Id = 26,
                             Code = "BM",
                             Name = "Bermuda"
                         },
                         new
                         {
-                            Id = (short)27,
+                            Id = 27,
                             Code = "BN",
                             Name = "Brunei"
                         },
                         new
                         {
-                            Id = (short)28,
+                            Id = 28,
                             Code = "BO",
                             Name = "Bolivia"
                         },
                         new
                         {
-                            Id = (short)29,
+                            Id = 29,
                             Code = "BR",
                             Name = "Brazil"
                         },
                         new
                         {
-                            Id = (short)30,
+                            Id = 30,
                             Code = "BS",
                             Name = "Bahamas"
                         },
                         new
                         {
-                            Id = (short)31,
+                            Id = 31,
                             Code = "BT",
                             Name = "Bhutan"
                         },
                         new
                         {
-                            Id = (short)32,
+                            Id = 32,
                             Code = "BV",
                             Name = "Bouvet Island"
                         },
                         new
                         {
-                            Id = (short)33,
+                            Id = 33,
                             Code = "BW",
                             Name = "Botswana"
                         },
                         new
                         {
-                            Id = (short)34,
+                            Id = 34,
                             Code = "BY",
                             Name = "Belarus"
                         },
                         new
                         {
-                            Id = (short)35,
+                            Id = 35,
                             Code = "BZ",
                             Name = "Belize"
                         },
                         new
                         {
-                            Id = (short)36,
+                            Id = 36,
                             Code = "CA",
                             Name = "Canada"
                         },
                         new
                         {
-                            Id = (short)37,
+                            Id = 37,
                             Code = "CC",
                             Name = "Cocos [Keeling] Islands"
                         },
                         new
                         {
-                            Id = (short)38,
+                            Id = 38,
                             Code = "CD",
                             Name = "Congo [DRC]"
                         },
                         new
                         {
-                            Id = (short)39,
+                            Id = 39,
                             Code = "CF",
                             Name = "Central African Republic"
                         },
                         new
                         {
-                            Id = (short)40,
+                            Id = 40,
                             Code = "CG",
                             Name = "Congo [Republic]"
                         },
                         new
                         {
-                            Id = (short)41,
+                            Id = 41,
                             Code = "CH",
                             Name = "Switzerland"
                         },
                         new
                         {
-                            Id = (short)42,
+                            Id = 42,
                             Code = "CI",
                             Name = "Côte d'Ivoire"
                         },
                         new
                         {
-                            Id = (short)43,
+                            Id = 43,
                             Code = "CK",
                             Name = "Cook Islands"
                         },
                         new
                         {
-                            Id = (short)44,
+                            Id = 44,
                             Code = "CL",
                             Name = "Chile"
                         },
                         new
                         {
-                            Id = (short)45,
+                            Id = 45,
                             Code = "CM",
                             Name = "Cameroon"
                         },
                         new
                         {
-                            Id = (short)46,
+                            Id = 46,
                             Code = "CN",
                             Name = "China"
                         },
                         new
                         {
-                            Id = (short)47,
+                            Id = 47,
                             Code = "CO",
                             Name = "Colombia"
                         },
                         new
                         {
-                            Id = (short)48,
+                            Id = 48,
                             Code = "CR",
                             Name = "Costa Rica"
                         },
                         new
                         {
-                            Id = (short)49,
+                            Id = 49,
                             Code = "CU",
                             Name = "Cuba"
                         },
                         new
                         {
-                            Id = (short)50,
+                            Id = 50,
                             Code = "CV",
                             Name = "Cape Verde"
                         },
                         new
                         {
-                            Id = (short)51,
+                            Id = 51,
                             Code = "CX",
                             Name = "Christmas Island"
                         },
                         new
                         {
-                            Id = (short)52,
+                            Id = 52,
                             Code = "CY",
                             Name = "Cyprus"
                         },
                         new
                         {
-                            Id = (short)53,
+                            Id = 53,
                             Code = "CZ",
                             Name = "Czech Republic"
                         },
                         new
                         {
-                            Id = (short)54,
+                            Id = 54,
                             Code = "DE",
                             Name = "Germany"
                         },
                         new
                         {
-                            Id = (short)55,
+                            Id = 55,
                             Code = "DJ",
                             Name = "Djibouti"
                         },
                         new
                         {
-                            Id = (short)56,
+                            Id = 56,
                             Code = "DK",
                             Name = "Denmark"
                         },
                         new
                         {
-                            Id = (short)57,
+                            Id = 57,
                             Code = "DM",
                             Name = "Dominica"
                         },
                         new
                         {
-                            Id = (short)58,
+                            Id = 58,
                             Code = "DO",
                             Name = "Dominican Republic"
                         },
                         new
                         {
-                            Id = (short)59,
+                            Id = 59,
                             Code = "DZ",
                             Name = "Algeria"
                         },
                         new
                         {
-                            Id = (short)60,
+                            Id = 60,
                             Code = "EC",
                             Name = "Ecuador"
                         },
                         new
                         {
-                            Id = (short)61,
+                            Id = 61,
                             Code = "EE",
                             Name = "Estonia"
                         },
                         new
                         {
-                            Id = (short)62,
+                            Id = 62,
                             Code = "EG",
                             Name = "Egypt"
                         },
                         new
                         {
-                            Id = (short)63,
+                            Id = 63,
                             Code = "EH",
                             Name = "Western Sahara"
                         },
                         new
                         {
-                            Id = (short)64,
+                            Id = 64,
                             Code = "ER",
                             Name = "Eritrea"
                         },
                         new
                         {
-                            Id = (short)65,
+                            Id = 65,
                             Code = "ES",
                             Name = "Spain"
                         },
                         new
                         {
-                            Id = (short)66,
+                            Id = 66,
                             Code = "ET",
                             Name = "Ethiopia"
                         },
                         new
                         {
-                            Id = (short)67,
+                            Id = 67,
                             Code = "FI",
                             Name = "Finland"
                         },
                         new
                         {
-                            Id = (short)68,
+                            Id = 68,
                             Code = "FJ",
                             Name = "Fiji"
                         },
                         new
                         {
-                            Id = (short)69,
+                            Id = 69,
                             Code = "FK",
                             Name = "Falkland Islands [Islas Malvinas]"
                         },
                         new
                         {
-                            Id = (short)70,
+                            Id = 70,
                             Code = "FM",
                             Name = "Micronesia"
                         },
                         new
                         {
-                            Id = (short)71,
+                            Id = 71,
                             Code = "FO",
                             Name = "Faroe Islands"
                         },
                         new
                         {
-                            Id = (short)72,
+                            Id = 72,
                             Code = "FR",
                             Name = "France"
                         },
                         new
                         {
-                            Id = (short)73,
+                            Id = 73,
                             Code = "GA",
                             Name = "Gabon"
                         },
                         new
                         {
-                            Id = (short)74,
+                            Id = 74,
                             Code = "GB",
                             Name = "United Kingdom"
                         },
                         new
                         {
-                            Id = (short)75,
+                            Id = 75,
                             Code = "GD",
                             Name = "Grenada"
                         },
                         new
                         {
-                            Id = (short)76,
+                            Id = 76,
                             Code = "GE",
                             Name = "Georgia"
                         },
                         new
                         {
-                            Id = (short)77,
+                            Id = 77,
                             Code = "GF",
                             Name = "French Guiana"
                         },
                         new
                         {
-                            Id = (short)78,
+                            Id = 78,
                             Code = "GG",
                             Name = "Guernsey"
                         },
                         new
                         {
-                            Id = (short)79,
+                            Id = 79,
                             Code = "GH",
                             Name = "Ghana"
                         },
                         new
                         {
-                            Id = (short)80,
+                            Id = 80,
                             Code = "GI",
                             Name = "Gibraltar"
                         },
                         new
                         {
-                            Id = (short)81,
+                            Id = 81,
                             Code = "GL",
                             Name = "Greenland"
                         },
                         new
                         {
-                            Id = (short)82,
+                            Id = 82,
                             Code = "GM",
                             Name = "Gambia"
                         },
                         new
                         {
-                            Id = (short)83,
+                            Id = 83,
                             Code = "GN",
                             Name = "Guinea"
                         },
                         new
                         {
-                            Id = (short)84,
+                            Id = 84,
                             Code = "GP",
                             Name = "Guadeloupe"
                         },
                         new
                         {
-                            Id = (short)85,
+                            Id = 85,
                             Code = "GQ",
                             Name = "Equatorial Guinea"
                         },
                         new
                         {
-                            Id = (short)86,
+                            Id = 86,
                             Code = "GR",
                             Name = "Greece"
                         },
                         new
                         {
-                            Id = (short)87,
+                            Id = 87,
                             Code = "GS",
                             Name = "South Georgia and the South Sandwich Islands"
                         },
                         new
                         {
-                            Id = (short)88,
+                            Id = 88,
                             Code = "GT",
                             Name = "Guatemala"
                         },
                         new
                         {
-                            Id = (short)89,
+                            Id = 89,
                             Code = "GU",
                             Name = "Guam"
                         },
                         new
                         {
-                            Id = (short)90,
+                            Id = 90,
                             Code = "GW",
                             Name = "Guinea-Bissau"
                         },
                         new
                         {
-                            Id = (short)91,
+                            Id = 91,
                             Code = "GY",
                             Name = "Guyana"
                         },
                         new
                         {
-                            Id = (short)92,
+                            Id = 92,
                             Code = "GZ",
                             Name = "Gaza Strip"
                         },
                         new
                         {
-                            Id = (short)93,
+                            Id = 93,
                             Code = "HK",
                             Name = "Hong Kong"
                         },
                         new
                         {
-                            Id = (short)94,
+                            Id = 94,
                             Code = "HM",
                             Name = "Heard Island and McDonald Islands"
                         },
                         new
                         {
-                            Id = (short)95,
+                            Id = 95,
                             Code = "HN",
                             Name = "Honduras"
                         },
                         new
                         {
-                            Id = (short)96,
+                            Id = 96,
                             Code = "HR",
                             Name = "Croatia"
                         },
                         new
                         {
-                            Id = (short)97,
+                            Id = 97,
                             Code = "HT",
                             Name = "Haiti"
                         },
                         new
                         {
-                            Id = (short)98,
+                            Id = 98,
                             Code = "HU",
                             Name = "Hungary"
                         },
                         new
                         {
-                            Id = (short)99,
+                            Id = 99,
                             Code = "ID",
                             Name = "Indonesia"
                         },
                         new
                         {
-                            Id = (short)100,
+                            Id = 100,
                             Code = "IE",
                             Name = "Ireland"
                         },
                         new
                         {
-                            Id = (short)101,
+                            Id = 101,
                             Code = "IL",
                             Name = "Israel"
                         },
                         new
                         {
-                            Id = (short)102,
+                            Id = 102,
                             Code = "IM",
                             Name = "Isle of Man"
                         },
                         new
                         {
-                            Id = (short)103,
+                            Id = 103,
                             Code = "IN",
                             Name = "India"
                         },
                         new
                         {
-                            Id = (short)104,
+                            Id = 104,
                             Code = "IO",
                             Name = "British Indian Ocean Territory"
                         },
                         new
                         {
-                            Id = (short)105,
+                            Id = 105,
                             Code = "IQ",
                             Name = "Iraq"
                         },
                         new
                         {
-                            Id = (short)106,
+                            Id = 106,
                             Code = "IR",
                             Name = "Iran"
                         },
                         new
                         {
-                            Id = (short)107,
+                            Id = 107,
                             Code = "IS",
                             Name = "Iceland"
                         },
                         new
                         {
-                            Id = (short)108,
+                            Id = 108,
                             Code = "IT",
                             Name = "Italy"
                         },
                         new
                         {
-                            Id = (short)109,
+                            Id = 109,
                             Code = "JE",
                             Name = "Jersey"
                         },
                         new
                         {
-                            Id = (short)110,
+                            Id = 110,
                             Code = "JM",
                             Name = "Jamaica"
                         },
                         new
                         {
-                            Id = (short)111,
+                            Id = 111,
                             Code = "JO",
                             Name = "Jordan"
                         },
                         new
                         {
-                            Id = (short)112,
+                            Id = 112,
                             Code = "JP",
                             Name = "Japan"
                         },
                         new
                         {
-                            Id = (short)113,
+                            Id = 113,
                             Code = "KE",
                             Name = "Kenya"
                         },
                         new
                         {
-                            Id = (short)114,
+                            Id = 114,
                             Code = "KG",
                             Name = "Kyrgyzstan"
                         },
                         new
                         {
-                            Id = (short)115,
+                            Id = 115,
                             Code = "KH",
                             Name = "Cambodia"
                         },
                         new
                         {
-                            Id = (short)116,
+                            Id = 116,
                             Code = "KI",
                             Name = "Kiribati"
                         },
                         new
                         {
-                            Id = (short)117,
+                            Id = 117,
                             Code = "KM",
                             Name = "Comoros"
                         },
                         new
                         {
-                            Id = (short)118,
+                            Id = 118,
                             Code = "KN",
                             Name = "Saint Kitts and Nevis"
                         },
                         new
                         {
-                            Id = (short)119,
+                            Id = 119,
                             Code = "KP",
                             Name = "North Korea"
                         },
                         new
                         {
-                            Id = (short)120,
+                            Id = 120,
                             Code = "KR",
                             Name = "South Korea"
                         },
                         new
                         {
-                            Id = (short)121,
+                            Id = 121,
                             Code = "KW",
                             Name = "Kuwait"
                         },
                         new
                         {
-                            Id = (short)122,
+                            Id = 122,
                             Code = "KY",
                             Name = "Cayman Islands"
                         },
                         new
                         {
-                            Id = (short)123,
+                            Id = 123,
                             Code = "KZ",
                             Name = "Kazakhstan"
                         },
                         new
                         {
-                            Id = (short)124,
+                            Id = 124,
                             Code = "LA",
                             Name = "Laos"
                         },
                         new
                         {
-                            Id = (short)125,
+                            Id = 125,
                             Code = "LB",
                             Name = "Lebanon"
                         },
                         new
                         {
-                            Id = (short)126,
+                            Id = 126,
                             Code = "LC",
                             Name = "Saint Lucia"
                         },
                         new
                         {
-                            Id = (short)127,
+                            Id = 127,
                             Code = "LI",
                             Name = "Liechtenstein"
                         },
                         new
                         {
-                            Id = (short)128,
+                            Id = 128,
                             Code = "LK",
                             Name = "Sri Lanka"
                         },
                         new
                         {
-                            Id = (short)129,
+                            Id = 129,
                             Code = "LR",
                             Name = "Liberia"
                         },
                         new
                         {
-                            Id = (short)130,
+                            Id = 130,
                             Code = "LS",
                             Name = "Lesotho"
                         },
                         new
                         {
-                            Id = (short)131,
+                            Id = 131,
                             Code = "LT",
                             Name = "Lithuania"
                         },
                         new
                         {
-                            Id = (short)132,
+                            Id = 132,
                             Code = "LU",
                             Name = "Luxembourg"
                         },
                         new
                         {
-                            Id = (short)133,
+                            Id = 133,
                             Code = "LV",
                             Name = "Latvia"
                         },
                         new
                         {
-                            Id = (short)134,
+                            Id = 134,
                             Code = "LY",
                             Name = "Libya"
                         },
                         new
                         {
-                            Id = (short)135,
+                            Id = 135,
                             Code = "MA",
                             Name = "Morocco"
                         },
                         new
                         {
-                            Id = (short)136,
+                            Id = 136,
                             Code = "MC",
                             Name = "Monaco"
                         },
                         new
                         {
-                            Id = (short)137,
+                            Id = 137,
                             Code = "MD",
                             Name = "Moldova"
                         },
                         new
                         {
-                            Id = (short)138,
+                            Id = 138,
                             Code = "ME",
                             Name = "Montenegro"
                         },
                         new
                         {
-                            Id = (short)139,
+                            Id = 139,
                             Code = "MG",
                             Name = "Madagascar"
                         },
                         new
                         {
-                            Id = (short)140,
+                            Id = 140,
                             Code = "MH",
                             Name = "Marshall Islands"
                         },
                         new
                         {
-                            Id = (short)141,
+                            Id = 141,
                             Code = "MK",
                             Name = "Macedonia [FYROM]"
                         },
                         new
                         {
-                            Id = (short)142,
+                            Id = 142,
                             Code = "ML",
                             Name = "Mali"
                         },
                         new
                         {
-                            Id = (short)143,
+                            Id = 143,
                             Code = "MM",
                             Name = "Myanmar [Burma]"
                         },
                         new
                         {
-                            Id = (short)144,
+                            Id = 144,
                             Code = "MN",
                             Name = "Mongolia"
                         },
                         new
                         {
-                            Id = (short)145,
+                            Id = 145,
                             Code = "MO",
                             Name = "Macau"
                         },
                         new
                         {
-                            Id = (short)146,
+                            Id = 146,
                             Code = "MP",
                             Name = "Northern Mariana Islands"
                         },
                         new
                         {
-                            Id = (short)147,
+                            Id = 147,
                             Code = "MQ",
                             Name = "Martinique"
                         },
                         new
                         {
-                            Id = (short)148,
+                            Id = 148,
                             Code = "MR",
                             Name = "Mauritania"
                         },
                         new
                         {
-                            Id = (short)149,
+                            Id = 149,
                             Code = "MS",
                             Name = "Montserrat"
                         },
                         new
                         {
-                            Id = (short)150,
+                            Id = 150,
                             Code = "MT",
                             Name = "Malta"
                         },
                         new
                         {
-                            Id = (short)151,
+                            Id = 151,
                             Code = "MU",
                             Name = "Mauritius"
                         },
                         new
                         {
-                            Id = (short)152,
+                            Id = 152,
                             Code = "MV",
                             Name = "Maldives"
                         },
                         new
                         {
-                            Id = (short)153,
+                            Id = 153,
                             Code = "MW",
                             Name = "Malawi"
                         },
                         new
                         {
-                            Id = (short)154,
+                            Id = 154,
                             Code = "MX",
                             Name = "Mexico"
                         },
                         new
                         {
-                            Id = (short)155,
+                            Id = 155,
                             Code = "MY",
                             Name = "Malaysia"
                         },
                         new
                         {
-                            Id = (short)156,
+                            Id = 156,
                             Code = "MZ",
                             Name = "Mozambique"
                         },
                         new
                         {
-                            Id = (short)157,
+                            Id = 157,
                             Code = "NA",
                             Name = "Namibia"
                         },
                         new
                         {
-                            Id = (short)158,
+                            Id = 158,
                             Code = "NC",
                             Name = "New Caledonia"
                         },
                         new
                         {
-                            Id = (short)159,
+                            Id = 159,
                             Code = "NE",
                             Name = "Niger"
                         },
                         new
                         {
-                            Id = (short)160,
+                            Id = 160,
                             Code = "NF",
                             Name = "Norfolk Island"
                         },
                         new
                         {
-                            Id = (short)161,
+                            Id = 161,
                             Code = "NG",
                             Name = "Nigeria"
                         },
                         new
                         {
-                            Id = (short)162,
+                            Id = 162,
                             Code = "NI",
                             Name = "Nicaragua"
                         },
                         new
                         {
-                            Id = (short)163,
+                            Id = 163,
                             Code = "NL",
                             Name = "Netherlands"
                         },
                         new
                         {
-                            Id = (short)164,
+                            Id = 164,
                             Code = "NO",
                             Name = "Norway"
                         },
                         new
                         {
-                            Id = (short)165,
+                            Id = 165,
                             Code = "NP",
                             Name = "Nepal"
                         },
                         new
                         {
-                            Id = (short)166,
+                            Id = 166,
                             Code = "NR",
                             Name = "Nauru"
                         },
                         new
                         {
-                            Id = (short)167,
+                            Id = 167,
                             Code = "NU",
                             Name = "Niue"
                         },
                         new
                         {
-                            Id = (short)168,
+                            Id = 168,
                             Code = "NZ",
                             Name = "New Zealand"
                         },
                         new
                         {
-                            Id = (short)169,
+                            Id = 169,
                             Code = "OM",
                             Name = "Oman"
                         },
                         new
                         {
-                            Id = (short)170,
+                            Id = 170,
                             Code = "PA",
                             Name = "Panama"
                         },
                         new
                         {
-                            Id = (short)171,
+                            Id = 171,
                             Code = "PE",
                             Name = "Peru"
                         },
                         new
                         {
-                            Id = (short)172,
+                            Id = 172,
                             Code = "PF",
                             Name = "French Polynesia"
                         },
                         new
                         {
-                            Id = (short)173,
+                            Id = 173,
                             Code = "PG",
                             Name = "Papua New Guinea"
                         },
                         new
                         {
-                            Id = (short)174,
+                            Id = 174,
                             Code = "PH",
                             Name = "Philippines"
                         },
                         new
                         {
-                            Id = (short)175,
+                            Id = 175,
                             Code = "PK",
                             Name = "Pakistan"
                         },
                         new
                         {
-                            Id = (short)176,
+                            Id = 176,
                             Code = "PL",
                             Name = "Poland"
                         },
                         new
                         {
-                            Id = (short)177,
+                            Id = 177,
                             Code = "PM",
                             Name = "Saint Pierre and Miquelon"
                         },
                         new
                         {
-                            Id = (short)178,
+                            Id = 178,
                             Code = "PN",
                             Name = "Pitcairn Islands"
                         },
                         new
                         {
-                            Id = (short)179,
+                            Id = 179,
                             Code = "PR",
                             Name = "Puerto Rico"
                         },
                         new
                         {
-                            Id = (short)180,
+                            Id = 180,
                             Code = "PS",
                             Name = "Palestinian Territories"
                         },
                         new
                         {
-                            Id = (short)181,
+                            Id = 181,
                             Code = "PT",
                             Name = "Portugal"
                         },
                         new
                         {
-                            Id = (short)182,
+                            Id = 182,
                             Code = "PW",
                             Name = "Palau"
                         },
                         new
                         {
-                            Id = (short)183,
+                            Id = 183,
                             Code = "PY",
                             Name = "Paraguay"
                         },
                         new
                         {
-                            Id = (short)184,
+                            Id = 184,
                             Code = "QA",
                             Name = "Qatar"
                         },
                         new
                         {
-                            Id = (short)185,
+                            Id = 185,
                             Code = "RE",
                             Name = "Réunion"
                         },
                         new
                         {
-                            Id = (short)186,
+                            Id = 186,
                             Code = "RO",
                             Name = "Romania"
                         },
                         new
                         {
-                            Id = (short)187,
+                            Id = 187,
                             Code = "RS",
                             Name = "Serbia"
                         },
                         new
                         {
-                            Id = (short)188,
+                            Id = 188,
                             Code = "RU",
                             Name = "Russia"
                         },
                         new
                         {
-                            Id = (short)189,
+                            Id = 189,
                             Code = "RW",
                             Name = "Rwanda"
                         },
                         new
                         {
-                            Id = (short)190,
+                            Id = 190,
                             Code = "SA",
                             Name = "Saudi Arabia"
                         },
                         new
                         {
-                            Id = (short)191,
+                            Id = 191,
                             Code = "SB",
                             Name = "Solomon Islands"
                         },
                         new
                         {
-                            Id = (short)192,
+                            Id = 192,
                             Code = "SC",
                             Name = "Seychelles"
                         },
                         new
                         {
-                            Id = (short)193,
+                            Id = 193,
                             Code = "SD",
                             Name = "Sudan"
                         },
                         new
                         {
-                            Id = (short)194,
+                            Id = 194,
                             Code = "SE",
                             Name = "Sweden"
                         },
                         new
                         {
-                            Id = (short)195,
+                            Id = 195,
                             Code = "SG",
                             Name = "Singapore"
                         },
                         new
                         {
-                            Id = (short)196,
+                            Id = 196,
                             Code = "SH",
                             Name = "Saint Helena"
                         },
                         new
                         {
-                            Id = (short)197,
+                            Id = 197,
                             Code = "SI",
                             Name = "Slovenia"
                         },
                         new
                         {
-                            Id = (short)198,
+                            Id = 198,
                             Code = "SJ",
                             Name = "Svalbard and Jan Mayen"
                         },
                         new
                         {
-                            Id = (short)199,
+                            Id = 199,
                             Code = "SK",
                             Name = "Slovakia"
                         },
                         new
                         {
-                            Id = (short)200,
+                            Id = 200,
                             Code = "SL",
                             Name = "Sierra Leone"
                         },
                         new
                         {
-                            Id = (short)201,
+                            Id = 201,
                             Code = "SM",
                             Name = "San Marino"
                         },
                         new
                         {
-                            Id = (short)202,
+                            Id = 202,
                             Code = "SN",
                             Name = "Senegal"
                         },
                         new
                         {
-                            Id = (short)203,
+                            Id = 203,
                             Code = "SO",
                             Name = "Somalia"
                         },
                         new
                         {
-                            Id = (short)204,
+                            Id = 204,
                             Code = "SR",
                             Name = "Suriname"
                         },
                         new
                         {
-                            Id = (short)205,
+                            Id = 205,
                             Code = "ST",
                             Name = "São Tomé and Príncipe"
                         },
                         new
                         {
-                            Id = (short)206,
+                            Id = 206,
                             Code = "SV",
                             Name = "El Salvador"
                         },
                         new
                         {
-                            Id = (short)207,
+                            Id = 207,
                             Code = "SY",
                             Name = "Syria"
                         },
                         new
                         {
-                            Id = (short)208,
+                            Id = 208,
                             Code = "SZ",
                             Name = "Swaziland"
                         },
                         new
                         {
-                            Id = (short)209,
+                            Id = 209,
                             Code = "TC",
                             Name = "Turks and Caicos Islands"
                         },
                         new
                         {
-                            Id = (short)210,
+                            Id = 210,
                             Code = "TD",
                             Name = "Chad"
                         },
                         new
                         {
-                            Id = (short)211,
+                            Id = 211,
                             Code = "TF",
                             Name = "French Southern Territories"
                         },
                         new
                         {
-                            Id = (short)212,
+                            Id = 212,
                             Code = "TG",
                             Name = "Togo"
                         },
                         new
                         {
-                            Id = (short)213,
+                            Id = 213,
                             Code = "TH",
                             Name = "Thailand"
                         },
                         new
                         {
-                            Id = (short)214,
+                            Id = 214,
                             Code = "TJ",
                             Name = "Tajikistan"
                         },
                         new
                         {
-                            Id = (short)215,
+                            Id = 215,
                             Code = "TK",
                             Name = "Tokelau"
                         },
                         new
                         {
-                            Id = (short)216,
+                            Id = 216,
                             Code = "TL",
                             Name = "Timor-Leste"
                         },
                         new
                         {
-                            Id = (short)217,
+                            Id = 217,
                             Code = "TM",
                             Name = "Turkmenistan"
                         },
                         new
                         {
-                            Id = (short)218,
+                            Id = 218,
                             Code = "TN",
                             Name = "Tunisia"
                         },
                         new
                         {
-                            Id = (short)219,
+                            Id = 219,
                             Code = "TO",
                             Name = "Tonga"
                         },
                         new
                         {
-                            Id = (short)220,
+                            Id = 220,
                             Code = "TR",
                             Name = "Turkey"
                         },
                         new
                         {
-                            Id = (short)221,
+                            Id = 221,
                             Code = "TT",
                             Name = "Trinidad and Tobago"
                         },
                         new
                         {
-                            Id = (short)222,
+                            Id = 222,
                             Code = "TV",
                             Name = "Tuvalu"
                         },
                         new
                         {
-                            Id = (short)223,
+                            Id = 223,
                             Code = "TW",
                             Name = "Taiwan"
                         },
                         new
                         {
-                            Id = (short)224,
+                            Id = 224,
                             Code = "TZ",
                             Name = "Tanzania"
                         },
                         new
                         {
-                            Id = (short)225,
+                            Id = 225,
                             Code = "UA",
                             Name = "Ukraine"
                         },
                         new
                         {
-                            Id = (short)226,
+                            Id = 226,
                             Code = "UG",
                             Name = "Uganda"
                         },
                         new
                         {
-                            Id = (short)227,
+                            Id = 227,
                             Code = "UM",
                             Name = "U.S. Minor Outlying Islands"
                         },
                         new
                         {
-                            Id = (short)228,
+                            Id = 228,
                             Code = "US",
                             Name = "United States"
                         },
                         new
                         {
-                            Id = (short)229,
+                            Id = 229,
                             Code = "UY",
                             Name = "Uruguay"
                         },
                         new
                         {
-                            Id = (short)230,
+                            Id = 230,
                             Code = "UZ",
                             Name = "Uzbekistan"
                         },
                         new
                         {
-                            Id = (short)231,
+                            Id = 231,
                             Code = "VA",
                             Name = "Vatican City"
                         },
                         new
                         {
-                            Id = (short)232,
+                            Id = 232,
                             Code = "VC",
                             Name = "Saint Vincent and the Grenadines"
                         },
                         new
                         {
-                            Id = (short)233,
+                            Id = 233,
                             Code = "VE",
                             Name = "Venezuela"
                         },
                         new
                         {
-                            Id = (short)234,
+                            Id = 234,
                             Code = "VG",
                             Name = "British Virgin Islands"
                         },
                         new
                         {
-                            Id = (short)235,
+                            Id = 235,
                             Code = "VI",
                             Name = "U.S. Virgin Islands"
                         },
                         new
                         {
-                            Id = (short)236,
+                            Id = 236,
                             Code = "VN",
                             Name = "Vietnam"
                         },
                         new
                         {
-                            Id = (short)237,
+                            Id = 237,
                             Code = "VU",
                             Name = "Vanuatu"
                         },
                         new
                         {
-                            Id = (short)238,
+                            Id = 238,
                             Code = "WF",
                             Name = "Wallis and Futuna"
                         },
                         new
                         {
-                            Id = (short)239,
+                            Id = 239,
                             Code = "WS",
                             Name = "Samoa"
                         },
                         new
                         {
-                            Id = (short)240,
+                            Id = 240,
                             Code = "XK",
                             Name = "Kosovo"
                         },
                         new
                         {
-                            Id = (short)241,
+                            Id = 241,
                             Code = "YE",
                             Name = "Yemen"
                         },
                         new
                         {
-                            Id = (short)242,
+                            Id = 242,
                             Code = "YT",
                             Name = "Mayotte"
                         },
                         new
                         {
-                            Id = (short)243,
+                            Id = 243,
                             Code = "ZA",
                             Name = "South Africa"
                         },
                         new
                         {
-                            Id = (short)244,
+                            Id = 244,
                             Code = "ZM",
                             Name = "Zambia"
                         },
                         new
                         {
-                            Id = (short)245,
+                            Id = 245,
                             Code = "ZW",
                             Name = "Zimbabwe"
                         });
@@ -1729,11 +1821,11 @@ namespace BankApp.Migrations
 
             modelBuilder.Entity("BankApp.Entities.Currency", b =>
                 {
-                    b.Property<short>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint");
+                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<short>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Ask")
                         .HasColumnType("numeric");
@@ -1748,6 +1840,106 @@ namespace BankApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Currencies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "PLN"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "USD"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "AUD"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "CAD"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "EUR"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "HUF"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "CHF"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "GBP"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "JPY"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "CZK"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "DKK"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "NOK"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "SEK"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Ask = 0m,
+                            Bid = 0m,
+                            Code = "XDR"
+                        });
                 });
 
             modelBuilder.Entity("BankApp.Entities.Transfer", b =>
@@ -1862,11 +2054,11 @@ namespace BankApp.Migrations
                         {
                             Id = "7a4165b4-0aca-43fb-a390-294781ee377f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4e3c2cfa-ff2d-470f-954b-7794e426ca4c",
+                            ConcurrencyStamp = "19cc68a3-c186-4fa3-b854-7da43e2acfba",
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFvErt+WV4ByJ2Nmsx0pRPqly8uNI7Ocmg20P9A/Ia8vh66TLpGTZKjjeNFKUP56NQ==",
-                            SecurityStamp = "6f9b6c34-6557-40ff-ae22-506994299721",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBTSZ4g6SSBRpWwQIwRa2Ib1eEmgMmYqR79gQsU1lCbDabUf+OOw4DYOBKhospc/5A==",
+                            SecurityStamp = "e099f138-2353-4bbd-928a-7fe9ecb45206",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -1968,21 +2160,21 @@ namespace BankApp.Migrations
                         new
                         {
                             Id = "fa2640a0-0496-4010-bc27-424e0e5c6f78",
-                            ConcurrencyStamp = "f6e21ecf-0c53-430e-ac00-e63310869e5f",
+                            ConcurrencyStamp = "b15c4041-0ccf-4c41-b7c0-ae84f5329862",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "8d746f98-ea62-46eb-9577-db25954163ca",
-                            ConcurrencyStamp = "69b3909c-a152-4f97-a609-85d5b8fa1b44",
+                            Id = "c2698ac8-3dfb-4876-be27-7a369a8a6891",
+                            ConcurrencyStamp = "28e69b2f-4e95-44fc-8bc4-8d91f287e077",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = "1bdd1cab-e0c4-4b27-9aa8-742cecf0a42e",
-                            ConcurrencyStamp = "aba22bcb-468c-4036-ae90-a12c2e3c0d2f",
+                            Id = "545fba29-1425-4860-847d-d1bc453ca327",
+                            ConcurrencyStamp = "41fbd4b2-3cb2-4ced-85c0-9da8d2d80d78",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
@@ -2118,6 +2310,25 @@ namespace BankApp.Migrations
                     b.HasOne("BankApp.Entities.UserTypes.Customer", null)
                         .WithMany("BankAccounts")
                         .HasForeignKey("CustomerId");
+
+                    b.Navigation("AccountType");
+
+                    b.Navigation("Currency");
+                });
+
+            modelBuilder.Entity("BankApp.Entities.AccountTypeCurrency", b =>
+                {
+                    b.HasOne("BankApp.Entities.AccountType", "AccountType")
+                        .WithMany("AvailableCurrencies")
+                        .HasForeignKey("AccountTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BankApp.Entities.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AccountType");
 
@@ -2311,6 +2522,11 @@ namespace BankApp.Migrations
             modelBuilder.Entity("BankApp.Entities.Account", b =>
                 {
                     b.Navigation("Transfers");
+                });
+
+            modelBuilder.Entity("BankApp.Entities.AccountType", b =>
+                {
+                    b.Navigation("AvailableCurrencies");
                 });
 
             modelBuilder.Entity("BankApp.Entities.UserTypes.Customer", b =>

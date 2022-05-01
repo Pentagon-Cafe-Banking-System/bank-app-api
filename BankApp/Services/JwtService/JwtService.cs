@@ -40,7 +40,8 @@ public class JwtService : IJwtService
         return jwt;
     }
 
-    public async Task<RefreshToken> GenerateRefreshTokenAsync(string? ipAddress)
+    public async Task<RefreshToken> GenerateRefreshTokenAsync(string? ipAddress,
+        CancellationToken cancellationToken = default)
     {
         var refreshToken = new RefreshToken
         {
@@ -61,9 +62,12 @@ public class JwtService : IJwtService
             do
             {
                 // token is a cryptographically strong random sequence of values
-                token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+                var localToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+                token = localToken;
                 // ensure token is unique by checking against db
-                tokenIsUnique = !await _userManager.Users.AnyAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+                tokenIsUnique = !await _userManager.Users.AnyAsync(u =>
+                        u.RefreshTokens.Any(t => t.Token == localToken), cancellationToken: cancellationToken
+                );
             } while (!tokenIsUnique);
 
             return token;

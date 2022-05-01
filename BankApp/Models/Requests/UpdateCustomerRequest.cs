@@ -17,10 +17,12 @@ public class UpdateCustomerRequestValidator : AbstractValidator<UpdateCustomerRe
 {
     public UpdateCustomerRequestValidator(ApplicationDbContext applicationDbContext)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.UserName).MustAsync(async (username, _) =>
             {
                 var result = await applicationDbContext.Users.AnyAsync(user =>
-                    user.NormalizedUserName == username.ToUpperInvariant()
+                    user.NormalizedUserName == username.ToUpper()
                 );
                 return !result;
             }
