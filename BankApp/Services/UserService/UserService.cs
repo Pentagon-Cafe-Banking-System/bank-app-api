@@ -83,4 +83,17 @@ public class UserService : IUserService
         var refreshTokens = user.RefreshTokens.ToList();
         return refreshTokens;
     }
+
+    public async Task<bool> UserNameExistsAsync(string userName)
+    {
+        var exists = await _userManager.Users.AnyAsync(user => user.NormalizedUserName == userName.ToUpper());
+        return exists;
+    }
+
+    public async Task<bool> ValidateUserPasswordAsync(string userName, string password)
+    {
+        var user = await GetUserByUserNameAsync(userName);
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
+        return isPasswordValid;
+    }
 }

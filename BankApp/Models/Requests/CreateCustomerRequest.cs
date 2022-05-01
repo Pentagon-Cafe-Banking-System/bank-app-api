@@ -1,6 +1,7 @@
-﻿using BankApp.Data;
+﻿using BankApp.Services.CustomerService;
+using BankApp.Services.UserService;
+using BankApp.Utils;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Models.Requests;
 
@@ -19,8 +20,10 @@ public class CreateCustomerRequest
 
 public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRequest>
 {
-    public CreateCustomerRequestValidator(ApplicationDbContext dbContext)
+    public CreateCustomerRequestValidator(IUserService userService, ICustomerService customerService)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.UserName)
             .NotEmpty()
             .WithMessage("Username is required")
@@ -28,14 +31,7 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
             .WithMessage("Username must be at least 4 characters long")
             .MaximumLength(16)
             .WithMessage("Username must be at most 16 characters long")
-            .MustAsync(async (username, cancellationToken) =>
-                {
-                    var usernameExists = await dbContext.Users
-                        .AnyAsync(user => user.NormalizedUserName == username.ToUpperInvariant(),
-                            cancellationToken: cancellationToken);
-                    return !usernameExists;
-                }
-            )
+            .MustAsync(async (username, _) => await userService.UserNameExistsAsync(username))
             .WithMessage("Username already exists");
 
         RuleFor(e => e.Password)
@@ -71,13 +67,7 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
             .WithMessage("Last name must be at most 50 characters long");
 
         RuleFor(e => e.NationalId)
-            .MustAsync(async (nationalId, cancellationToken) =>
-                {
-                    var nationalIdExists = await dbContext.Customers
-                        .AnyAsync(customer => customer.NationalId == nationalId, cancellationToken: cancellationToken);
-                    return !nationalIdExists;
-                }
-            )
+            .MustAsync(async (nationalId, _) => await customerService.NationalIdExistsAsync(nationalId))
             .WithMessage("National ID already exists")
             .MinimumLength(9)
             .WithMessage("National id must be at least 9 digits long")
@@ -85,13 +75,7 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
             .WithMessage("National id must consist of digits only");
 
         RuleFor(e => e.DateOfBirth)
-            .Must(dateOfBirth =>
-                {
-                    var timeSpan = DateTime.UtcNow - dateOfBirth;
-                    var years = timeSpan.TotalDays / 365.25;
-                    return years >= 18;
-                }
-            )
+            .Must(dateOfBirth => DateUtils.GetYearsBetween(dateOfBirth, DateTime.UtcNow) >= 18)
             .WithMessage("Customer must be at least 18 years old");
 
         RuleFor(e => e.CityOfBirth)

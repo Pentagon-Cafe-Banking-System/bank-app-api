@@ -6,4 +6,5 @@ public interface ICurrencyService
 {
     Task<IList<Currency>> GetAllCurrenciesAsync();
     Task<Currency> GetCurrencyByIdAsync(short currencyId);
+    Task<bool> CurrencyExistsByIdAsync(short currencyId);
 }

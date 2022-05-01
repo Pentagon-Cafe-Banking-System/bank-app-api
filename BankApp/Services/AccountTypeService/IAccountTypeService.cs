@@ -7,4 +7,5 @@ public interface IAccountTypeService
     Task<IList<AccountType>> GetAllAccountTypesAsync();
     Task<IList<Currency>> GetCurrenciesOfAccountTypeAsync(short accountTypeId);
     Task<AccountType> GetAccountTypeByIdAsync(short accountTypeId);
+    Task<bool> AccountTypeExistsByIdAsync(short accountTypeId);
 }

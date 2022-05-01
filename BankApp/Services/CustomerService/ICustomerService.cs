@@ -10,4 +10,6 @@ public interface ICustomerService
     Task<Customer> CreateCustomerAsync(CreateCustomerRequest request);
     Task<Customer> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId);
     Task<bool> DeleteCustomerByIdAsync(string customerId);
+    Task<bool> CustomerExistsByIdAsync(string customerId);
+    Task<bool> NationalIdExistsAsync(string nationalId);
 }

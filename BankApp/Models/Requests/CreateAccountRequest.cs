@@ -1,6 +1,7 @@
-using BankApp.Data;
+using BankApp.Services.AccountTypeService;
+using BankApp.Services.CurrencyService;
+using BankApp.Services.CustomerService;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Models.Requests;
 
@@ -16,8 +17,13 @@ public class CreateAccountRequest
 
 public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequest>
 {
-    public CreateAccountRequestValidator(ApplicationDbContext dbContext)
+    public CreateAccountRequestValidator(
+        IAccountTypeService accountTypeService,
+        ICurrencyService currencyService,
+        ICustomerService customerService)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.Balance)
             .GreaterThanOrEqualTo(0)
             .WithMessage("Balance must be greater than or equal to 0");
@@ -29,22 +35,12 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
         RuleFor(e => e.IsActive);
 
         RuleFor(e => e.AccountTypeId)
-            .MustAsync(async (e, cancellationToken) =>
-            {
-                var accountType = await dbContext.AccountTypes
-                    .FirstOrDefaultAsync(accountType => accountType.Id == e, cancellationToken);
-                return accountType != null;
-            })
-            .WithMessage("Account type could not be found");
+            .MustAsync(async (e, _) => await accountTypeService.AccountTypeExistsByIdAsync(e))
+            .WithMessage("Account type does not exist");
 
         RuleFor(e => e.CurrencyId)
-            .MustAsync(async (e, cancellationToken) =>
-            {
-                var currency = await dbContext.Currencies
-                    .FirstOrDefaultAsync(currency => currency.Id == e, cancellationToken);
-                return currency != null;
-            })
-            .WithMessage("Currency could not be found");
+            .MustAsync(async (e, _) => await currencyService.CurrencyExistsByIdAsync(e))
+            .WithMessage("Currency does not exist");
 
         RuleFor(e => new {e.AccountTypeId, e.CurrencyId})
             .Must((args, _) =>
@@ -63,13 +59,7 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
             .WithMessage("Foreign currency accounts don't support this currency");
 
         RuleFor(e => e.CustomerId)
-            .MustAsync(async (customerId, cancellationToken) =>
-                {
-                    var result = await dbContext.Customers
-                        .AnyAsync(customer => customer.Id == customerId, cancellationToken: cancellationToken);
-                    return result;
-                }
-            )
+            .MustAsync(async (customerId, _) => await customerService.CustomerExistsByIdAsync(customerId))
             .WithMessage("Customer doesn't exist");
     }
 }

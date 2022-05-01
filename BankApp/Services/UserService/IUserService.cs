@@ -13,4 +13,6 @@ public interface IUserService
     Task<bool> DeleteUserByIdAsync(string userId);
     Task<IList<Claim>> GetUserRolesAsClaimsAsync(AppUser user);
     Task<IList<RefreshToken>> GetUserRefreshTokensAsync(string userId);
+    Task<bool> UserNameExistsAsync(string userName);
+    Task<bool> ValidateUserPasswordAsync(string userName, string password);
 }

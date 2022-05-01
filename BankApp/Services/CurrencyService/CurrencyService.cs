@@ -27,4 +27,10 @@ public class CurrencyService : ICurrencyService
             throw new NotFoundException("Currency with requested id does not exist");
         return currency;
     }
+
+    public async Task<bool> CurrencyExistsByIdAsync(short currencyId)
+    {
+        var exists = await _dbContext.Currencies.AnyAsync(c => c.Id == currencyId);
+        return exists;
+    }
 }

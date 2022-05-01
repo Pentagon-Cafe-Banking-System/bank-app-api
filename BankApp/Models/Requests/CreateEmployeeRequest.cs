@@ -1,6 +1,6 @@
-﻿using BankApp.Data;
+﻿using BankApp.Services.UserService;
+using BankApp.Utils;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Models.Requests;
 
@@ -18,8 +18,10 @@ public class CreateEmployeeRequest
 
 public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRequest>
 {
-    public CreateEmployeeRequestValidator(ApplicationDbContext dbContext)
+    public CreateEmployeeRequestValidator(IUserService userService)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.UserName)
             .NotEmpty()
             .WithMessage("Username is required")
@@ -27,14 +29,7 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
             .WithMessage("Username must be at least 4 characters long")
             .MaximumLength(16)
             .WithMessage("Username must be at most 16 characters long")
-            .MustAsync(async (username, cancellationToken) =>
-                {
-                    var usernameExists = await dbContext.Users.AnyAsync(
-                        user => user.NormalizedUserName == username.ToUpperInvariant(),
-                        cancellationToken: cancellationToken);
-                    return !usernameExists;
-                }
-            )
+            .MustAsync(async (username, _) => await userService.UserNameExistsAsync(username))
             .WithMessage("Username already exists");
 
         RuleFor(e => e.Password)
@@ -70,13 +65,7 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
             .Must(g => genders.Contains(g));
 
         RuleFor(e => e.DateOfBirth)
-            .Must(dateOfBirth =>
-                {
-                    var timeSpan = DateTime.UtcNow - dateOfBirth;
-                    var years = timeSpan.TotalDays / 365.25;
-                    return years >= 18;
-                }
-            )
+            .Must(dateOfBirth => DateUtils.GetYearsBetween(dateOfBirth, DateTime.UtcNow) >= 18)
             .WithMessage("Employee must be at least 18 years old");
 
         RuleFor(e => e.DateOfEmployment)

@@ -68,4 +68,16 @@ public class CustomerService : ICustomerService
     {
         return await _userService.DeleteUserByIdAsync(customerId);
     }
+
+    public async Task<bool> CustomerExistsByIdAsync(string customerId)
+    {
+        var exists = await _dbContext.Customers.AnyAsync(c => c.Id == customerId);
+        return exists;
+    }
+
+    public async Task<bool> NationalIdExistsAsync(string nationalId)
+    {
+        var exists = await _dbContext.Customers.AnyAsync(c => c.NationalId == nationalId);
+        return exists;
+    }
 }

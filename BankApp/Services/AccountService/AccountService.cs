@@ -47,9 +47,9 @@ public class AccountService : IAccountService
         return account;
     }
 
-    public Task<Account> GetAccountByNumberAsync(string number)
+    public Task<Account> GetAccountByNumberAsync(string accountNumber)
     {
-        var account = _dbContext.Accounts.SingleAsync(a => a.Number == number);
+        var account = _dbContext.Accounts.SingleAsync(a => a.Number == accountNumber);
         if (account == null)
             throw new NotFoundException("Account with requested number does not exist");
         return account;
@@ -99,6 +99,42 @@ public class AccountService : IAccountService
         _dbContext.Accounts.Remove(account);
         await _dbContext.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<bool> IsAccountActiveByIdAsync(long accountId)
+    {
+        var account = await GetAccountByIdAsync(accountId);
+        return account.IsActive;
+    }
+
+    public async Task<bool> IsAccountActiveByNumberAsync(string accountNumber)
+    {
+        var account = await GetAccountByNumberAsync(accountNumber);
+        return account.IsActive;
+    }
+
+    public Task<bool> AccountExistsByIdAsync(long accountId)
+    {
+        var exists = _dbContext.Accounts.AnyAsync(a => a.Id == accountId);
+        return exists;
+    }
+
+    public async Task<bool> AccountExistsByNumberAsync(string accountNumber)
+    {
+        var exists = await _dbContext.Accounts.AnyAsync(a => a.Number == accountNumber);
+        return exists;
+    }
+
+    public async Task<bool> HasSufficientFundsAsync(long accountId, decimal amount)
+    {
+        var account = await GetAccountByIdAsync(accountId);
+        return account.Balance >= amount;
+    }
+
+    public async Task<bool> IsWithinTransferLimitAsync(long accountId, decimal amount)
+    {
+        var account = await GetAccountByIdAsync(accountId);
+        return account.TransferLimit >= amount;
     }
 
     private string GenerateAccountNumber()

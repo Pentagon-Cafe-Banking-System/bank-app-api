@@ -46,7 +46,7 @@ public class TransferService : ITransferService
     {
         var transfer = await _dbContext.Transfers.FindAsync(id);
         if (transfer == null)
-            throw new NotFoundException("Transfer with requested id could not be found");
+            throw new NotFoundException("Transfer with requested id does not exist");
         return transfer;
     }
 

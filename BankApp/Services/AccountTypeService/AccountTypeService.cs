@@ -35,4 +35,10 @@ public class AccountTypeService : IAccountTypeService
             throw new NotFoundException("Account type with requested id does not exist");
         return accountType;
     }
+
+    public async Task<bool> AccountTypeExistsByIdAsync(short accountTypeId)
+    {
+        var exists = await _dbContext.AccountTypes.AnyAsync(x => x.Id == accountTypeId);
+        return exists;
+    }
 }

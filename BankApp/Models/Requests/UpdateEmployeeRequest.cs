@@ -17,6 +17,8 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRe
 {
     public UpdateEmployeeRequestValidator(ApplicationDbContext applicationDbContext)
     {
+        CascadeMode = CascadeMode.Stop;
+
         RuleFor(e => e.UserName).MustAsync(async (username, _) =>
             {
                 var result = await applicationDbContext.Users.AnyAsync(user =>
