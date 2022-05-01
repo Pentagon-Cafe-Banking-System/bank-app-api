@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using System.Transactions;
 using BankApp.Entities;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
@@ -48,19 +47,15 @@ public class UserService : IUserService
             throw new NotFoundException($"Role '{roleName}' does not exist");
 
         var user = new AppUser {UserName = userName};
-        using (var scope = new TransactionScope())
-        {
-            var createUserIdentityResult = await _userManager.CreateAsync(user, password);
-            if (!createUserIdentityResult.Succeeded)
-                throw new AppException("UserManager could not create user");
+        var createUserIdentityResult = await _userManager.CreateAsync(user, password);
+        if (!createUserIdentityResult.Succeeded)
+            throw new AppException("UserManager could not create user");
 
-            var addToRoleIdentityResult = await _userManager.AddToRoleAsync(user, roleName);
-            if (!addToRoleIdentityResult.Succeeded)
-                throw new AppException("UserManager could not add user to role");
+        var addToRoleIdentityResult = await _userManager.AddToRoleAsync(user, roleName);
+        if (!addToRoleIdentityResult.Succeeded)
+            throw new AppException("UserManager could not add user to role");
 
-            scope.Complete();
-            return user;
-        }
+        return user;
     }
 
     public async Task<bool> DeleteUserByIdAsync(string userId)
