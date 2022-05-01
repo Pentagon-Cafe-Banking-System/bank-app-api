@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using BankApp.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +17,7 @@ public class Account
 
     public virtual AccountType AccountType { get; set; } = default!;
     public virtual Currency Currency { get; set; } = default!;
-    [JsonIgnore] public virtual List<Transfer> Transfers { get; set; } = new();
+    public virtual List<Transfer> Transfers { get; set; } = new();
 
     public AccountDto ToDto()
     {
