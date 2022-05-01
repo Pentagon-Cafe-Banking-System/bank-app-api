@@ -19,33 +19,35 @@ public class CreateTransferRequestValidator : AbstractValidator<CreateTransferRe
         CascadeMode = CascadeMode.Stop;
 
         RuleFor(e => e.SenderAccountId)
-            .MustAsync(async (accountId, _) => await accountService.AccountExistsByIdAsync(accountId))
+            .MustAsync(async (accountId, cancellationToken) =>
+                await accountService.AccountExistsByIdAsync(accountId, cancellationToken))
             .WithMessage("Sender's account does not exist")
-            .MustAsync(async (accountId, _) => await accountService.IsAccountActiveByIdAsync(accountId))
+            .MustAsync(async (accountId, cancellationToken) =>
+                await accountService.IsAccountActiveByIdAsync(accountId, cancellationToken))
             .WithMessage("Selected account is deactivated");
 
         RuleFor(e => e.ReceiverAccountNumber)
-            .MustAsync(async (accountNumber, _) => await accountService.AccountExistsByNumberAsync(accountNumber))
+            .MustAsync(async (accountNumber, cancellationToken) =>
+                await accountService.AccountExistsByNumberAsync(accountNumber, cancellationToken))
             .WithMessage("Receiver's account number does not exist")
-            .MustAsync(async (accountNumber, _) => await accountService.IsAccountActiveByNumberAsync(accountNumber))
+            .MustAsync(async (accountNumber, cancellationToken) =>
+                await accountService.IsAccountActiveByNumberAsync(accountNumber, cancellationToken))
             .WithMessage("Receiver's account is deactivated");
 
         RuleFor(e => new {e.Amount, e.SenderAccountId})
-            .MustAsync(async (args, _) =>
-                await accountService.HasSufficientFundsAsync(args.SenderAccountId, args.Amount)
-            )
+            .MustAsync(async (args, cancellationToken) =>
+                await accountService.HasSufficientFundsAsync(args.SenderAccountId, args.Amount, cancellationToken))
             .WithName("Amount")
             .WithMessage("Insufficient funds")
-            .MustAsync(async (args, _) =>
-                await accountService.IsWithinTransferLimitAsync(args.SenderAccountId, args.Amount)
-            )
+            .MustAsync(async (args, cancellationToken) =>
+                await accountService.IsWithinTransferLimitAsync(args.SenderAccountId, args.Amount, cancellationToken))
             .WithName("Amount")
             .WithMessage("Transfer limit exceeded");
 
         RuleFor(e => new {e.ReceiverAccountNumber, e.SenderAccountId})
-            .MustAsync(async (args, _) =>
+            .MustAsync(async (args, cancellationToken) =>
             {
-                var senderAccount = await accountService.GetAccountByIdAsync(args.SenderAccountId);
+                var senderAccount = await accountService.GetAccountByIdAsync(args.SenderAccountId, cancellationToken);
                 return senderAccount.Number != args.ReceiverAccountNumber;
             })
             .WithName("ReceiverAccountNumber")

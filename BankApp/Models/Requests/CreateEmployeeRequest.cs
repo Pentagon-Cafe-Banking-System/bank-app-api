@@ -29,7 +29,8 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
             .WithMessage("Username must be at least 4 characters long")
             .MaximumLength(16)
             .WithMessage("Username must be at most 16 characters long")
-            .MustAsync(async (username, _) => await userService.UserNameExistsAsync(username))
+            .MustAsync(async (username, cancellationToken) =>
+                await userService.UserNameExistsAsync(username, cancellationToken))
             .WithMessage("Username already exists");
 
         RuleFor(e => e.Password)

@@ -16,11 +16,13 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
         CascadeMode = CascadeMode.Stop;
 
         RuleFor(e => e.UserName)
-            .MustAsync(async (userName, _) => await userService.UserNameExistsAsync(userName))
+            .MustAsync(async (userName, cancellationToken) =>
+                await userService.UserNameExistsAsync(userName, cancellationToken))
             .WithMessage("Username does not exist");
 
         RuleFor(e => new {e.UserName, e.Password})
-            .MustAsync(async (args, _) => await userService.ValidateUserPasswordAsync(args.UserName, args.Password))
+            .MustAsync(async (args, _) =>
+                await userService.ValidateUserPasswordAsync(args.UserName, args.Password))
             .WithName("Password")
             .WithMessage("Password is incorrect");
     }

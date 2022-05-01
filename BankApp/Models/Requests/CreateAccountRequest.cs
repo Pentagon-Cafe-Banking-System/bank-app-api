@@ -34,32 +34,37 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
 
         RuleFor(e => e.IsActive);
 
+        RuleFor(e => e.CustomerId)
+            .MustAsync(async (customerId, cancellationToken) =>
+                await customerService.CustomerExistsByIdAsync(customerId, cancellationToken))
+            .WithMessage("Customer doesn't exist");
+
         RuleFor(e => e.AccountTypeId)
-            .MustAsync(async (e, _) => await accountTypeService.AccountTypeExistsByIdAsync(e))
+            .MustAsync(async (accountTypeId, cancellationToken) =>
+                await accountTypeService.AccountTypeExistsByIdAsync(accountTypeId, cancellationToken))
             .WithMessage("Account type does not exist");
 
         RuleFor(e => e.CurrencyId)
-            .MustAsync(async (e, _) => await currencyService.CurrencyExistsByIdAsync(e))
+            .MustAsync(async (e, cancellationToken) =>
+                await currencyService.CurrencyExistsByIdAsync(e, cancellationToken))
             .WithMessage("Currency does not exist");
 
         RuleFor(e => new {e.AccountTypeId, e.CurrencyId})
             .Must((args, _) =>
             {
-                if (args.AccountTypeId is 1 or 2) return args.AccountTypeId is 1 or 2 && args.CurrencyId == 1;
+                if (args.AccountTypeId is 1 or 2)
+                    return args.CurrencyId == 1;
                 return true;
             })
             .WithName("CurrencyId")
             .WithMessage("Chosen account type only supports PLN currency")
             .Must((args, _) =>
             {
-                if (args.AccountTypeId == 3) return args.AccountTypeId == 3 && args.CurrencyId != 1;
+                if (args.AccountTypeId == 3)
+                    return args.CurrencyId != 1;
                 return true;
             })
             .WithName("CurrencyId")
             .WithMessage("Foreign currency accounts don't support this currency");
-
-        RuleFor(e => e.CustomerId)
-            .MustAsync(async (customerId, _) => await customerService.CustomerExistsByIdAsync(customerId))
-            .WithMessage("Customer doesn't exist");
     }
 }
