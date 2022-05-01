@@ -14,23 +14,26 @@ public class CurrencyService : ICurrencyService
         _dbContext = dbContext;
     }
 
-    public async Task<IList<Currency>> GetAllCurrenciesAsync()
+    public async Task<IList<Currency>> GetAllCurrenciesAsync(CancellationToken cancellationToken = default)
     {
-        var currencies = await _dbContext.Currencies.ToListAsync();
+        var currencies = await _dbContext.Currencies.ToListAsync(cancellationToken: cancellationToken);
         return currencies;
     }
 
-    public async Task<Currency> GetCurrencyByIdAsync(short currencyId)
+    public async Task<Currency> GetCurrencyByIdAsync(short currencyId, CancellationToken cancellationToken = default)
     {
-        var currency = await _dbContext.Currencies.FindAsync(currencyId);
+        var currency = await _dbContext.Currencies
+            .FindAsync(new object?[] {currencyId}, cancellationToken: cancellationToken);
         if (currency == null)
             throw new NotFoundException("Currency with requested id does not exist");
         return currency;
     }
 
-    public async Task<bool> CurrencyExistsByIdAsync(short currencyId)
+    public async Task<bool> CurrencyExistsByIdAsync(short currencyId, CancellationToken cancellationToken = default)
     {
-        var exists = await _dbContext.Currencies.AnyAsync(c => c.Id == currencyId);
+        var exists = await _dbContext.Currencies.AnyAsync(c =>
+                c.Id == currencyId, cancellationToken: cancellationToken
+        );
         return exists;
     }
 }

@@ -4,7 +4,7 @@ namespace BankApp.Services.CurrencyService;
 
 public interface ICurrencyService
 {
-    Task<IList<Currency>> GetAllCurrenciesAsync();
-    Task<Currency> GetCurrencyByIdAsync(short currencyId);
-    Task<bool> CurrencyExistsByIdAsync(short currencyId);
+    Task<IList<Currency>> GetAllCurrenciesAsync(CancellationToken cancellationToken = default);
+    Task<Currency> GetCurrencyByIdAsync(short currencyId, CancellationToken cancellationToken = default);
+    Task<bool> CurrencyExistsByIdAsync(short currencyId, CancellationToken cancellationToken = default);
 }

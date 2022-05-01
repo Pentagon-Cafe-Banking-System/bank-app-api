@@ -5,8 +5,11 @@ namespace BankApp.Services.TransferService;
 
 public interface ITransferService
 {
-    Task<IList<Transfer>> GetAllTransfersAsync();
-    Task<IList<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId);
-    Task<Transfer> GetTransferByIdAsync(long id);
-    Task<Transfer> CreateTransferAsync(CreateTransferRequest request);
+    Task<IList<Transfer>> GetAllTransfersAsync(CancellationToken cancellationToken = default);
+
+    Task<IList<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId,
+        CancellationToken cancellationToken = default);
+
+    Task<Transfer> GetTransferByIdAsync(long id, CancellationToken cancellationToken = default);
+    Task<Transfer> CreateTransferAsync(CreateTransferRequest request, CancellationToken cancellationToken = default);
 }

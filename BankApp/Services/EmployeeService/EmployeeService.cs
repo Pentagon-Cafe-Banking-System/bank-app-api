@@ -21,21 +21,23 @@ public class EmployeeService : IEmployeeService
         _userService = userService;
     }
 
-    public async Task<IList<Employee>> GetAllEmployeesAsync()
+    public async Task<IList<Employee>> GetAllEmployeesAsync(CancellationToken cancellationToken = default)
     {
-        var employees = await _dbContext.Employees.ToListAsync();
+        var employees = await _dbContext.Employees.ToListAsync(cancellationToken: cancellationToken);
         return employees;
     }
 
-    public async Task<Employee> GetEmployeeByIdAsync(string employeeId)
+    public async Task<Employee> GetEmployeeByIdAsync(string employeeId, CancellationToken cancellationToken = default)
     {
-        var employee = await _dbContext.Employees.FindAsync(employeeId);
+        var employee = await _dbContext.Employees
+            .FindAsync(new object?[] {employeeId}, cancellationToken: cancellationToken);
         if (employee == null)
             throw new NotFoundException("Employee with requested id does not exist");
         return employee;
     }
 
-    public async Task<Employee> CreateEmployeeAsync(CreateEmployeeRequest request)
+    public async Task<Employee> CreateEmployeeAsync(CreateEmployeeRequest request,
+        CancellationToken cancellationToken = default)
     {
         var user = await _userService.CreateUserAsync(request.UserName, request.Password, RoleType.Employee);
 
@@ -45,22 +47,23 @@ public class EmployeeService : IEmployeeService
         var employee = mapper.Map<Employee>(request);
         employee.AppUser = user;
 
-        var employeeEntity = (await _dbContext.Employees.AddAsync(employee)).Entity;
-        await _dbContext.SaveChangesAsync();
+        var employeeEntity = (await _dbContext.Employees.AddAsync(employee, cancellationToken)).Entity;
+        await _dbContext.SaveChangesAsync(cancellationToken);
         return employeeEntity;
     }
 
-    public async Task<Employee> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request, string employeeId)
+    public async Task<Employee> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request, string employeeId,
+        CancellationToken cancellationToken = default)
     {
         var hasher = new PasswordHasher<AppUser>();
-        var employee = await GetEmployeeByIdAsync(employeeId);
+        var employee = await GetEmployeeByIdAsync(employeeId, cancellationToken);
         employee.AppUser.UserName = request.UserName;
         employee.AppUser.NormalizedUserName = request.UserName.ToUpperInvariant();
         employee.AppUser.PasswordHash = hasher.HashPassword(null!, request.Password);
         employee.FirstName = request.FirstName;
         employee.LastName = request.LastName;
         employee.Salary = request.Salary;
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(cancellationToken);
         return employee;
     }
 

@@ -28,12 +28,13 @@ public class AuthService : IAuthService
         _userService = userService;
     }
 
-    public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress)
+    public async Task<AuthenticateResponse> AuthenticateAsync(LoginRequest request, string? ipAddress,
+        CancellationToken cancellationToken = default)
     {
         var user = await _userService.GetUserByUserNameAsync(request.UserName);
         var userClaims = await _userService.GetUserRolesAsClaimsAsync(user);
         var jwtToken = _jwtService.GenerateJwtToken(userClaims);
-        var refreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
+        var refreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress, cancellationToken);
 
         // remove old refresh tokens from user
         RemoveOldRefreshTokens(user);
@@ -96,17 +97,18 @@ public class AuthService : IAuthService
 
     // helper methods
 
-    private async Task<AppUser> GetUserByRefreshTokenAsync(string token)
+    private async Task<AppUser> GetUserByRefreshTokenAsync(string token, CancellationToken cancellationToken = default)
     {
         var user = await _userManager.Users.SingleAsync(u =>
-            u.RefreshTokens.Any(t => t.Token == token)
+                u.RefreshTokens.Any(t => t.Token == token), cancellationToken: cancellationToken
         );
         return user;
     }
 
-    private async Task<RefreshToken> RotateRefreshTokenAsync(RefreshToken refreshToken, string? ipAddress)
+    private async Task<RefreshToken> RotateRefreshTokenAsync(RefreshToken refreshToken, string? ipAddress,
+        CancellationToken cancellationToken = default)
     {
-        var newRefreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress);
+        var newRefreshToken = await _jwtService.GenerateRefreshTokenAsync(ipAddress, cancellationToken);
         RevokeRefreshToken(refreshToken, ipAddress, "Replaced by new token", newRefreshToken.Token);
         return newRefreshToken;
     }
@@ -134,7 +136,7 @@ public class AuthService : IAuthService
             RevokeDescendantRefreshTokens(childToken, user, ipAddress, reason);
     }
 
-    private void RevokeRefreshToken(RefreshToken token, string? ipAddress, string? reason = null,
+    private static void RevokeRefreshToken(RefreshToken token, string? ipAddress, string? reason = null,
         string? replacedByToken = null)
     {
         token.Revoked = DateTime.UtcNow;

@@ -18,9 +18,9 @@ public class UserService : IUserService
         _roleManager = roleManager;
     }
 
-    public async Task<IList<AppUser>> GetAllUsersAsync()
+    public async Task<IList<AppUser>> GetAllUsersAsync(CancellationToken cancellationToken = default)
     {
-        var users = await _userManager.Users.ToListAsync();
+        var users = await _userManager.Users.ToListAsync(cancellationToken: cancellationToken);
         return users;
     }
 
@@ -84,9 +84,10 @@ public class UserService : IUserService
         return refreshTokens;
     }
 
-    public async Task<bool> UserNameExistsAsync(string userName)
+    public async Task<bool> UserNameExistsAsync(string userName, CancellationToken cancellationToken = default)
     {
-        var exists = await _userManager.Users.AnyAsync(user => user.NormalizedUserName == userName.ToUpper());
+        var exists = await _userManager.Users.AnyAsync(user =>
+            user.NormalizedUserName == userName.ToUpper(), cancellationToken: cancellationToken);
         return exists;
     }
 

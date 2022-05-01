@@ -5,11 +5,14 @@ namespace BankApp.Services.CustomerService;
 
 public interface ICustomerService
 {
-    Task<IList<Customer>> GetAllCustomersAsync();
-    Task<Customer> GetCustomerByIdAsync(string customerId);
-    Task<Customer> CreateCustomerAsync(CreateCustomerRequest request);
-    Task<Customer> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId);
+    Task<IList<Customer>> GetAllCustomersAsync(CancellationToken cancellationToken = default);
+    Task<Customer> GetCustomerByIdAsync(string customerId, CancellationToken cancellationToken = default);
+    Task<Customer> CreateCustomerAsync(CreateCustomerRequest request, CancellationToken cancellationToken = default);
+
+    Task<Customer> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId,
+        CancellationToken cancellationToken = default);
+
     Task<bool> DeleteCustomerByIdAsync(string customerId);
-    Task<bool> CustomerExistsByIdAsync(string customerId);
-    Task<bool> NationalIdExistsAsync(string nationalId);
+    Task<bool> CustomerExistsByIdAsync(string customerId, CancellationToken cancellationToken = default);
+    Task<bool> NationalIdExistsAsync(string nationalId, CancellationToken cancellationToken = default);
 }
