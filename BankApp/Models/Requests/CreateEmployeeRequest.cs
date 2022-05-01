@@ -29,8 +29,8 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
             .WithMessage("Username must be at least 4 characters long")
             .MaximumLength(16)
             .WithMessage("Username must be at most 16 characters long")
-            .MustAsync(async (username, cancellationToken) =>
-                !await userService.UserNameExistsAsync(username, cancellationToken))
+            .MustAsync(async (userName, cancellationToken) =>
+                !await userService.UserNameExistsAsync(userName, cancellationToken))
             .WithMessage("Username already exists");
 
         RuleFor(e => e.Password)
@@ -63,7 +63,7 @@ public class CreateEmployeeRequestValidator : AbstractValidator<CreateEmployeeRe
 
         var genders = new List<char> {GenderType.Male, GenderType.Female};
         RuleFor(e => e.Gender)
-            .Must(g => genders.Contains(g));
+            .Must(gender => genders.Contains(gender));
 
         RuleFor(e => e.DateOfBirth)
             .Must(dateOfBirth => DateUtils.GetYearsBetween(dateOfBirth, DateTime.UtcNow) >= 18)

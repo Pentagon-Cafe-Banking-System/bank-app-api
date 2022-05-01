@@ -45,8 +45,8 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
             .WithMessage("Account type does not exist");
 
         RuleFor(e => e.CurrencyId)
-            .MustAsync(async (e, cancellationToken) =>
-                await currencyService.CurrencyExistsByIdAsync(e, cancellationToken))
+            .MustAsync(async (currencyId, cancellationToken) =>
+                await currencyService.CurrencyExistsByIdAsync(currencyId, cancellationToken))
             .WithMessage("Currency does not exist");
 
         RuleFor(e => new {e.AccountTypeId, e.CurrencyId})
