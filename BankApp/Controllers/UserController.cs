@@ -1,7 +1,5 @@
-﻿using System.Security.Claims;
-using BankApp.Entities;
+﻿using BankApp.Entities;
 using BankApp.Entities.UserTypes;
-using BankApp.Exceptions.RequestErrors;
 using BankApp.Models;
 using BankApp.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
@@ -26,9 +24,9 @@ public class UserController : ControllerBase
     /// Returns all base users. Only for admins.
     /// </summary>
     [HttpGet]
-    public ActionResult<IEnumerable<AppUser>> GetAllUsers()
+    public async Task<ActionResult<IEnumerable<AppUser>>> GetAllUsersAsync()
     {
-        var users = _userService.GetAllUsers();
+        var users = await _userService.GetAllUsersAsync();
         return Ok(users);
     }
 
@@ -36,13 +34,9 @@ public class UserController : ControllerBase
     /// Returns all refresh tokens for specified user. Only for admins.
     /// </summary>
     [HttpGet("{userId}/refresh-tokens")]
-    public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokens(string userId)
+    public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokensAsync(string userId)
     {
-        var userIdFromToken = User.FindFirstValue(ClaimTypes.Sid);
-        if (userIdFromToken != userId)
-            throw new BadRequestError("Id", "Trying to get refresh tokens of another user");
-
-        var user = await _userService.GetUserByIdAsync(userId);
-        return Ok(user.RefreshTokens);
+        var refreshTokens = await _userService.GetUserRefreshTokensAsync(userId);
+        return Ok(refreshTokens);
     }
 }

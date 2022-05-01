@@ -1,16 +1,13 @@
-﻿using BankApp.Entities;
-using BankApp.Entities.UserTypes;
+﻿using BankApp.Entities.UserTypes;
 using BankApp.Models.Requests;
-using Microsoft.AspNetCore.Identity;
 
 namespace BankApp.Services.CustomerService;
 
 public interface ICustomerService
 {
-    Task<IEnumerable<Customer>> GetAllCustomersAsync();
-    Task<Customer> GetCustomerByIdAsync(string id);
+    Task<IList<Customer>> GetAllCustomersAsync();
+    Task<Customer> GetCustomerByIdAsync(string customerId);
     Task<Customer> CreateCustomerAsync(CreateCustomerRequest request);
-    Task<Customer> UpdateCustomerAsync(UpdateCustomerRequest request, string id);
-    Task<IdentityResult> DeleteCustomerByIdAsync(string id);
-    Task<IEnumerable<Account>> GetAllAccountsByCustomerIdAsync(string id);
+    Task<Customer> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId);
+    Task<bool> DeleteCustomerByIdAsync(string customerId);
 }

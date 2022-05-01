@@ -23,7 +23,7 @@ public class CurrencyServiceTests
     }
 
     [Fact]
-    public async void GetAllCurrenciesAsync_Always_ReturnsListOfCurrency()
+    public async void GetAllCurrencies_Always_ReturnsListOfCurrency()
     {
         // arrange
 

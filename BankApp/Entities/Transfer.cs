@@ -8,9 +8,9 @@ public class Transfer
 {
     [Key] public long Id { get; set; }
     public decimal Amount { get; set; }
-    public string ReceiverAccountNumber { get; set; } = string.Empty;
-    public string ReceiverName { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
+    public string ReceiverAccountNumber { get; set; } = default!;
+    public string ReceiverName { get; set; } = default!;
+    public string Title { get; set; } = default!;
     public DateTime Ordered { get; set; }
     public DateTime Executed { get; set; }
     public string? ReasonFailed { get; set; }

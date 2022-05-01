@@ -1,14 +1,13 @@
 ﻿using BankApp.Entities.UserTypes;
 using BankApp.Models.Requests;
-using Microsoft.AspNetCore.Identity;
 
 namespace BankApp.Services.EmployeeService;
 
 public interface IEmployeeService
 {
-    Task<IEnumerable<Employee>> GetAllEmployeesAsync();
-    Task<Employee> GetEmployeeByIdAsync(string id);
+    Task<IList<Employee>> GetAllEmployeesAsync();
+    Task<Employee> GetEmployeeByIdAsync(string employeeId);
     Task<Employee> CreateEmployeeAsync(CreateEmployeeRequest request);
-    Task<Employee> UpdateEmployeeAsync(UpdateEmployeeRequest request, string id);
-    Task<IdentityResult> DeleteEmployeeByIdAsync(string id);
+    Task<Employee> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request, string employeeId);
+    Task<bool> DeleteEmployeeByIdAsync(string employeeId);
 }

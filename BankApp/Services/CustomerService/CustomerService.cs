@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using BankApp.Data;
-using BankApp.Entities;
 using BankApp.Entities.UserTypes;
-using BankApp.Exceptions.RequestErrors;
+using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
@@ -22,50 +21,39 @@ public class CustomerService : ICustomerService
         _userService = userService;
     }
 
-    public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
+    public async Task<IList<Customer>> GetAllCustomersAsync()
     {
         var employees = await _dbContext.Customers.ToListAsync();
         return employees;
     }
 
-    public async Task<Customer> GetCustomerByIdAsync(string id)
+    public async Task<Customer> GetCustomerByIdAsync(string customerId)
     {
-        var customer = await _dbContext.Customers.FindAsync(id);
+        var customer = await _dbContext.Customers.FindAsync(customerId);
         if (customer == null)
-            throw new NotFoundError("Id", "Customer with requested id could not be found");
+            throw new NotFoundException("Customer with requested id does not exist");
         return customer;
     }
 
     public async Task<Customer> CreateCustomerAsync(CreateCustomerRequest request)
     {
-        await using (var dbContextTransaction = await _dbContext.Database.BeginTransactionAsync())
-        {
-            var user = new AppUser
-            {
-                UserName = request.UserName,
-            };
-            await _userService.CreateUserAsync(user, request.Password, RoleType.Customer);
+        var user = await _userService.CreateUserAsync(request.UserName, request.Password, RoleType.Customer);
 
-            var mapper = new Mapper(
-                new MapperConfiguration(cfg =>
-                    cfg.CreateMap<CreateCustomerRequest, Customer>()
-                )
-            );
-            var customer = mapper.Map<Customer>(request);
-            customer.AppUser = user;
-            var entity = (await _dbContext.Customers.AddAsync(customer)).Entity;
+        var mapper = new Mapper(new MapperConfiguration(cfg =>
+            cfg.CreateMap<CreateCustomerRequest, Customer>()
+        ));
+        var customer = mapper.Map<Customer>(request);
+        customer.AppUser = user;
 
-            await _dbContext.SaveChangesAsync();
-            await dbContextTransaction.CommitAsync();
-
-            return entity;
-        }
+        var customerEntity = (await _dbContext.Customers.AddAsync(customer)).Entity;
+        await _dbContext.SaveChangesAsync();
+        return customerEntity;
     }
 
-    public async Task<Customer> UpdateCustomerAsync(UpdateCustomerRequest request, string id)
+    public async Task<Customer> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId)
     {
         var hasher = new PasswordHasher<AppUser>();
-        var customer = await GetCustomerByIdAsync(id);
+        var customer = await GetCustomerByIdAsync(customerId);
         customer.AppUser.UserName = request.UserName;
         customer.AppUser.NormalizedUserName = request.UserName.ToUpperInvariant();
         customer.AppUser.PasswordHash = hasher.HashPassword(null!, request.Password);
@@ -76,16 +64,8 @@ public class CustomerService : ICustomerService
         return customer;
     }
 
-    public async Task<IdentityResult> DeleteCustomerByIdAsync(string id)
+    public async Task<bool> DeleteCustomerByIdAsync(string customerId)
     {
-        var employee = await GetCustomerByIdAsync(id);
-        var appUser = employee.AppUser;
-        return await _userService.DeleteUserAsync(appUser);
-    }
-
-    public async Task<IEnumerable<Account>> GetAllAccountsByCustomerIdAsync(string id)
-    {
-        var customer = await GetCustomerByIdAsync(id);
-        return customer.BankAccounts;
+        return await _userService.DeleteUserByIdAsync(customerId);
     }
 }

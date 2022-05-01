@@ -6,15 +6,15 @@ namespace BankApp.Models.Requests;
 
 public class CreateCustomerRequest
 {
-    public string UserName { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string FirstName { get; set; } = string.Empty;
-    public string MiddleName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public string NationalId { get; set; } = string.Empty;
+    public string UserName { get; set; } = default!;
+    public string Password { get; set; } = default!;
+    public string FirstName { get; set; } = default!;
+    public string MiddleName { get; set; } = default!;
+    public string LastName { get; set; } = default!;
+    public string NationalId { get; set; } = default!;
     public DateTime DateOfBirth { get; set; }
-    public string CityOfBirth { get; set; } = string.Empty;
-    public string FathersName { get; set; } = string.Empty;
+    public string CityOfBirth { get; set; } = default!;
+    public string FathersName { get; set; } = default!;
 }
 
 public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRequest>

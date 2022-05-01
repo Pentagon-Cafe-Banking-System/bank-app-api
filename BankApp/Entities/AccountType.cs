@@ -7,7 +7,7 @@ namespace BankApp.Entities;
 public class AccountType
 {
     [Key] public short Id { get; set; }
-    public string Code { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
+    public string Code { get; set; } = default!;
+    public string Name { get; set; } = default!;
     public decimal InterestRate { get; set; }
 }

@@ -1,11 +1,12 @@
+using System;
 using System.Linq;
 using BankApp.Entities.UserTypes;
 using BankApp.Exceptions;
-using BankApp.Exceptions.RequestErrors;
 using BankApp.Services.UserService;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
+using MockQueryable.FakeItEasy;
 using Xunit;
 
 namespace BankApp.UnitTests;
@@ -24,28 +25,28 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void GetAllUsers_NoUsers_ReturnsEmptyCollection()
+    public async void GetAllUsers_NoUsers_ReturnsEmptyCollection()
     {
         // arrange
-        var fakeAppUserQueryable = A.CollectionOfDummy<AppUser>(0).AsQueryable();
+        var fakeAppUserQueryable = A.CollectionOfDummy<AppUser>(0).AsQueryable().BuildMock();
         A.CallTo(() => _fakeUserManager.Users).Returns(fakeAppUserQueryable);
 
         // act
-        var result = _userService.GetAllUsers().ToList();
+        var result = await _userService.GetAllUsersAsync();
 
         // assert
         result.Should().BeEmpty();
     }
 
     [Fact]
-    public void GetAllUsers_UsersExist_ReturnsUsersCollection()
+    public async void GetAllUsers_UsersExist_ReturnsUsersCollection()
     {
         // arrange
-        var fakeAppUserQueryable = A.CollectionOfDummy<AppUser>(3).AsQueryable();
+        var fakeAppUserQueryable = A.CollectionOfDummy<AppUser>(3).AsQueryable().BuildMock();
         A.CallTo(() => _fakeUserManager.Users).Returns(fakeAppUserQueryable);
 
         // act
-        var result = _userService.GetAllUsers().ToList();
+        var result = await _userService.GetAllUsersAsync();
 
         // assert
         result.Should().HaveSameCount(fakeAppUserQueryable);
@@ -76,46 +77,44 @@ public class UserServiceTests
         var action = async () => await _userService.GetUserByIdAsync("1");
 
         // assert
-        await action.Should().ThrowExactlyAsync<NotFoundError>();
+        await action.Should().ThrowExactlyAsync<NotFoundException>();
     }
 
     [Fact]
     public async void CreateUserAsync_ForValidData_DoesNotThrowAnyException()
     {
         // arrange
-        var appUser = A.Dummy<AppUser>();
-        A.CallTo(() => _fakeRoleManager.RoleExistsAsync(A<string>.Ignored)).Returns(true);
-
         var fakeIdentityResult = IdentityResult.Success;
+        A.CallTo(() => _fakeRoleManager.RoleExistsAsync(A<string>.Ignored)).Returns(true);
+        A.CallTo(() => _fakeUserManager.CreateAsync(A<AppUser>.Ignored, A<string>.Ignored)).Returns(fakeIdentityResult);
         A.CallTo(() =>
-            _fakeUserManager.CreateAsync(A<AppUser>.Ignored, A<string>.Ignored)).Returns(fakeIdentityResult);
+            _fakeUserManager.AddToRoleAsync(A<AppUser>.Ignored, A<string>.Ignored)
+        ).Returns(fakeIdentityResult);
 
         // act
-        var action = async () => await _userService.CreateUserAsync(appUser, "password", "roleName");
+        var action = async () => await _userService.CreateUserAsync("userName", "password", "roleName");
 
         // assert
         await action.Should().NotThrowAsync();
     }
 
     [Fact]
-    public async void CreateUserAsync_RoleNameDoesntExist_ThrowsAppException()
+    public async void CreateUserAsync_RoleNameDoesntExist_ThrowsNotFoundException()
     {
         // arrange
-        var appUser = A.Dummy<AppUser>();
         A.CallTo(() => _fakeRoleManager.RoleExistsAsync(A<string>.Ignored)).Returns(false);
 
         // act
-        var action = async () => await _userService.CreateUserAsync(appUser, "password", "roleName");
+        var action = async () => await _userService.CreateUserAsync("userName", "password", "roleName");
 
         // assert
-        await action.Should().ThrowExactlyAsync<AppException>();
+        await action.Should().ThrowExactlyAsync<NotFoundException>();
     }
 
     [Fact]
     public async void CreateUserAsync_ForInvalidData_ThrowsAppException()
     {
         // arrange
-        var appUser = A.Dummy<AppUser>();
         A.CallTo(() => _fakeRoleManager.RoleExistsAsync(A<string>.Ignored)).Returns(true);
 
         var fakeIdentityResult = IdentityResult.Failed(new IdentityError());
@@ -123,7 +122,7 @@ public class UserServiceTests
             _fakeUserManager.CreateAsync(A<AppUser>.Ignored, A<string>.Ignored)).Returns(fakeIdentityResult);
 
         // act
-        var action = async () => await _userService.CreateUserAsync(appUser, "password", "roleName");
+        var action = async () => await _userService.CreateUserAsync("userName", "password", "roleName");
 
         // assert
         await action.Should().ThrowExactlyAsync<AppException>();
@@ -140,17 +139,17 @@ public class UserServiceTests
         var action = async () => await _userService.DeleteUserByIdAsync("1");
 
         // assert
-        await action.Should().ThrowExactlyAsync<NotFoundError>();
+        await action.Should().ThrowExactlyAsync<NotFoundException>();
     }
 
     [Fact]
-    public async void DeleteUserAsync_CallsUserManagerDeleteAsyncMethod()
+    public async void DeleteUserByIdAsync_CallsUserManagerDeleteAsyncMethod()
     {
         // arrange
-        AppUser appUser = A.Dummy<AppUser>();
+        var id = Guid.NewGuid().ToString();
 
         // act
-        await _userService.DeleteUserAsync(appUser);
+        await _userService.DeleteUserByIdAsync(id);
 
         // assert
         A.CallTo(() => _fakeUserManager.DeleteAsync(A<AppUser>.Ignored)).MustHaveHappenedOnceExactly();

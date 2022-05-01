@@ -5,10 +5,12 @@ namespace BankApp.Services.AccountService;
 
 public interface IAccountService
 {
-    Task<IEnumerable<Account>> GetAllAccountsAsync();
+    Task<IList<Account>> GetAllAccountsAsync();
     Task<bool> IsCustomerAccountOwnerAsync(string userId, long accountId);
     Task<Account> GetAccountByIdAsync(long id);
+    Task<Account> GetAccountByNumberAsync(string number);
+    Task<IList<Account>> GetAccountsByCustomerIdAsync(string customerId);
     Task<Account> CreateAccountAsync(CreateAccountRequest request);
-    Task<Account> UpdateAccountAsync(UpdateAccountRequest request, long id);
-    Task<bool> DeleteAccountAsync(long id);
+    Task<Account> UpdateAccountAsync(UpdateAccountRequest request, long accountId);
+    Task<bool> DeleteAccountByIdAsync(long accountId);
 }

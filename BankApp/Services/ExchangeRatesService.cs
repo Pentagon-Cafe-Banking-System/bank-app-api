@@ -22,20 +22,19 @@ public class ExchangeRatesService : IHostedService, IDisposable
     public void Dispose()
     {
         _timer?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
-    public Task StartAsync(CancellationToken stoppingToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Exchange Rates Service running.");
-
+        _logger.LogInformation("Exchange Rates Service running");
         _timer = new Timer(async _ => await DoWork(), null, TimeSpan.Zero, TimeSpan.FromHours(12));
-
         return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Exchange Rates Service is stopping.");
+        _logger.LogInformation("Exchange Rates Service is stopping");
 
         _timer?.Change(Timeout.Infinite, 0);
 
@@ -47,7 +46,7 @@ public class ExchangeRatesService : IHostedService, IDisposable
         var count = Interlocked.Increment(ref _executionCount);
         _logger.LogInformation("Exchange Rates Service is working. Count: {Count}", count);
 
-        var url = "https://api.nbp.pl/api/exchangerates/tables/c";
+        const string url = "https://api.nbp.pl/api/exchangerates/tables/c";
         var client = new HttpClient();
         var response = await client.GetAsync(url);
         var jsonString = await response.Content.ReadAsStringAsync();

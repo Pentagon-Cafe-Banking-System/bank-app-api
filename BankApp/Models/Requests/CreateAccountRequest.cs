@@ -11,7 +11,7 @@ public class CreateAccountRequest
     public bool IsActive { get; set; }
     public short AccountTypeId { get; set; }
     public short CurrencyId { get; set; }
-    public string CustomerId { get; set; } = string.Empty;
+    public string CustomerId { get; set; } = default!;
 }
 
 public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequest>

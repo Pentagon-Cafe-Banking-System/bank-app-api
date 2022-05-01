@@ -25,7 +25,7 @@ public class CustomerController : ControllerBase
     /// </summary>
     [HttpGet]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IEnumerable<Customer>>> GetAllCustomers()
+    public async Task<ActionResult<IEnumerable<Customer>>> GetAllCustomersAsync()
     {
         var customers = await _customerService.GetAllCustomersAsync();
         return Ok(customers);
@@ -36,7 +36,7 @@ public class CustomerController : ControllerBase
     /// </summary>
     [HttpGet("{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Customer>> GetCustomerById(string customerId)
+    public async Task<ActionResult<Customer>> GetCustomerByIdAsync(string customerId)
     {
         var customer = await _customerService.GetCustomerByIdAsync(customerId);
         return Ok(customer);
@@ -47,7 +47,7 @@ public class CustomerController : ControllerBase
     /// </summary>
     [HttpPost]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Customer>> CreateCustomer(CreateCustomerRequest request)
+    public async Task<ActionResult<Customer>> CreateCustomerAsync(CreateCustomerRequest request)
     {
         var customer = await _customerService.CreateCustomerAsync(request);
         return Ok(customer);
@@ -58,9 +58,9 @@ public class CustomerController : ControllerBase
     /// </summary>
     [HttpPatch("{customerId}")] // TODO - make it true PATCH
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Customer>> UpdateCustomer(UpdateCustomerRequest request, string customerId)
+    public async Task<ActionResult<Customer>> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId)
     {
-        var customer = await _customerService.UpdateCustomerAsync(request, customerId);
+        var customer = await _customerService.UpdateCustomerByIdAsync(request, customerId);
         return Ok(customer);
     }
 
@@ -69,7 +69,7 @@ public class CustomerController : ControllerBase
     /// </summary>
     [HttpDelete("{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IdentityResult>> DeleteCustomerById(string customerId)
+    public async Task<ActionResult<IdentityResult>> DeleteCustomerByIdAsync(string customerId)
     {
         var result = await _customerService.DeleteCustomerByIdAsync(customerId);
         return Ok(result);

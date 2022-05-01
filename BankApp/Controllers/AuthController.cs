@@ -23,17 +23,17 @@ public class AuthController : ControllerBase
     /// Returns a pair of access token and refresh token by username and password.
     /// </summary>
     [HttpPost("authenticate")]
-    public async Task<ActionResult<AuthenticateResponse>> Authenticate(LoginRequest request)
+    public async Task<ActionResult<AuthenticateResponse>> AuthenticateAsync(LoginRequest request)
     {
         var response = await _authService.AuthenticateAsync(request, IpAddress());
         return Ok(response);
     }
 
     /// <summary>
-    /// Returns a new pair of access token and refresh token or the user by using the refresh token.
+    /// Returns a new pair of access token and refresh token by current refresh token.
     /// </summary>
     [HttpPost("refresh-token")]
-    public async Task<ActionResult<AuthenticateResponse>> RefreshToken(RefreshTokenRequest request)
+    public async Task<ActionResult<AuthenticateResponse>> RefreshTokenAsync(RefreshTokenRequest request)
     {
         var refreshToken = request.RefreshToken;
         var response = await _authService.RefreshTokenAsync(refreshToken, IpAddress());
@@ -44,10 +44,10 @@ public class AuthController : ControllerBase
     /// Revokes specified refresh token.
     /// </summary>
     [HttpPost("revoke-token")]
-    public async Task<IActionResult> RevokeToken(RevokeRefreshTokenRequest request)
+    public async Task<IActionResult> RevokeTokenAsync(RevokeRefreshTokenRequest request)
     {
         var refreshToken = request.RefreshToken;
-        await _authService.RevokeTokenAsync(refreshToken, IpAddress());
+        await _authService.RevokeRefreshTokenAsync(refreshToken, IpAddress());
         return Ok(new {message = "Token revoked"});
     }
 

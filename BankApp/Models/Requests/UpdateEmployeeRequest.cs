@@ -1,17 +1,18 @@
 ﻿using BankApp.Data;
-using Microsoft.EntityFrameworkCore;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+
 namespace BankApp.Models.Requests;
 
 public class UpdateEmployeeRequest
 {
-    public string UserName { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
+    public string UserName { get; set; } = default!;
+    public string Password { get; set; } = default!;
+    public string FirstName { get; set; } = default!;
+    public string LastName { get; set; } = default!;
     public double Salary { get; set; }
-    
 }
+
 public class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRequest>
 {
     public UpdateEmployeeRequestValidator(ApplicationDbContext applicationDbContext)

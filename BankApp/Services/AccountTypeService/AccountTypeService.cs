@@ -1,5 +1,6 @@
 ﻿using BankApp.Data;
 using BankApp.Entities;
+using BankApp.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.AccountTypeService;
@@ -13,15 +14,25 @@ public class AccountTypeService : IAccountTypeService
         _dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<AccountType>> GetAllAccountTypesAsync()
+    public async Task<IList<AccountType>> GetAllAccountTypesAsync()
     {
-        return await _dbContext.AccountTypes.ToListAsync();
+        var accountTypes = await _dbContext.AccountTypes.ToListAsync();
+        return accountTypes;
     }
 
-    public async Task<IEnumerable<Currency>> GetCurrenciesByAccountTypeIdAsync(short accountTypeId)
+    public async Task<IList<Currency>> GetCurrenciesOfAccountTypeAsync(short accountTypeId)
     {
         if (accountTypeId == 3)
             return await _dbContext.Currencies.ToListAsync();
-        return await _dbContext.Currencies.Where(x => x.Code == "PLN").ToListAsync();
+        var plnCurrency = await _dbContext.Currencies.SingleAsync(x => x.Code == "PLN");
+        return new List<Currency> {plnCurrency};
+    }
+
+    public async Task<AccountType> GetAccountTypeByIdAsync(short accountTypeId)
+    {
+        var accountType = await _dbContext.AccountTypes.FindAsync(accountTypeId);
+        if (accountType == null)
+            throw new NotFoundException("Account type with requested id does not exist");
+        return accountType;
     }
 }
