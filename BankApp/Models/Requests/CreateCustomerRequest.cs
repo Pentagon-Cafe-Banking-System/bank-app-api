@@ -32,7 +32,7 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
             .MaximumLength(16)
             .WithMessage("Username must be at most 16 characters long")
             .MustAsync(async (username, cancellationToken) =>
-                await userService.UserNameExistsAsync(username, cancellationToken))
+                !await userService.UserNameExistsAsync(username, cancellationToken))
             .WithMessage("Username already exists");
 
         RuleFor(e => e.Password)
@@ -69,7 +69,7 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
 
         RuleFor(e => e.NationalId)
             .MustAsync(async (nationalId, cancellationToken) =>
-                await customerService.NationalIdExistsAsync(nationalId, cancellationToken))
+                !await customerService.NationalIdExistsAsync(nationalId, cancellationToken))
             .WithMessage("National ID already exists")
             .MinimumLength(9)
             .WithMessage("National id must be at least 9 digits long")

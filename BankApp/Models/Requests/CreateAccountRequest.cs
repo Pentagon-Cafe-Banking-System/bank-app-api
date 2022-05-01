@@ -10,8 +10,8 @@ public class CreateAccountRequest
     public int Balance { get; set; }
     public int TransferLimit { get; set; }
     public bool IsActive { get; set; }
-    public short AccountTypeId { get; set; }
-    public short CurrencyId { get; set; }
+    public int AccountTypeId { get; set; }
+    public int CurrencyId { get; set; }
     public string CustomerId { get; set; } = default!;
 }
 

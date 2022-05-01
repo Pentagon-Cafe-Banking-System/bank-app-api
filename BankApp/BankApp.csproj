@@ -31,6 +31,10 @@
             <TargetPath>%(Filename)%(Extension)</TargetPath>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </ContentWithTargetPath>
+        <ContentWithTargetPath Include="Files/available_currency_codes.csv">
+            <TargetPath>%(Filename)%(Extension)</TargetPath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </ContentWithTargetPath>
     </ItemGroup>
 
 </Project>

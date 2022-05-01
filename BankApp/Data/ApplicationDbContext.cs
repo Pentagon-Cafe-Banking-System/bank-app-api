@@ -44,6 +44,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
         CreateAdminAccount(builder, adminRoleId);
 
         SeedCountries(builder);
+
+        SeedCurrencies(builder);
         SeedAccountTypes(builder);
     }
 
@@ -64,6 +66,9 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     private void ConfigureRelationships(ModelBuilder builder)
     {
         ConfigureRelationshipsWithAppUser(builder);
+
+        builder.Entity<AccountTypeCurrency>()
+            .HasKey("AccountTypeId", nameof(AccountTypeCurrency.CurrencyId));
     }
 
     private void ConfigureRelationshipsWithAppUser(ModelBuilder builder)
@@ -129,8 +134,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     private void SeedCountries(ModelBuilder builder)
     {
         var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "countries.csv");
-        var lines = File.ReadAllLines(path);
-        short countryId = 1;
+        var lines = File.ReadLines(path);
+        int countryId = 1;
         foreach (var line in lines)
         {
             var arr = line.Split(",");
@@ -140,6 +145,26 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
                     Id = countryId++,
                     Code = arr[0],
                     Name = arr[3]
+                }
+            );
+        }
+    }
+
+    private void SeedCurrencies(ModelBuilder builder)
+    {
+        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "available_currency_codes.csv");
+        var line = File.ReadAllLines(path).First();
+        var currencyCodes = line.Split(";");
+        int currencyId = 1;
+        foreach (var currencyCode in currencyCodes)
+        {
+            builder.Entity<Currency>().HasData(
+                new Currency
+                {
+                    Id = currencyId++,
+                    Code = currencyCode,
+                    Bid = default!,
+                    Ask = default!
                 }
             );
         }
@@ -170,5 +195,28 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
                 InterestRate = (decimal) 0.0
             }
         );
+
+        builder.Entity<AccountTypeCurrency>().HasData(
+            new AccountTypeCurrency
+            {
+                AccountTypeId = 1,
+                CurrencyId = 1
+            },
+            new AccountTypeCurrency
+            {
+                AccountTypeId = 2,
+                CurrencyId = 1
+            }
+        );
+        foreach (var currencyId in Enumerable.Range(2, 13))
+        {
+            builder.Entity<AccountTypeCurrency>().HasData(
+                new AccountTypeCurrency
+                {
+                    AccountTypeId = 3,
+                    CurrencyId = currencyId
+                }
+            );
+        }
     }
 }

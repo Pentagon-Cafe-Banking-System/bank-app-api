@@ -20,7 +20,7 @@ public class CurrencyService : ICurrencyService
         return currencies;
     }
 
-    public async Task<Currency> GetCurrencyByIdAsync(short currencyId, CancellationToken cancellationToken = default)
+    public async Task<Currency> GetCurrencyByIdAsync(int currencyId, CancellationToken cancellationToken = default)
     {
         var currency = await _dbContext.Currencies
             .FindAsync(new object?[] {currencyId}, cancellationToken: cancellationToken);
@@ -29,7 +29,7 @@ public class CurrencyService : ICurrencyService
         return currency;
     }
 
-    public async Task<bool> CurrencyExistsByIdAsync(short currencyId, CancellationToken cancellationToken = default)
+    public async Task<bool> CurrencyExistsByIdAsync(int currencyId, CancellationToken cancellationToken = default)
     {
         var exists = await _dbContext.Currencies.AnyAsync(c =>
                 c.Id == currencyId, cancellationToken: cancellationToken

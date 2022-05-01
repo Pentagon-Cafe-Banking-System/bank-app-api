@@ -6,9 +6,9 @@ public interface IAccountTypeService
 {
     Task<IList<AccountType>> GetAllAccountTypesAsync(CancellationToken cancellationToken = default);
 
-    Task<IList<Currency>> GetCurrenciesOfAccountTypeAsync(short accountTypeId,
+    Task<IList<Currency>> GetCurrenciesOfAccountTypeAsync(int accountTypeId,
         CancellationToken cancellationToken = default);
 
-    Task<AccountType> GetAccountTypeByIdAsync(short accountTypeId, CancellationToken cancellationToken = default);
-    Task<bool> AccountTypeExistsByIdAsync(short accountTypeId, CancellationToken cancellationToken = default);
+    Task<AccountType> GetAccountTypeByIdAsync(int accountTypeId, CancellationToken cancellationToken = default);
+    Task<bool> AccountTypeExistsByIdAsync(int accountTypeId, CancellationToken cancellationToken = default);
 }

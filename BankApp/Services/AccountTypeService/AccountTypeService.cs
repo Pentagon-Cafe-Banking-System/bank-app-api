@@ -20,18 +20,17 @@ public class AccountTypeService : IAccountTypeService
         return accountTypes;
     }
 
-    public async Task<IList<Currency>> GetCurrenciesOfAccountTypeAsync(short accountTypeId,
+    public async Task<IList<Currency>> GetCurrenciesOfAccountTypeAsync(int accountTypeId,
         CancellationToken cancellationToken = default)
     {
-        if (accountTypeId == 3)
-            return await _dbContext.Currencies.ToListAsync(cancellationToken: cancellationToken);
-        var plnCurrency = await _dbContext.Currencies.SingleAsync(x =>
-                x.Code == "PLN", cancellationToken: cancellationToken
-        );
-        return new List<Currency> {plnCurrency};
+        var accountType = await GetAccountTypeByIdAsync(accountTypeId, cancellationToken);
+        var currencies = accountType.AvailableCurrencies
+            .Select(ac => ac.Currency)
+            .ToList();
+        return currencies;
     }
 
-    public async Task<AccountType> GetAccountTypeByIdAsync(short accountTypeId,
+    public async Task<AccountType> GetAccountTypeByIdAsync(int accountTypeId,
         CancellationToken cancellationToken = default)
     {
         var accountType = await _dbContext.AccountTypes
@@ -41,7 +40,7 @@ public class AccountTypeService : IAccountTypeService
         return accountType;
     }
 
-    public async Task<bool> AccountTypeExistsByIdAsync(short accountTypeId,
+    public async Task<bool> AccountTypeExistsByIdAsync(int accountTypeId,
         CancellationToken cancellationToken = default)
     {
         var exists = await _dbContext.AccountTypes.AnyAsync(x =>

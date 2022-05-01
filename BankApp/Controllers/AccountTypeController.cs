@@ -32,7 +32,7 @@ public class AccountTypeController : ControllerBase
     /// Returns currencies available for specified account type. For all authenticated users.
     /// </summary>
     [HttpGet("{accountTypeId}/currencies")]
-    public async Task<ActionResult<IEnumerable<Currency>>> GetCurrenciesOfAccountTypeAsync(short accountTypeId)
+    public async Task<ActionResult<IEnumerable<Currency>>> GetCurrenciesOfAccountTypeAsync(int accountTypeId)
     {
         var currencies = await _accountTypeService.GetCurrenciesOfAccountTypeAsync(accountTypeId);
         return Ok(currencies);
