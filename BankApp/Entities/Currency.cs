@@ -1,7 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Entities;
 
+[Table("Currencies")]
+[Index(nameof(Code), IsUnique = true)]
 public class Currency
 {
     [Key] public int Id { get; set; }

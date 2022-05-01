@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Entities;
 
 [Table("Accounts")]
+[Index(nameof(Number), IsUnique = true)]
 public class Account
 {
     [Key] public long Id { get; set; }

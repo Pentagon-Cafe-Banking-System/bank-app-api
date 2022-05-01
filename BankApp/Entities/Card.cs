@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Entities;
 
 [Table("Cards")]
+[Index(nameof(Number), IsUnique = true)]
 public class Card
 {
     [Key] public long Id { get; set; }

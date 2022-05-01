@@ -436,15 +436,15 @@ namespace BankApp.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "545fba29-1425-4860-847d-d1bc453ca327", "41fbd4b2-3cb2-4ced-85c0-9da8d2d80d78", "Customer", "CUSTOMER" },
-                    { "c2698ac8-3dfb-4876-be27-7a369a8a6891", "28e69b2f-4e95-44fc-8bc4-8d91f287e077", "Employee", "EMPLOYEE" },
-                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "b15c4041-0ccf-4c41-b7c0-ae84f5329862", "Admin", "ADMIN" }
+                    { "58c162fe-6871-4615-982a-738b416748e9", "4effe154-4700-44ad-9ed9-0d2e8ab2452c", "Employee", "EMPLOYEE" },
+                    { "bca4ec56-c05e-4747-a607-f3c0a8699b12", "d9c51bd1-8f8c-43c5-a150-440246eb5ff1", "Customer", "CUSTOMER" },
+                    { "fa2640a0-0496-4010-bc27-424e0e5c6f78", "6a810648-1fc2-4696-93ca-df5a31b15c2c", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "LockoutEnabled", "LockoutEnd", "NormalizedUserName", "PasswordHash", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "19cc68a3-c186-4fa3-b854-7da43e2acfba", false, null, "ADMIN", "AQAAAAEAACcQAAAAEBTSZ4g6SSBRpWwQIwRa2Ib1eEmgMmYqR79gQsU1lCbDabUf+OOw4DYOBKhospc/5A==", "e099f138-2353-4bbd-928a-7fe9ecb45206", false, "admin" });
+                values: new object[] { "7a4165b4-0aca-43fb-a390-294781ee377f", 0, "685eb3b8-e5a1-43f9-8168-81dcfe494962", false, null, "ADMIN", "AQAAAAEAACcQAAAAEHGX/3nlRuKCce4QDEUBx4CMoPrqeagCKXjpMMbOlQjluk7hJKjQahWqMTfwtfDZcQ==", "271eca47-1e45-44de-8355-7aeba9e46649", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "Countries",
@@ -767,9 +767,21 @@ namespace BankApp.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Accounts_Number",
+                table: "Accounts",
+                column: "Number",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AccountTypeCurrencies_CurrencyId",
                 table: "AccountTypeCurrencies",
                 column: "CurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccountTypes_Code",
+                table: "AccountTypes",
+                column: "Code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_CountryId",
@@ -818,6 +830,30 @@ namespace BankApp.Migrations
                 name: "IX_Cards_CardTypeId",
                 table: "Cards",
                 column: "CardTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cards_Number",
+                table: "Cards",
+                column: "Number",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CardTypes_Code",
+                table: "CardTypes",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Countries_Code",
+                table: "Countries",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Currencies_Code",
+                table: "Currencies",
+                column: "Code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_AppUserId",
