@@ -67,7 +67,7 @@ public class UserControllerTests : IClassFixture<WebApplicationFactory<Program>>
         client.DefaultRequestHeaders.Add("Authorization", $"bearer {token}");
 
         // act
-        var response = await client.GetAsync("/api/users");
+        var response = await client.GetAsync("/api/user-management/users");
 
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -89,7 +89,7 @@ public class UserControllerTests : IClassFixture<WebApplicationFactory<Program>>
         client.DefaultRequestHeaders.Add("Authorization", $"bearer {token}");
 
         // act
-        var response = await client.GetAsync("/api/users");
+        var response = await client.GetAsync("/api/user-management/users");
 
         // assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);

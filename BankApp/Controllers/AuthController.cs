@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/auth-management")]
 [AllowAnonymous]
 [ApiExplorerSettings(GroupName = "Authentication")]
 public class AuthController : ControllerBase

@@ -1,6 +1,6 @@
-﻿using BankApp.Entities.UserTypes;
-using BankApp.Models;
+﻿using BankApp.Models;
 using BankApp.Models.Requests;
+using BankApp.Models.Responses;
 using BankApp.Services.EmployeeService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +10,7 @@ namespace BankApp.Controllers;
 
 [ApiController]
 [Authorize(Roles = RoleType.Admin)]
-[Route("api/employees")]
+[Route("api/employee-management")]
 [ApiExplorerSettings(GroupName = "Employees")]
 public class EmployeeController : ControllerBase
 {
@@ -24,47 +24,52 @@ public class EmployeeController : ControllerBase
     /// <summary>
     /// Returns all employees. Only for admins.
     /// </summary>
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Employee>>> GetAllEmployeesAsync()
+    [HttpGet("employees")]
+    public async Task<ActionResult<IList<EmployeeDto>>> GetAllEmployeesAsync()
     {
         var employees = await _employeeService.GetAllEmployeesAsync();
-        return Ok(employees);
+        var employeesDto = employees.Select(e => e.ToDto()).ToList();
+        return Ok(employeesDto);
     }
 
     /// <summary>
     /// Returns employee by id. Only for admins.
     /// </summary>
-    [HttpGet("{employeeId}")]
-    public async Task<ActionResult<Employee>> GetEmployeeByIdAsync(string employeeId)
+    [HttpGet("employees/{employeeId}")]
+    public async Task<ActionResult<EmployeeDto>> GetEmployeeByIdAsync(string employeeId)
     {
         var employee = await _employeeService.GetEmployeeByIdAsync(employeeId);
-        return Ok(employee);
+        var employeeDto = employee.ToDto();
+        return Ok(employeeDto);
     }
 
     /// <summary>
     /// Creates new employee. Only for admins.
     /// </summary>
-    [HttpPost]
-    public async Task<ActionResult<Employee>> CreateEmployeeAsync(CreateEmployeeRequest request)
+    [HttpPost("employees")]
+    public async Task<ActionResult<EmployeeDto>> CreateEmployeeAsync(CreateEmployeeRequest request)
     {
         var employee = await _employeeService.CreateEmployeeAsync(request);
-        return Ok(employee);
+        var employeeDto = employee.ToDto();
+        return Ok(employeeDto);
     }
 
     /// <summary>
     /// Updates employee by id. Only for admins.
     /// </summary>
-    [HttpPatch("{employeeId}")] // TODO - make it true PATCH
-    public async Task<ActionResult<Employee>> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request, string employeeId)
+    [HttpPatch("employees/{employeeId}")] // TODO - make it true PATCH
+    public async Task<ActionResult<EmployeeDto>> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request,
+        string employeeId)
     {
         var employee = await _employeeService.UpdateEmployeeByIdAsync(request, employeeId);
-        return Ok(employee);
+        var employeeDto = employee.ToDto();
+        return Ok(employeeDto);
     }
 
     /// <summary>
     /// Deletes employee by id. Only for admins.
     /// </summary>
-    [HttpDelete("{employeeId}")]
+    [HttpDelete("employees/{employeeId}")]
     public async Task<ActionResult<IdentityResult>> DeleteEmployeeByIdAsync(string employeeId)
     {
         var result = await _employeeService.DeleteEmployeeByIdAsync(employeeId);

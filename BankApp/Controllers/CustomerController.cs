@@ -1,6 +1,6 @@
-﻿using BankApp.Entities.UserTypes;
-using BankApp.Models;
+﻿using BankApp.Models;
 using BankApp.Models.Requests;
+using BankApp.Models.Responses;
 using BankApp.Services.CustomerService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BankApp.Controllers;
 
 [ApiController]
-[Route("api/customers")]
+[Route("api/customer-management")]
 [ApiExplorerSettings(GroupName = "Customers")]
 public class CustomerController : ControllerBase
 {
@@ -23,51 +23,56 @@ public class CustomerController : ControllerBase
     /// <summary>
     /// Returns all customers. Only for employees.
     /// </summary>
-    [HttpGet]
+    [HttpGet("customers")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IEnumerable<Customer>>> GetAllCustomersAsync()
+    public async Task<ActionResult<IList<CustomerDto>>> GetAllCustomersAsync()
     {
         var customers = await _customerService.GetAllCustomersAsync();
-        return Ok(customers);
+        var customersDto = customers.Select(c => c.ToDto()).ToList();
+        return Ok(customersDto);
     }
 
     /// <summary>
     /// Returns customer by id. Only for employees.
     /// </summary>
-    [HttpGet("{customerId}")]
+    [HttpGet("customers/{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Customer>> GetCustomerByIdAsync(string customerId)
+    public async Task<ActionResult<CustomerDto>> GetCustomerByIdAsync(string customerId)
     {
         var customer = await _customerService.GetCustomerByIdAsync(customerId);
-        return Ok(customer);
+        var customerDto = customer.ToDto();
+        return Ok(customerDto);
     }
 
     /// <summary>
     /// Creates new customer. Only for employees.
     /// </summary>
-    [HttpPost]
+    [HttpPost("customers")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Customer>> CreateCustomerAsync(CreateCustomerRequest request)
+    public async Task<ActionResult<CustomerDto>> CreateCustomerAsync(CreateCustomerRequest request)
     {
         var customer = await _customerService.CreateCustomerAsync(request);
-        return Ok(customer);
+        var customerDto = customer.ToDto();
+        return Ok(customerDto);
     }
 
     /// <summary>
     /// Updates customer by id. Only for employees.
     /// </summary>
-    [HttpPatch("{customerId}")] // TODO - make it true PATCH
+    [HttpPatch("customers/{customerId}")] // TODO - make it true PATCH
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<Customer>> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId)
+    public async Task<ActionResult<CustomerDto>> UpdateCustomerByIdAsync(UpdateCustomerRequest request,
+        string customerId)
     {
         var customer = await _customerService.UpdateCustomerByIdAsync(request, customerId);
-        return Ok(customer);
+        var customerDto = customer.ToDto();
+        return Ok(customerDto);
     }
 
     /// <summary>
     /// Deletes customer by id. Only for employees.
     /// </summary>
-    [HttpDelete("{customerId}")]
+    [HttpDelete("customers/{customerId}")]
     [Authorize(Roles = RoleType.Employee)]
     public async Task<ActionResult<IdentityResult>> DeleteCustomerByIdAsync(string customerId)
     {

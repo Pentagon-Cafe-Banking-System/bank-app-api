@@ -1,11 +1,11 @@
-﻿using BankApp.Entities;
+﻿using BankApp.Models.Responses;
 using BankApp.Services.CurrencyService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankApp.Controllers;
 
 [ApiController]
-[Route("api/currencies")]
+[Route("api/currency-management")]
 [ApiExplorerSettings(GroupName = "Currencies")]
 public class CurrencyController : Controller
 {
@@ -19,10 +19,11 @@ public class CurrencyController : Controller
     /// <summary>
     /// Returns all available currencies with their rates.
     /// </summary>
-    [HttpGet]
-    public async Task<IEnumerable<Currency>> GetAllCurrenciesAsync()
+    [HttpGet("currencies")]
+    public async Task<ActionResult<IList<CurrencyDto>>> GetAllCurrenciesAsync()
     {
         var currencies = await _currencyService.GetAllCurrenciesAsync();
-        return currencies;
+        var currenciesDto = currencies.Select(c => c.ToDto()).ToList();
+        return Ok(currenciesDto);
     }
 }

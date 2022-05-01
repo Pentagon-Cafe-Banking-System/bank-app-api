@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BankApp.Models.Responses;
 
 namespace BankApp.Entities;
 
@@ -19,4 +20,23 @@ public class Transfer
 
     public long SenderAccountId { get; set; }
     public virtual Account SenderAccount { get; set; } = default!;
+
+    public TransferDto ToDto()
+    {
+        return new TransferDto
+        {
+            Id = Id,
+            Amount = Amount,
+            ReceiverAccountNumber = ReceiverAccountNumber,
+            ReceiverName = ReceiverName,
+            Title = Title,
+            Ordered = Ordered,
+            Executed = Executed,
+            ReasonFailed = ReasonFailed,
+            IsCompleted = IsCompleted,
+            IsFailed = IsFailed,
+            SenderAccountNumber = SenderAccount.Number,
+            SenderAccountCurrencyCode = SenderAccount.Currency.Code
+        };
+    }
 }

@@ -23,7 +23,7 @@ public class JwtService : IJwtService
         _appSettings = appSettings.Value;
     }
 
-    public string GenerateJwtToken(IEnumerable<Claim> claims)
+    public string GenerateJwtToken(IList<Claim> claims)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appSettings.JwtSecret));

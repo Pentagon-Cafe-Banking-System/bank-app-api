@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BankApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220501111221_SquashedMigrations")]
+    [Migration("20220501171309_SquashedMigrations")]
     partial class SquashedMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,6 +62,9 @@ namespace BankApp.Migrations
 
                     b.HasIndex("CustomerId");
 
+                    b.HasIndex("Number")
+                        .IsUnique();
+
                     b.ToTable("Accounts");
                 });
 
@@ -85,6 +88,9 @@ namespace BankApp.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.ToTable("AccountTypes");
 
@@ -277,6 +283,9 @@ namespace BankApp.Migrations
 
                     b.HasIndex("CardTypeId");
 
+                    b.HasIndex("Number")
+                        .IsUnique();
+
                     b.ToTable("Cards");
                 });
 
@@ -323,6 +332,9 @@ namespace BankApp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.ToTable("CardTypes");
                 });
 
@@ -343,6 +355,9 @@ namespace BankApp.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.ToTable("Countries");
 
@@ -1839,6 +1854,9 @@ namespace BankApp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.ToTable("Currencies");
 
                     b.HasData(
@@ -2054,11 +2072,11 @@ namespace BankApp.Migrations
                         {
                             Id = "7a4165b4-0aca-43fb-a390-294781ee377f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "19cc68a3-c186-4fa3-b854-7da43e2acfba",
+                            ConcurrencyStamp = "981d4b1f-7fcc-430a-9b4b-c439bbae5b21",
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBTSZ4g6SSBRpWwQIwRa2Ib1eEmgMmYqR79gQsU1lCbDabUf+OOw4DYOBKhospc/5A==",
-                            SecurityStamp = "e099f138-2353-4bbd-928a-7fe9ecb45206",
+                            PasswordHash = "AQAAAAEAACcQAAAAENXmsqKmDPDcLRamrDZ1b6auHAQBzUpysleeoeoUcdm9LSgx2RrroDJUr6JdgFSX4Q==",
+                            SecurityStamp = "76e259a2-f256-4d16-bd3d-9c66646b68c3",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -2160,21 +2178,21 @@ namespace BankApp.Migrations
                         new
                         {
                             Id = "fa2640a0-0496-4010-bc27-424e0e5c6f78",
-                            ConcurrencyStamp = "b15c4041-0ccf-4c41-b7c0-ae84f5329862",
+                            ConcurrencyStamp = "ab4672cc-d659-40ad-9cb0-08ab02d2a6d8",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "c2698ac8-3dfb-4876-be27-7a369a8a6891",
-                            ConcurrencyStamp = "28e69b2f-4e95-44fc-8bc4-8d91f287e077",
+                            Id = "d1b8fe3b-26fb-4c0a-850a-6854833be5d2",
+                            ConcurrencyStamp = "a185570a-d8a9-42d6-ae2d-a1fedb963d07",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = "545fba29-1425-4860-847d-d1bc453ca327",
-                            ConcurrencyStamp = "41fbd4b2-3cb2-4ced-85c0-9da8d2d80d78",
+                            Id = "d174a543-f853-43b7-9d13-2ef0a492fd50",
+                            ConcurrencyStamp = "5ba565f6-2c9a-4233-aeac-ce7c8b74b1a6",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         });
