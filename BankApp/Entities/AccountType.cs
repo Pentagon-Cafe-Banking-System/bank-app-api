@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BankApp.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Entities;
@@ -13,5 +14,16 @@ public class AccountType
     public string Name { get; set; } = default!;
     public decimal InterestRate { get; set; }
 
-    public virtual List<AccountTypeCurrency> AvailableCurrencies { get; set; } = default!;
+    public virtual List<AccountTypeCurrency> AvailableCurrencies { get; set; } = new();
+
+    public AccountTypeDto ToDto()
+    {
+        return new AccountTypeDto
+        {
+            Id = Id,
+            Code = Code,
+            Name = Name,
+            InterestRate = InterestRate
+        };
+    }
 }
