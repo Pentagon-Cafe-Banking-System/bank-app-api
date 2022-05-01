@@ -29,9 +29,9 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpGet("transfers")]
     [Authorize(Roles = RoleType.Employee)]
-    public ActionResult<IEnumerable<Transfer>> GetAllTransfers()
+    public async Task<ActionResult<IList<Transfer>>> GetAllTransfers()
     {
-        var transfers = _transferService.GetAllTransfersAsync();
+        var transfers = await _transferService.GetAllTransfersAsync();
         return Ok(transfers);
     }
 
@@ -40,7 +40,7 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpGet("customer/auth/transfers")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IEnumerable<Transfer>>> GetAllTransfersFromAndToCustomerByIdAsync()
+    public async Task<ActionResult<IList<Transfer>>> GetAllTransfersFromAndToCustomerByIdAsync()
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         var transfers = await _transferService.GetAllTransfersFromAndToCustomerAsync(customerId);

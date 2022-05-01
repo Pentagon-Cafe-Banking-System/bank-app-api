@@ -24,7 +24,7 @@ public class UserController : ControllerBase
     /// Returns all base users. Only for admins.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetAllUsersAsync()
+    public async Task<ActionResult<IList<AppUser>>> GetAllUsersAsync()
     {
         var users = await _userService.GetAllUsersAsync();
         return Ok(users);
@@ -34,7 +34,7 @@ public class UserController : ControllerBase
     /// Returns all refresh tokens for specified user. Only for admins.
     /// </summary>
     [HttpGet("{userId}/refresh-tokens")]
-    public async Task<ActionResult<IEnumerable<RefreshToken>>> GetUserRefreshTokensAsync(string userId)
+    public async Task<ActionResult<IList<RefreshToken>>> GetUserRefreshTokensAsync(string userId)
     {
         var refreshTokens = await _userService.GetUserRefreshTokensAsync(userId);
         return Ok(refreshTokens);

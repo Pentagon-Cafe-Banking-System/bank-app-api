@@ -26,7 +26,7 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("accounts")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsAsync()
+    public async Task<ActionResult<IList<Account>>> GetAllAccountsAsync()
     {
         var accounts = await _accountService.GetAllAccountsAsync();
         return Ok(accounts);
@@ -48,7 +48,7 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("customers/auth/accounts")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAllAccountsOfAuthenticatedCustomerAsync()
+    public async Task<ActionResult<IList<Account>>> GetAllAccountsOfAuthenticatedCustomerAsync()
     {
         var userId = User.FindFirstValue(ClaimTypes.Sid);
         var accounts = await _accountService.GetAccountsByCustomerIdAsync(userId);
@@ -60,7 +60,7 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("customers/{customerId}/accounts")]
     [Authorize(Roles = RoleType.Employee)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAccountsByCustomerIdAsync(string customerId)
+    public async Task<ActionResult<IList<Account>>> GetAccountsByCustomerIdAsync(string customerId)
     {
         var accounts = await _accountService.GetAccountsByCustomerIdAsync(customerId);
         return Ok(accounts);
@@ -71,7 +71,7 @@ public class AccountController : ControllerBase
     /// </summary>
     [HttpGet("customers/auth/accounts/{accountId:long}")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IEnumerable<Account>>> GetAccountByIdOfAuthenticatedCustomerAsync(long accountId)
+    public async Task<ActionResult<IList<Account>>> GetAccountByIdOfAuthenticatedCustomerAsync(long accountId)
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         if (!await _accountService.IsCustomerAccountOwnerAsync(customerId, accountId))

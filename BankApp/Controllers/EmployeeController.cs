@@ -25,7 +25,7 @@ public class EmployeeController : ControllerBase
     /// Returns all employees. Only for admins.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Employee>>> GetAllEmployeesAsync()
+    public async Task<ActionResult<IList<Employee>>> GetAllEmployeesAsync()
     {
         var employees = await _employeeService.GetAllEmployeesAsync();
         return Ok(employees);

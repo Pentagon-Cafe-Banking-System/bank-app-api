@@ -22,7 +22,7 @@ public class AccountTypeController : ControllerBase
     /// Returns all account types. For all authenticated users.
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AccountType>>> GetAllAccountTypesAsync()
+    public async Task<ActionResult<IList<AccountType>>> GetAllAccountTypesAsync()
     {
         var accountTypes = await _accountTypeService.GetAllAccountTypesAsync();
         return Ok(accountTypes);
@@ -31,8 +31,8 @@ public class AccountTypeController : ControllerBase
     /// <summary>
     /// Returns currencies available for specified account type. For all authenticated users.
     /// </summary>
-    [HttpGet("{accountTypeId}/currencies")]
-    public async Task<ActionResult<IEnumerable<Currency>>> GetCurrenciesOfAccountTypeAsync(int accountTypeId)
+    [HttpGet("{accountTypeId:int}/currencies")]
+    public async Task<ActionResult<IList<Currency>>> GetCurrenciesOfAccountTypeAsync(int accountTypeId)
     {
         var currencies = await _accountTypeService.GetCurrenciesOfAccountTypeAsync(accountTypeId);
         return Ok(currencies);

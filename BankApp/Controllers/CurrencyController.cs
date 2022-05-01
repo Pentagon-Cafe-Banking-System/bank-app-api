@@ -20,7 +20,7 @@ public class CurrencyController : Controller
     /// Returns all available currencies with their rates.
     /// </summary>
     [HttpGet]
-    public async Task<IEnumerable<Currency>> GetAllCurrenciesAsync()
+    public async Task<IList<Currency>> GetAllCurrenciesAsync()
     {
         var currencies = await _currencyService.GetAllCurrenciesAsync();
         return currencies;
