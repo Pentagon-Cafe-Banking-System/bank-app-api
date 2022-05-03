@@ -5,7 +5,6 @@ using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.CustomerService;
@@ -36,6 +35,16 @@ public class CustomerService : ICustomerService
         return customer;
     }
 
+    public async Task<Customer> GetCustomerByNationalIdAsync(string nationalId,
+        CancellationToken cancellationToken = default)
+    {
+        var customer = await _dbContext.Customers
+            .FirstOrDefaultAsync(c => c.NationalId == nationalId, cancellationToken: cancellationToken);
+        if (customer == null)
+            throw new NotFoundException("Customer with requested id does not exist");
+        return customer;
+    }
+
     public async Task<Customer> CreateCustomerAsync(CreateCustomerRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -55,14 +64,19 @@ public class CustomerService : ICustomerService
     public async Task<Customer> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId,
         CancellationToken cancellationToken = default)
     {
-        var hasher = new PasswordHasher<AppUser>();
         var customer = await GetCustomerByIdAsync(customerId, cancellationToken);
         customer.AppUser.UserName = request.UserName;
         customer.AppUser.NormalizedUserName = request.UserName.ToUpper();
-        customer.AppUser.PasswordHash = hasher.HashPassword(null!, request.Password);
+        if (!string.IsNullOrEmpty(request.Password))
+            _userService.SetUserPassword(customer.AppUser, request.Password);
+
         customer.FirstName = request.FirstName;
-        customer.MiddleName = request.SecondName;
+        customer.MiddleName = request.MiddleName;
         customer.LastName = request.LastName;
+        customer.NationalId = request.NationalId;
+        customer.DateOfBirth = request.DateOfBirth;
+        customer.CityOfBirth = request.CityOfBirth;
+        customer.FathersName = request.FathersName;
         await _dbContext.SaveChangesAsync(cancellationToken);
         return customer;
     }

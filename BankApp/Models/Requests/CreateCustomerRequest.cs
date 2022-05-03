@@ -71,8 +71,8 @@ public class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRe
             .MustAsync(async (nationalId, cancellationToken) =>
                 !await customerService.NationalIdExistsAsync(nationalId, cancellationToken))
             .WithMessage("National ID already exists")
-            .MinimumLength(9)
-            .WithMessage("National id must be at least 9 digits long")
+            .Length(11)
+            .WithMessage("National ID must be 11 characters long")
             .Matches("\\d+")
             .WithMessage("National id must consist of digits only");
 

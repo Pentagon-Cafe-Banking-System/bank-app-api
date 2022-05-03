@@ -97,4 +97,10 @@ public class UserService : IUserService
         var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
         return isPasswordValid;
     }
+
+    public void SetUserPassword(AppUser user, string newPassword)
+    {
+        var hasher = new PasswordHasher<AppUser>();
+        user.PasswordHash = hasher.HashPassword(user, newPassword);
+    }
 }

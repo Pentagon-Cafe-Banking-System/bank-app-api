@@ -7,6 +7,7 @@ public interface ICustomerService
 {
     Task<IList<Customer>> GetAllCustomersAsync(CancellationToken cancellationToken = default);
     Task<Customer> GetCustomerByIdAsync(string customerId, CancellationToken cancellationToken = default);
+    Task<Customer> GetCustomerByNationalIdAsync(string nationalId, CancellationToken cancellationToken = default);
     Task<Customer> CreateCustomerAsync(CreateCustomerRequest request, CancellationToken cancellationToken = default);
 
     Task<Customer> UpdateCustomerByIdAsync(UpdateCustomerRequest request, string customerId,

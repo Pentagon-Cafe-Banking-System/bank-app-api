@@ -5,7 +5,6 @@ using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.EmployeeService;
@@ -55,14 +54,18 @@ public class EmployeeService : IEmployeeService
     public async Task<Employee> UpdateEmployeeByIdAsync(UpdateEmployeeRequest request, string employeeId,
         CancellationToken cancellationToken = default)
     {
-        var hasher = new PasswordHasher<AppUser>();
         var employee = await GetEmployeeByIdAsync(employeeId, cancellationToken);
         employee.AppUser.UserName = request.UserName;
         employee.AppUser.NormalizedUserName = request.UserName.ToUpper();
-        employee.AppUser.PasswordHash = hasher.HashPassword(null!, request.Password);
+        if (!string.IsNullOrEmpty(request.Password))
+            _userService.SetUserPassword(employee.AppUser, request.Password);
+
         employee.FirstName = request.FirstName;
         employee.LastName = request.LastName;
         employee.Salary = request.Salary;
+        employee.Gender = request.Gender;
+        employee.DateOfEmployment = request.DateOfEmployment;
+        employee.DateOfBirth = request.DateOfBirth;
         await _dbContext.SaveChangesAsync(cancellationToken);
         return employee;
     }
