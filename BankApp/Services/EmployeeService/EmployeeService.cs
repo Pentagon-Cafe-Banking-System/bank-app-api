@@ -5,7 +5,6 @@ using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.EmployeeService;
@@ -59,10 +58,7 @@ public class EmployeeService : IEmployeeService
         employee.AppUser.UserName = request.UserName;
         employee.AppUser.NormalizedUserName = request.UserName.ToUpper();
         if (!string.IsNullOrEmpty(request.Password))
-        {
-            var hasher = new PasswordHasher<AppUser>();
-            employee.AppUser.PasswordHash = hasher.HashPassword(employee.AppUser, request.Password);
-        }
+            _userService.SetUserPassword(employee.AppUser, request.Password);
 
         employee.FirstName = request.FirstName;
         employee.LastName = request.LastName;

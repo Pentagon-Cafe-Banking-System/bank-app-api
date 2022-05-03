@@ -15,4 +15,5 @@ public interface IUserService
     Task<IList<RefreshToken>> GetUserRefreshTokensAsync(string userId);
     Task<bool> UserNameExistsAsync(string userName, CancellationToken cancellationToken = default);
     Task<bool> ValidateUserPasswordAsync(string userName, string password);
+    void SetUserPassword(AppUser user, string newPassword);
 }

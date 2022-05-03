@@ -5,7 +5,6 @@ using BankApp.Exceptions;
 using BankApp.Models;
 using BankApp.Models.Requests;
 using BankApp.Services.UserService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.CustomerService;
@@ -69,10 +68,7 @@ public class CustomerService : ICustomerService
         customer.AppUser.UserName = request.UserName;
         customer.AppUser.NormalizedUserName = request.UserName.ToUpper();
         if (!string.IsNullOrEmpty(request.Password))
-        {
-            var hasher = new PasswordHasher<AppUser>();
-            customer.AppUser.PasswordHash = hasher.HashPassword(customer.AppUser, request.Password);
-        }
+            _userService.SetUserPassword(customer.AppUser, request.Password);
 
         customer.FirstName = request.FirstName;
         customer.MiddleName = request.MiddleName;
