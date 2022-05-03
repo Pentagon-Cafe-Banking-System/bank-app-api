@@ -6,7 +6,7 @@ namespace BankApp.Models.Requests;
 
 public class UpdateEmployeeRequest
 {
-    public string Id { get; set; } = default!;
+    public string EmployeeId { get; set; } = default!;
     public string UserName { get; set; } = default!;
     public string? Password { get; set; } = default!;
     public string FirstName { get; set; } = default!;
@@ -32,14 +32,15 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRe
             .WithMessage("Username must be at most 16 characters long");
 
 
-        RuleFor(e => new {e.Id, e.UserName})
+        RuleFor(e => new {e.EmployeeId, e.UserName})
             .MustAsync(async (args, cancellationToken) =>
             {
                 if (!await userService.UserNameExistsAsync(args.UserName, cancellationToken))
                     return true;
                 var user = await userService.GetUserByUserNameAsync(args.UserName);
-                return user.Id == args.Id;
+                return user.Id == args.EmployeeId;
             })
+            .WithName("UserName")
             .WithMessage("Username already exists");
 
         RuleFor(e => e.Password)
