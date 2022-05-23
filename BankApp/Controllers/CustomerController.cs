@@ -24,7 +24,7 @@ public class CustomerController : ControllerBase
     /// Returns all customers. Only for employees.
     /// </summary>
     [HttpGet("customers")]
-    [Authorize(Roles = RoleType.Employee)]
+    [Authorize(Roles = RoleType.Employee + "," + RoleType.Admin)]
     public async Task<ActionResult<IList<CustomerDto>>> GetAllCustomersAsync()
     {
         var customers = await _customerService.GetAllCustomersAsync();

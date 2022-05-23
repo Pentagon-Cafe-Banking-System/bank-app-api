@@ -7,6 +7,7 @@ using BankApp.Models.Requests;
 using BankApp.Services;
 using BankApp.Services.AccountService;
 using BankApp.Services.AccountTypeService;
+using BankApp.Services.AdminService;
 using BankApp.Services.AuthService;
 using BankApp.Services.CurrencyService;
 using BankApp.Services.CustomerService;
@@ -151,6 +152,7 @@ builder.Services.AddScoped<IAccountTypeService, AccountTypeService>();
 builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // Fluent validation
 builder.Services.AddFluentValidation();
