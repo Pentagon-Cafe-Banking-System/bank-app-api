@@ -5,6 +5,7 @@ using BankApp.Exceptions;
 using BankApp.Models.Requests;
 using BankApp.Services.AccountService;
 using BankApp.Services.CustomerService;
+using Castle.Core.Internal;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Services.TransferService;
@@ -42,7 +43,26 @@ public class TransferService : ITransferService
             .ToListAsync(cancellationToken: cancellationToken);
         return transfers;
     }
-
+    
+    public async Task<IEnumerable<Transfer>> GetTransfersByAmountAndTitleAsync(string customerId, long amount, string title,
+        int records, CancellationToken cancellationToken = default)
+    {
+        var customer = await _customerService.GetCustomerByIdAsync(customerId, cancellationToken);
+        var customerBankAccounts = customer.BankAccounts;
+        var accountIds = customerBankAccounts.Select(a => a.Id);
+        var accountNumbers = customerBankAccounts.Select(a => a.Number);
+        var transfers = await _dbContext.Transfers
+            .Where(t => accountNumbers.Contains(t.ReceiverAccountNumber) || accountIds.Contains(t.SenderAccountId))
+            .OrderByDescending(t => t.Ordered)
+            .ToListAsync(cancellationToken: cancellationToken);
+        var matchingTransfers = transfers.FindAll(t =>
+            (t.Amount == amount && t.Title == title)
+        );
+        if (matchingTransfers.IsNullOrEmpty())
+            throw new NotFoundException("There are no matching transfers");
+        return matchingTransfers.Take(records);
+    }
+    
     public async Task<Transfer> GetTransferByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         var transfer = await _dbContext.Transfers.FindAsync(new object?[] {id}, cancellationToken: cancellationToken);

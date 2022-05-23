@@ -35,6 +35,19 @@ public class TransferController : ControllerBase
         var transfersDto = transfers.Select(t => t.ToDto()).ToList();
         return Ok(transfersDto);
     }
+    
+    /// <summary>
+    /// Returns all transfers that match the search results. Only for customers.
+    /// </summary>
+    [HttpGet("customer/transfers/search")]
+    [Authorize(Roles = RoleType.Customer)]
+    public async Task<ActionResult<IList<TransferDto>>> GetAllMatchingTransfers(long amount, string title, int records)
+    {
+        var customerId = User.FindFirstValue(ClaimTypes.Sid);
+        var matchingTransfers = await _transferService.GetTransfersByAmountAndTitleAsync(customerId, amount, title, records);
+        var matchingTransfersDto = matchingTransfers.Select(t => t.ToDto()).ToList();
+        return Ok(matchingTransfersDto);
+    }
 
     /// <summary>
     /// Returns all transfers of the authenticated customer sorted descending by order date. Only for customers.
