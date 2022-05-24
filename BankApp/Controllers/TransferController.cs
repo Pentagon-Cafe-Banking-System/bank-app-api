@@ -37,15 +37,35 @@ public class TransferController : ControllerBase
     }
 
     /// <summary>
+    /// Returns all transfers of the authenticated customer that match the given criteria. Only for customers.
+    /// </summary>
+    [HttpGet("customer/auth/transfers/search")]
+    [Authorize(Roles = RoleType.Customer)]
+    public async Task<ActionResult<IList<TransferDto>>> GetAllTransfersFromAndToCustomerWithCriteriaAsync(
+        decimal? lowestAmount, decimal? highestAmount, string? title, int? takeFirst)
+    {
+        var customerId = User.FindFirstValue(ClaimTypes.Sid);
+        var transfers = await _transferService.GetFilteredTransfersFromAndToCustomerAsync(
+            customerId: customerId,
+            lowestAmount: lowestAmount,
+            highestAmount: highestAmount,
+            title: title,
+            takeFirst: takeFirst);
+        var transfersDto = transfers.Select(t => t.ToDto()).ToList();
+        return Ok(transfersDto);
+    }
+
+    /// <summary>
     /// Returns all transfers of the authenticated customer sorted descending by order date. Only for customers.
     /// </summary>
     [HttpGet("customer/auth/transfers")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IList<TransferDto>>> GetAllTransfersFromAndToCustomerByIdAsync()
+    public async Task<ActionResult<IList<TransferDto>>> GetAllTransfersFromAndToCustomerAsync()
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
         var transfers = await _transferService.GetAllTransfersFromAndToCustomerAsync(customerId);
-        var transfersDto = transfers.Select(t => t.ToDto()).ToList();
+        var transfersOrdered = transfers.OrderByDescending(t => t.Ordered);
+        var transfersDto = transfersOrdered.Select(t => t.ToDto()).ToList();
         return Ok(transfersDto);
     }
 

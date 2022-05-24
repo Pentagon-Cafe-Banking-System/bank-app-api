@@ -1,4 +1,5 @@
-﻿using BankApp.Models.Responses;
+﻿using BankApp.Models;
+using BankApp.Models.Responses;
 using BankApp.Services.AccountTypeService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +20,10 @@ public class AccountTypeController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all account types. For all authenticated users.
+    /// Returns all account types. For admins and employees.
     /// </summary>
     [HttpGet("account-types")]
+    [Authorize(Roles = RoleType.Admin + "," + RoleType.Employee)]
     public async Task<ActionResult<IList<AccountTypeDto>>> GetAllAccountTypesAsync()
     {
         var accountTypes = await _accountTypeService.GetAllAccountTypesAsync();
