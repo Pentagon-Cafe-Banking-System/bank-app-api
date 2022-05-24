@@ -33,10 +33,10 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
-    /// Returns employee by id. Only for admins.
+    /// Returns admin by id. Only for admins.
     /// </summary>
     [HttpGet("admin/{adminId}")]
-    public async Task<ActionResult<Admin>> GetEmployeeByIdAsync(string adminId)
+    public async Task<ActionResult<Admin>> GetAdminByIdAsync(string adminId)
     {
         var admin = await _adminService.GetAdminByIdAsync(adminId);
         var adminDto = admin.ToDto();
