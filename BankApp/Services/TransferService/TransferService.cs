@@ -30,39 +30,40 @@ public class TransferService : ITransferService
         return transfers;
     }
 
-    public async Task<IList<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId,
+    public async Task<IEnumerable<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId,
         CancellationToken cancellationToken = default)
     {
         var customer = await _customerService.GetCustomerByIdAsync(customerId, cancellationToken);
-        var customerBankAccounts = customer.BankAccounts;
-        var accountIds = customerBankAccounts.Select(a => a.Id);
-        var accountNumbers = customerBankAccounts.Select(a => a.Number);
-        var transfers = await _dbContext.Transfers
-            .Where(t => accountNumbers.Contains(t.ReceiverAccountNumber) || accountIds.Contains(t.SenderAccountId))
-            .OrderByDescending(t => t.Ordered)
-            .ToListAsync(cancellationToken: cancellationToken);
+        var customerAccounts = customer.BankAccounts;
+        var accountIds = customerAccounts.Select(a => a.Id);
+        var accountNumbers = customerAccounts.Select(a => a.Number);
+        var transfers = _dbContext.Transfers.Where(t =>
+            accountNumbers.Contains(t.ReceiverAccountNumber) || accountIds.Contains(t.SenderAccountId)
+        );
         return transfers;
     }
-    
-    public async Task<IEnumerable<Transfer>> GetTransfersByAmountAndTitleAsync(string customerId, decimal lowestAmount,
-        decimal highestAmount, string title, int records, CancellationToken cancellationToken = default)
+
+    public async Task<IEnumerable<Transfer>> GetFilteredTransfersFromAndToCustomerAsync(string customerId,
+        decimal? lowestAmount, decimal? highestAmount, string? title, int? takeFirst,
+        CancellationToken cancellationToken = default)
     {
-        var customer = await _customerService.GetCustomerByIdAsync(customerId, cancellationToken);
-        var customerBankAccounts = customer.BankAccounts;
-        var accountIds = customerBankAccounts.Select(a => a.Id);
-        var accountNumbers = customerBankAccounts.Select(a => a.Number);
-        var transfers = await _dbContext.Transfers
-            .Where(t => accountNumbers.Contains(t.ReceiverAccountNumber) || accountIds.Contains(t.SenderAccountId))
-            .OrderByDescending(t => t.Ordered)
-            .ToListAsync(cancellationToken: cancellationToken);
-        var matchingTransfers = transfers.FindAll(t =>
-            (t.Amount >= lowestAmount && t.Amount <= highestAmount && t.Title == title)
-        );
-        if (matchingTransfers.IsNullOrEmpty())
-            throw new NotFoundException("There are no matching transfers");
-        return matchingTransfers.Take(records);
+        var transfers = await GetAllTransfersFromAndToCustomerAsync(customerId, cancellationToken);
+
+        if (lowestAmount.HasValue)
+            transfers = transfers.Where(t => t.Amount >= lowestAmount);
+        if (highestAmount.HasValue)
+            transfers = transfers.Where(t => t.Amount <= highestAmount);
+        if (!title.IsNullOrEmpty())
+            transfers = transfers.Where(t => t.Title.ToUpper().Contains(title!.ToUpper()));
+        if (takeFirst.HasValue)
+            transfers = transfers.Take(takeFirst.Value);
+
+        var transfersFilteredAsList = transfers.ToList();
+        if (transfersFilteredAsList.IsNullOrEmpty())
+            throw new NotFoundException("No transfers match the search criteria");
+        return transfersFilteredAsList;
     }
-    
+
     public async Task<Transfer> GetTransferByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         var transfer = await _dbContext.Transfers.FindAsync(new object?[] {id}, cancellationToken: cancellationToken);

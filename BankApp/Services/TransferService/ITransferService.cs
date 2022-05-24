@@ -7,11 +7,12 @@ public interface ITransferService
 {
     Task<IList<Transfer>> GetAllTransfersAsync(CancellationToken cancellationToken = default);
 
-    Task<IList<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId,
+    Task<IEnumerable<Transfer>> GetAllTransfersFromAndToCustomerAsync(string customerId,
         CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<Transfer>> GetTransfersByAmountAndTitleAsync(string customerId, decimal lowestAmount, 
-        decimal highestAmount, string title, int records, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Transfer>> GetFilteredTransfersFromAndToCustomerAsync(string customerId, decimal? lowestAmount,
+        decimal? highestAmount, string? title, int? takeFirst, CancellationToken cancellationToken = default);
+
     Task<Transfer> GetTransferByIdAsync(long id, CancellationToken cancellationToken = default);
     Task<Transfer> CreateTransferAsync(CreateTransferRequest request, CancellationToken cancellationToken = default);
 }

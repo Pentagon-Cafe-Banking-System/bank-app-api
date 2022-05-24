@@ -1,5 +1,4 @@
 using BankApp.Entities.UserTypes;
-using BankApp.Models.Requests;
 
 namespace BankApp.Services.AdminService;
 

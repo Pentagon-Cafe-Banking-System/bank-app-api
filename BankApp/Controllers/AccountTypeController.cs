@@ -20,7 +20,7 @@ public class AccountTypeController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all account types. Only for admins and employees.
+    /// Returns all account types. For admins and employees.
     /// </summary>
     [HttpGet("account-types")]
     [Authorize(Roles = RoleType.Admin + "," + RoleType.Employee)]
