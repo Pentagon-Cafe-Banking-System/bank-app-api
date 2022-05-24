@@ -41,10 +41,12 @@ public class TransferController : ControllerBase
     /// </summary>
     [HttpGet("customer/transfers/search")]
     [Authorize(Roles = RoleType.Customer)]
-    public async Task<ActionResult<IList<TransferDto>>> GetAllMatchingTransfers(long amount, string title, int records)
+    public async Task<ActionResult<IList<TransferDto>>> GetAllMatchingTransfers(decimal lowestAmount,
+        decimal highestAmount, string title, int records)
     {
         var customerId = User.FindFirstValue(ClaimTypes.Sid);
-        var matchingTransfers = await _transferService.GetTransfersByAmountAndTitleAsync(customerId, amount, title, records);
+        var matchingTransfers = await _transferService.GetTransfersByAmountAndTitleAsync(customerId,
+            lowestAmount,highestAmount, title, records);
         var matchingTransfersDto = matchingTransfers.Select(t => t.ToDto()).ToList();
         return Ok(matchingTransfersDto);
     }

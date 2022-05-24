@@ -44,8 +44,8 @@ public class TransferService : ITransferService
         return transfers;
     }
     
-    public async Task<IEnumerable<Transfer>> GetTransfersByAmountAndTitleAsync(string customerId, long amount, string title,
-        int records, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Transfer>> GetTransfersByAmountAndTitleAsync(string customerId, decimal lowestAmount,
+        decimal highestAmount, string title, int records, CancellationToken cancellationToken = default)
     {
         var customer = await _customerService.GetCustomerByIdAsync(customerId, cancellationToken);
         var customerBankAccounts = customer.BankAccounts;
@@ -56,7 +56,7 @@ public class TransferService : ITransferService
             .OrderByDescending(t => t.Ordered)
             .ToListAsync(cancellationToken: cancellationToken);
         var matchingTransfers = transfers.FindAll(t =>
-            (t.Amount == amount && t.Title == title)
+            (t.Amount >= lowestAmount && t.Amount <= highestAmount && t.Title == title)
         );
         if (matchingTransfers.IsNullOrEmpty())
             throw new NotFoundException("There are no matching transfers");

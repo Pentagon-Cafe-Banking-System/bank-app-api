@@ -21,7 +21,7 @@ public class CustomerController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all customers. Only for employees.
+    /// Returns all customers. Only for employees and admins.
     /// </summary>
     [HttpGet("customers")]
     [Authorize(Roles = RoleType.Employee + "," + RoleType.Admin)]

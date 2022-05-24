@@ -20,10 +20,10 @@ public class AccountTypeController : ControllerBase
     }
 
     /// <summary>
-    /// Returns all account types. Only for admins.
+    /// Returns all account types. Only for admins and employees.
     /// </summary>
     [HttpGet("account-types")]
-    [Authorize(Roles = RoleType.Admin)]
+    [Authorize(Roles = RoleType.Admin + "," + RoleType.Employee)]
     public async Task<ActionResult<IList<AccountTypeDto>>> GetAllAccountTypesAsync()
     {
         var accountTypes = await _accountTypeService.GetAllAccountTypesAsync();
